@@ -1,0 +1,201 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@font-face {
+  font-family: 'Segoe UI Gis';
+  src: url('./assets/fonts/segoe-ui.woff') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-main {
+  /* background-color: #25272b; */
+  background-color: #222222;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* font-size: calc(10px + 2vmin); */
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reset default margin/padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI Gis', sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 🔹 Top Menu Bar */
+.menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 35px;
+  /* background: #282c34; */
+  background: #2b2b2b;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* border-bottom: 1px solid gray; */
+}
+
+.menu-bar button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  height: 100%;
+  width: 65px;
+}
+
+.menu-bar button:hover {
+  background: #313131;
+}
+
+/* 🔹 Main Content Layout */
+.content {
+  display: flex;
+  /* height: calc(100vh - 50px); Takes full height minus the menu bar */
+  height: 100vh;
+  padding-top: 35px; /* Leaves space for the menu bar */
+  width: 100%; /* Ensure it spans the entire width */
+  justify-content: flex-start; /* Align children to the left */
+  align-items: stretch; /* Stretch children to full height */
+}
+
+/* 🔹 Sidebar: Note List */
+.note-list {
+  width: 300px; /* Fixed width for note list */
+  /* background: #2c2c2c; */
+  background-color: #222222;
+  border-right: 1px solid #393939;
+  padding: 10px;
+  height: 100%; /* Full height */
+  overflow-y: auto;
+}
+
+
+.note-list button {
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  background: #343434;
+  color: white;
+  border: none;
+}
+
+.note-list>button:hover {
+  background: #3f3f3f;
+}
+
+.note-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #4a4a4a;
+  /* border-radius: 5px; */
+  margin-bottom: 5px;
+  cursor: pointer;
+  padding: 0px 10px 0px 10px;
+}
+
+.note-item:hover {
+  background: #626262;
+}
+
+.note-item button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  color: lightgray;
+  margin-bottom: 0;
+}
+
+/* 🔹 Note Editor */
+.editor {
+  flex-grow: 1; /* Take remaining space */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure it stretches fully */
+}
+
+.editor input {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+.editor textarea {
+  flex-grow: 1;
+  font-size: 16px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+}
+
+.editor-icon {
+  width: 250px;
+  filter: opacity(0.1);
+}
+
+.editor-empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-empty-title {
+  font-size: 22px;
+  color: #b3b3b3;
+}
+
+.editor-empty-text {
+  font-size: 17px;
+  color: #b3b3b3;
+  margin-top: 10px;
+}
