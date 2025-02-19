@@ -12,6 +12,7 @@ SharpNote is a modern desktop note-taking application built with Electron and Re
 - 💾 Local file storage with `.sharp` file association
 - 🚀 Cross-platform support (Windows, macOS, Linux)
 - 📤 Export & Import – Save or load a single note or all notes
+- 🔒 100% Offline – No cloud storage, no data tracking. Your notes stay on your device, giving you full privacy and control
 
 ## Installation
 ### Windows
