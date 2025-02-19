@@ -27,6 +27,9 @@ WIP
 ### Linux
 WIP
 
+## Why SharpNote?
+Many note-taking apps either rely on plain .txt files with limited functionality or lock you into corporate ecosystems like OneNote or Notion. SharpNote is designed to be a modern, feature-rich alternative that remains fully offline — giving you complete privacy, control, and ownership of your notes without being tied to a cloud service.
+
 ## Screenshots
 WIP
 
