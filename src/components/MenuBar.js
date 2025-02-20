@@ -1,11 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
+import SettingsPopup from "./SettingsPopup";  // We'll create this next
 
 const MenuBar = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSettingsPopupOpen, setIsSettingsPopupOpen] = useState(false);
+
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const openSettingsPopup = () => setIsSettingsPopupOpen(true);
+  const closeSettingsPopup = () => setIsSettingsPopupOpen(false);
+
   return (
     <div className="menu-bar">
-      <button>File</button>
-      <button>Edit</button>
-      <button>View</button>
+      <button onClick={toggleDropdown}>File</button>
+      {isDropdownOpen && (
+        <div className="dropdown-menu">
+          <button onClick={openSettingsPopup}>Settings</button>
+        </div>
+      )}
+      {isSettingsPopupOpen && (
+        <SettingsPopup closePopup={closeSettingsPopup} />
+      )}
     </div>
   );
 };

@@ -5,9 +5,9 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const NoteItem = ({ note, onDeleteNote, onSelectNote }) => {
   return (
-    <div className="note-item" onClick={() => onSelectNote(note.id)}>
-      <span>{note.title}</span>
-      <button onClick={(e) => { e.stopPropagation(); onDeleteNote(note.id); }}><FontAwesomeIcon icon={faTrash} /></button>
+    <div className="note-item" onClick={() => onSelectNote(note.noteID)}>
+      <span>{note.noteTitle}</span>
+      <button onClick={(e) => { e.stopPropagation(); onDeleteNote(note.noteID); }}><FontAwesomeIcon icon={faTrash} /></button>
     </div>
   );
 };
