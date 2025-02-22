@@ -133,6 +133,50 @@ body {
 
 }
 
+.editnote-popup-item {
+  display: grid;
+  justify-items: center;
+  margin-bottom: 10px;
+}
+
+.editnote-popup {
+  position: relative;
+  background-color: rgb(27, 27, 27);
+  padding: 0px;
+  border-radius: 8px;
+  width: 40%;
+  padding-top: 10px;
+  height: 40%;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.editnote-popup-content {
+  width: 250px;
+  justify-self: center;
+  margin-top: 20px;
+}
+
+.editnote-input {
+  background-color: #333333;
+  border: none;
+  padding: 10px;
+  color: white;
+}
+
+.editnote-titleinput {
+  margin-top: 5px;
+}
+
+.noteColor-editcontainer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.note-item-active {
+  background-color: #3a3a3a !important
+}
 
 .menu-bar>button {
   background: none;
@@ -194,12 +238,12 @@ body {
   display: grid;
   justify-content: space-between;
   align-items: center;
-  background: #3a3a3a;
+  background: #2e2e2e;
   /* border-radius: 5px; */
   margin-bottom: 5px;
   cursor: pointer;
-  padding: 0px 10px 0px 10px;
-  grid-template-columns: 0% 90% 10%;
+  padding: 0px 0px 0px 10px;
+  grid-template-columns: 0% 85% 15%;
   text-align: left;
   height: 32px;
 }
@@ -218,8 +262,12 @@ body {
   margin-top: 0;
 }
 
-.note-item-button:hover {
+.note-item-button-delete:hover {
   color: rgb(232, 197, 197);
+}
+
+.note-item-button-edit:hover {
+  color: rgb(255, 253, 220);
 }
 
 .note-item span {
@@ -266,11 +314,13 @@ body {
 
 .editor-icon {
   width: 250px;
+  -webkit-user-drag: none;
 }
 
 .editor-empty {
   align-items: center;
   justify-content: center;
+  user-select: none;
 }
 
 .editor-empty-title {
@@ -300,14 +350,16 @@ body {
 
 .note-list-tab-active {
   border-bottom: 2px solid #6a6a6a;
+  color: white;
 }
 
 .note-list-tab:not(.note-list-tab-active) {
   border-bottom: 2px solid #484848;
+  color: #c3c3c3;
 }
 
 .note-list-notes {
-  padding: 10px;
+  margin-top: 10px;
   overflow-y: auto;
   height: calc(100vh - 150px);
 }
@@ -442,6 +494,7 @@ body {
   border-left: 1px solid #313131;
   border-right: 1px solid #313131;
   padding: 0px 10px;
+  width: 122px;
 }
 
 .bottom-bar-left {
@@ -482,4 +535,9 @@ body {
   padding-left: 10px;
   padding-right: 10px;
   width: 75px;
+}
+
+.note-item-buttons {
+  display: flex;
+  gap: 4px;
 }

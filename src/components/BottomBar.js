@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotate, faToggleOn, faCheck, faSave, faToggleOff, faQuestion, faStarOfLife } from "@fortawesome/free-solid-svg-icons";
+import { faRotate, faToggleOn, faCheck, faToggleOff, faQuestion, faStarOfLife } from "@fortawesome/free-solid-svg-icons";
 
-const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote, noteOpened }) => {
+const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote, noteOpened, manualSaveIcon, manualSaveText }) => {
   const [rotating, setRotating] = useState(false);
-  let manualSaveIcon = faSave;
 
   // Function to count words and lines
   const getWordAndLineCount = (text) => {
@@ -19,6 +18,7 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
     }
   };
 
+  // Get word and line count from editor's content
   const { words, lines } = getWordAndLineCount(editorContent);
 
   // Autosave status logic
@@ -46,9 +46,9 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
     setTimeout(() => setRotating(false), 500); // Reset animation after 0.5s
   };
 
+  // Manual save using Save button in bottom right corner
   const doManualSave = () => { 
     onManualSaveNote()
-    manualSaveIcon = faCheck
   }
 
   return (
@@ -77,7 +77,7 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
 
         {noteOpened && (
         <div className={`manualsave-btn`} onClick={doManualSave}>
-            <FontAwesomeIcon icon={manualSaveIcon} /> <span>Save</span>
+            <FontAwesomeIcon icon={manualSaveIcon} /> <span>{manualSaveText}</span>
         </div>
         )}
       </div>

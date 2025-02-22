@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChange, onActiveEditorContentUpdate, onActiveEditorContentUpdateRaw }) => {
+const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChange, onActiveEditorContentUpdate }) => {
   const [content, setContent] = useState(selectedNote?.noteContent || "");
   const [lastSaved, setLastSaved] = useState(selectedNote?.lastSaved || "");
-  const [autoSaveStatus, setAutoSaveStatus] = useState(0); // 0 = off, 1 = auto-saving, 2 = unsaved changes
 
   let selectedNoteDeepCopy = { ...selectedNote }
 
@@ -16,14 +15,17 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
       // Start the auto-save timer (every minute)
       autoSaveInterval = setInterval(() => {
         if(selectedNote && (selectedNote.noteContent !== "" || content !== "")) {
+          // If a note is open
           if (content !== new TextDecoder().decode(Uint8Array.from(atob(selectedNote.noteContent), c => c.charCodeAt(0)))) {
+            // If the editor content is not the same as the latest stored noteContent, trigger update
             const encodedContent = btoa(String.fromCharCode(...new TextEncoder().encode(content)))
             const updatedNote = { ...selectedNote, noteContent: encodedContent, lastSaved: new Date().toISOString() };
-            onUpdateNote(updatedNote);
+            onUpdateNote(updatedNote); // Update note in DB and state
             setLastSaved(updatedNote.lastSaved); // Update the last saved time
-            onAutoSaveStatusChange(2); // Set status to "auto-saving"
+            onAutoSaveStatusChange(2); // Set status to "Up to date"
           } else {
-            onAutoSaveStatusChange(2); // Set status to "unsaved changes"
+            // Nothing needs to happen if content is the same.
+            onAutoSaveStatusChange(2); // Set status to "Up to date"
           }
         }
       }, 60000); // 60000 ms = 1 minute
@@ -45,7 +47,18 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
     }
     // setContent(selectedNote?.noteContent || ""); // Update content whenever selectedNote changes
   }, [selectedNote]);
-  
+
+  // Handle manual content update
+  const handleUpdate = (field, value) => {
+    setContent(value); // Update content state
+    selectedNoteDeepCopy.noteContent = value
+    if(settings?.userSettings.autoSave) {
+      onAutoSaveStatusChange(3); // Mark as "unsaved changes"
+    }
+    onActiveEditorContentUpdate(value)
+  };
+    
+  // If no note is selected, show start screen
   if (!selectedNote) {
     return (
         <div className="editor editor-empty">
@@ -55,19 +68,6 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
         </div>
     );
   } 
-
-  // Handle manual content update
-  const handleUpdate = (field, value) => {
-    setContent(value); // Update content state
-    selectedNoteDeepCopy.noteContent = value
-    onAutoSaveStatusChange(3); // Mark as "unsaved changes"
-    onActiveEditorContentUpdate(value)
-  };
-
-  // const handleUpdate = (field, value) => {
-  //   const updatedNote = { ...selectedNote, [field]: value, lastSaved: new Date().toISOString() };
-  //   onUpdateNote(updatedNote); // Passing the updated note with the lastSaved field
-  // };
 
   return (
     <div className="editor">

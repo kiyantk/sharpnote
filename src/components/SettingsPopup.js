@@ -13,6 +13,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     });
   }, []);
 
+  // Set local settings
   const handleCheckboxChange = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -23,6 +24,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     }));
   };
 
+  // Save settings
   const saveSettings = async () => {
     applySettings(settings); // Apply local changes
     try {

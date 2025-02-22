@@ -17,13 +17,20 @@ const MenuBar = ({onSettingsChange}) => {
     });
   }, []);
 
+  // Apply new settings from Settings popup
   const applySettings = (newSettings) => {
     setSettings(newSettings); // Update state
-    onSettingsChange(newSettings); // Mark as "unsaved changes"
+    onSettingsChange(newSettings);
   };
 
+  // Toggle dropdown
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
-  const openSettingsPopup = () => setIsSettingsPopupOpen(true);
+
+  // Open / Close settings popup
+  const openSettingsPopup = () => {
+    setIsSettingsPopupOpen(true);
+    toggleDropdown()
+  }
   const closeSettingsPopup = () => setIsSettingsPopupOpen(false);
 
   return (

@@ -4,11 +4,13 @@ const path = require("path");
 
 let mainWindow;
 
+// On startup:
 app.whenReady().then(() => {
+  // Set up desktop app window
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    icon: path.join(__dirname, './public/logo512.png'), // Set the app icon here
+    icon: path.join(__dirname, './public/logo512.png'), // Set the app icon
     webPreferences: {
       preload: path.join(__dirname, "preload.js"), // Load the preload script
       contextIsolation: true, // Keep context isolation enabled (default)
@@ -17,9 +19,8 @@ app.whenReady().then(() => {
     },
   });
 
-  mainWindow.removeMenu(); // Hides the default menu
+  mainWindow.removeMenu(); // Hides the default top menu
   mainWindow.maximize(); // Start in maximized mode
-  mainWindow.webContents.openDevTools(); // Open DevTools automatically
   mainWindow.on('closed', () => {
     mainWindow = null
   })
@@ -61,26 +62,37 @@ ipcMain.handle("add-note", (_, newNote) => {
 
 // Update a note
 ipcMain.handle("update-note", (_, updatedNote) => {
-  const stmt = db.prepare(`
-    UPDATE notes
-    SET noteTitle = ?, noteContent = ?, noteColor = ?, noteAttachments = ?, noteSyntax = ?, noteAuthor = ?, lastSaved = ?, lastOpened = ?, exported = ?, noteVersion = ?, noteTags = ?
-    WHERE noteID = ?
-  `);
+  try {
+    const stmt = db.prepare(`
+      UPDATE notes
+      SET noteTitle = ?, noteContent = ?, noteColor = ?, noteAttachments = ?, noteSyntax = ?, noteAuthor = ?, lastSaved = ?, lastOpened = ?, exported = ?, noteVersion = ?, noteTags = ?
+      WHERE noteID = ?
+    `);
 
-  stmt.run(
-    updatedNote.noteTitle,
-    updatedNote.noteContent,
-    updatedNote.noteColor,
-    updatedNote.noteAttachments,
-    updatedNote.noteSyntax,
-    updatedNote.noteAuthor,
-    updatedNote.lastSaved,
-    updatedNote.lastOpened,
-    updatedNote.exported || "",
-    updatedNote.noteVersion,
-    updatedNote.noteTags,
-    updatedNote.noteID
-  );
+    const result = stmt.run(
+      updatedNote.noteTitle,
+      updatedNote.noteContent,
+      updatedNote.noteColor,
+      updatedNote.noteAttachments,
+      updatedNote.noteSyntax,
+      updatedNote.noteAuthor,
+      updatedNote.lastSaved,
+      updatedNote.lastOpened,
+      updatedNote.exported || "",
+      updatedNote.noteVersion,
+      updatedNote.noteTags,
+      updatedNote.noteID
+    );
+
+    // Check if any rows were updated
+    if (result.changes > 0) {
+      return { success: true };
+    } else {
+      return { success: false, message: "No rows were updated. The noteID might be incorrect." };
+    }
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
 
 // Delete a note

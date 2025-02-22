@@ -1,5 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
+// Set up contextBridge for ipcRenderer communications
+
 contextBridge.exposeInMainWorld("electron", {
   ipcRenderer: {
     invoke: (channel, data) => ipcRenderer.invoke(channel, data),

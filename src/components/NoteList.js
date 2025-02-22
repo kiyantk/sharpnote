@@ -5,7 +5,8 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
-const NoteList = ({ notes, onAddNote, onDeleteNote, onSelectNote, activeTab, onTabSwitch }) => {
+const NoteList = ({ notes, onAddNote, onDeleteNote, onSelectNote, activeTab, onTabSwitch, onEditNote, selectedNoteId }) => {
+  // Sort notes based on tab selected (all tab = created, recent tab = lastOpened)
   const sortedNotes = activeTab === "recent"
   ? notes.sort((a, b) => new Date(b.lastOpened) - new Date(a.lastOpened))
   : notes.sort((a, b) => new Date(b.created) - new Date(a.created));
@@ -38,7 +39,9 @@ const NoteList = ({ notes, onAddNote, onDeleteNote, onSelectNote, activeTab, onT
             key={note.noteID}
             note={note}
             onDeleteNote={onDeleteNote}
+            selectedNoteId={selectedNoteId}
             onSelectNote={() => onSelectNote(note.noteID)}
+            onEditNote={onEditNote}
           />
         ))}
       </div>

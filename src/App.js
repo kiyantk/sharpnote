@@ -3,7 +3,9 @@ import MenuBar from "./components/MenuBar";
 import BottomBar from "./components/BottomBar";
 import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
+import EditPopup from "./components/EditPopup";
 import './App.css';
+import { faXmark, faCheck, faSave } from "@fortawesome/free-solid-svg-icons";
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -12,35 +14,59 @@ const App = () => {
   const [activeEditorNoteContent, setactiveEditorNoteContent] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
   const [isNoteOpened, setIsNoteOpened] = useState(false);
+  const [manualSaveIcon, setManualSaveIcon] = useState(faSave);
+  const [manualSaveText, setManualSaveText] = useState('Save');
   const [settings, setSettings] = useState({
     userSettings: { autoSave: true }, // Default settings
   });
   const [autosaveStatus, setAutosaveStatus] = useState(0); // Test value: 3 = "Changed"
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [editPopupNote, setEditPopupNote] = useState(null);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
   };
 
-  // ✅ Fix: Select note by `noteID` (not `id`)
+  // Define selected note
   let selectedNote = notes.find((note) => note.noteID === selectedNoteId);
 
-  const handleManualNoteSave = () => {
+  // Manual note saving logic
+  const handleManualNoteSave = async () => {
     if(activeEditorNoteContent !== selectedNote.noteContent) {
       const encodedCurrentContent = btoa(String.fromCharCode(...new TextEncoder().encode(activeEditorNoteContent)))
       const fullManualSaveNote = {
         ...selectedNote,
         noteContent: encodedCurrentContent
       }
-      updateNote(fullManualSaveNote)
-      setAutosaveStatus(2)
+      const result = await updateNote(fullManualSaveNote)
+      if(result.success) {
+        setAutosaveStatus(2)
+        setManualSaveIcon(faCheck)
+        setManualSaveText('Saved')
+        // Revert back to faSave after 1 second
+        setTimeout(() => {
+          setManualSaveIcon(faSave);
+          setManualSaveText('Save')
+        }, 1000);
+      } else {
+        setManualSaveIcon(faXmark);
+        setManualSaveText('Failed')
+        // Revert back to faSave after 1 second
+        setTimeout(() => {
+          setManualSaveIcon(faSave);
+          setManualSaveText('Save')
+        }, 1000);
+      }
     }
   }
 
+  // Apply new settings
   const handleonSettingsChange = (newSettings) => {
     setSettings(newSettings)
     newSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1)
   };
 
+  // Fetch notes from the local db
   const fetchNotes = async () => {
     if (!window.electron) return;
     try {
@@ -61,15 +87,12 @@ const App = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   console.log(autosaveStatus);  // Log after state change
-  // }, [autosaveStatus]);  // This effect runs when autosaveStatus changes
-  
-  // ✅ Call fetchNotes on mount
+  // Call fetchNotes on mount
   useEffect(() => {
     fetchNotes();
   }, []);
 
+  // Random ID generator for noteID's
   const generateRandomID = () => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
@@ -79,7 +102,7 @@ const App = () => {
     return result;
   };
 
-  // ✅ Handle new notes
+  // Handle new notes
   const addNote = async () => {
     if (!window.electron) return;
 
@@ -105,11 +128,13 @@ const App = () => {
     try {
       await window.electron.ipcRenderer.invoke("add-note", newNote);
       setNotes((prevNotes) => [...prevNotes, newNote]);
+      onRefresh();
     } catch (error) {
       console.error("Error adding note:", error);
     }
   };
 
+  // Handle note opening
   const selectNote = async (noteID) => {
     selectedNote = notes.find((note) => note.noteID === noteID);
     setactiveEditorNoteContent(selectedNote.noteContent)
@@ -130,8 +155,7 @@ const App = () => {
     }
   };
   
-
-  // ✅ Handle note deletion
+  // Handle note deletion
   const deleteNote = async (noteID) => {
     if (!window.electron) return;
 
@@ -143,28 +167,48 @@ const App = () => {
     }
   };
 
+  // Update the note in the local db
   const updateNote = async (updatedNote) => {
     updatedNote.lastSaved = new Date().toISOString();  // Update lastSaved directly
     updatedNote.noteVersion++;  // Increment the version
-  
     try {
-      await window.electron.ipcRenderer.invoke("update-note", updatedNote); // Update the note in the database
-      setNotes(notes.map((note) => (note.noteID === updatedNote.noteID ? updatedNote : note))); // Update state
+      const result = await window.electron.ipcRenderer.invoke("update-note", updatedNote); // Update the note in the database
+      if (result.success) {
+        setNotes(notes.map((note) => (note.noteID === updatedNote.noteID ? updatedNote : note))); // Update state
+        return { success: true };
+      } else {
+        return { success: false, error: result.message };
+      }
     } catch (error) {
       console.error("Error updating note:", error);
+      return { success: false, error: error.message };
     }
   };  
 
+  // Open the Edit Note popup
+  const openEditPopup = (noteID) => {
+    setIsEditPopupOpen(true);
+    const editNote = notes.find((note) => note.noteID === noteID);
+    setEditPopupNote(editNote)
+  }
 
-  // ✅ Handle tab switching
+  // Handle tab switching in NoteList
   const switchNoteListTab = (tab) => {
     setActiveTab(tab);
   };
 
+  // Refresh
   const onRefresh = () => {
     fetchNotes();
   };
 
+  // Closing the Edit Note popup
+  const closeEditPopup = () => setIsEditPopupOpen(false);
+
+  // Apply changes from Edit Note popup
+  const applyNoteEdits = (editedNote) => {
+    updateNote(editedNote)
+  }
 
   return (
     <div className="App">
@@ -176,12 +220,23 @@ const App = () => {
             onAddNote={addNote}
             onDeleteNote={deleteNote}
             onSelectNote={selectNote}
+            onEditNote={openEditPopup}
             activeTab={activeTab}
+            selectedNoteId={selectedNoteId}
             onTabSwitch={switchNoteListTab}
           />
           <NoteEditor selectedNote={selectedNote} onUpdateNote={updateNote} settings={settings} onAutoSaveStatusChange={handleAutoSaveStatusChange} onActiveEditorContentUpdate={setactiveEditorNoteContent} onActiveEditorContentUpdateRaw={setactiveEditorNoteContentDecoded} />
         </div>
-        <BottomBar autosaveStatus={autosaveStatus} editorContent={activeEditorNoteContent} onRefresh={onRefresh} onManualSaveNote={handleManualNoteSave} noteOpened={isNoteOpened} />
+        <div>
+        {isEditPopupOpen && (
+          <EditPopup
+            closeEditPopup={closeEditPopup}
+            noteToEdit={editPopupNote}  // Pass current settings
+            applyEdits={applyNoteEdits} // Pass function to apply new settings
+          />
+        )}
+        </div>
+        <BottomBar autosaveStatus={autosaveStatus} editorContent={activeEditorNoteContent} onRefresh={onRefresh} onManualSaveNote={handleManualNoteSave} noteOpened={isNoteOpened} manualSaveIcon={manualSaveIcon} manualSaveText={manualSaveText} />
       </div>
     </div>
   );
