@@ -1,8 +1,57 @@
 {
   "name": "sharpnote",
-  "version": "1.0",
-  "main": "main.js",
+  "version": "1.0.0",
+  "main": "build/electron.js",
   "private": true,
+  "author": "Kiyan <contact@kiyantk.nl>",
+  "build": {
+    "appId": "com.kiyantk.sharpnote",
+    "productName": "SharpNote",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!**/dist/**/*",
+      "!**/*.map",
+      "database.js",
+      "node_modules/**/*",
+      "package.json",
+      "src/**/*"
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerSidebar": "build/sharpnote-v1-installfinished.bmp"
+    },
+    "fileAssociations": [
+      {
+        "ext": "sharp",
+        "name": "SharpNote",
+        "icon": "public/favicon-256x256.ico"
+      },
+      {
+        "ext": "sharpbook",
+        "name": "SharpBook",
+        "icon": "public/favicon-256x256.ico"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "icon": "public/favicon-256x256.ico",
+      "target": "nsis"
+    },
+    "linux": {
+      "icon": "public/logo512.png",
+      "target": [
+        "AppImage"
+      ]
+    }
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
@@ -24,11 +73,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "dev": "concurrently \"npm start\" \"npx wait-on http://localhost:3000 && npm run electron\""
+    "dev": "concurrently \"npm start\" \"npx wait-on http://localhost:3000 && npm run electron\"",
+    "build": "electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "make-dmg": "electron-installer-dmg dist/mac/SharpNote-darwin-x64/SharpNote.app dist/mac-installer"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +100,11 @@
     ]
   },
   "devDependencies": {
-    "electron": "^34.2.0"
+    "@electron-forge/maker-deb": "^7.7.0",
+    "@electron/packager": "^18.3.6",
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8",
+    "electron-installer-dmg": "^5.0.1",
+    "electron-packager": "^17.1.2"
   }
 }

@@ -1,5 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
-const db = require("./database");
+const db = require("../database.js");
 const path = require("path");
 
 let mainWindow;
@@ -17,8 +17,12 @@ app.whenReady().then(() => {
       enableRemoteModule: false,
       nodeIntegration: false, // Prevent unsafe access
     },
+    extraResources: [
+      "preload.js"
+    ]
   });
 
+  // mainWindow.openDevTools();
   mainWindow.removeMenu(); // Hides the default top menu
   mainWindow.maximize(); // Start in maximized mode
   mainWindow.on('closed', () => {
@@ -111,9 +115,28 @@ const fs = require("fs");
 
 let configPath = "sharpnote-config.json";
 
+// Default configuration
+const defaultConfig = {
+  "username": "",
+  "welcomePopupSeen": false,
+  "userSettings": {
+    "autoSave": true
+  },
+  "structure": {
+    "folders": [],
+    "rootOrder": []
+  }
+};
+
 // Read settings
 ipcMain.handle("get-settings", async () => {
   try {
+    // Check if the config file exists
+    if (!fs.existsSync(configPath)) {
+      // If not, write the default config to the file
+      fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2), "utf8");
+      console.log("Config file created with default settings.");
+    }
     const data = fs.readFileSync(configPath, "utf8");
     return JSON.parse(data);
   } catch (err) {
