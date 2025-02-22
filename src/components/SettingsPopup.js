@@ -71,7 +71,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
             )}
             {selectedTab === "App" && (
               <div className="settings-content-item">
-                  <span>SharpNote Version: 1.0</span>
+                  <span>SharpNote Version: 1.0 "Azure"</span>
               </div>
             )}
           </div>
