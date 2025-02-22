@@ -1,6 +1,6 @@
 {
   "name": "sharpnote",
-  "version": "1.0.0",
+  "version": "1.0",
   "main": "main.js",
   "private": true,
   "dependencies": {
@@ -15,6 +15,7 @@
     "@testing-library/user-event": "^13.5.0",
     "better-sqlite3": "^11.8.1",
     "concurrently": "^9.1.2",
+    "fs": "^0.0.1-security",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",

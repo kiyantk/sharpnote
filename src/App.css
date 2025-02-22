@@ -65,16 +65,17 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 35px;
+  height: 26px;
   /* background: #282c34; */
-  background: #2b2b2b;
+  background: #242424;
   color: white;
   display: flex;
   align-items: center;
   padding: 0 10px;
   gap: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
   /* border-bottom: 1px solid gray; */
+  border-bottom: 1px solid #414141;
 }
 
 /* Dropdown Menu */
@@ -82,7 +83,7 @@ body {
   width: fit-content;
   position: absolute;
   background-color: #121212;
-  top: 35px; /* Adjust the position below the button */
+  top: 26px; /* Adjust the position below the button */
   z-index: 100;
 }
 
@@ -152,7 +153,7 @@ body {
   display: flex;
   /* height: calc(100vh - 50px); Takes full height minus the menu bar */
   height: 100vh;
-  padding-top: 35px; /* Leaves space for the menu bar */
+  padding-top: 26px; /* Leaves space for the menu bar */
   width: 100%; /* Ensure it spans the entire width */
   justify-content: flex-start; /* Align children to the left */
   align-items: stretch; /* Stretch children to full height */
@@ -165,27 +166,32 @@ body {
   background-color: #222222;
   border-right: 1px solid #393939;
   /* padding: 10px; */
-  height: 100%; /* Full height */
+  /* height: 100%; Full height */
+  height: calc(100% - 26px);
 }
 
-
-.note-list button {
-  margin-top: 10px;
-  margin-bottom: 10px;
+.note-list-topbutton {
   padding: 10px;
   font-size: 16px;
   cursor: pointer;
-  background: #343434;
+  background: #2e2e2e;
   color: white;
   border: none;
 }
 
-.note-list>button:hover {
-  background: #3f3f3f;
+.note-list-topbar {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  border-bottom: 2px solid #4e4e4e;
+}
+
+.note-list-topbutton:hover {
+  background: #373737;
 }
 
 .note-item {
-  display: flex;
+  display: grid;
   justify-content: space-between;
   align-items: center;
   background: #3a3a3a;
@@ -193,13 +199,16 @@ body {
   margin-bottom: 5px;
   cursor: pointer;
   padding: 0px 10px 0px 10px;
+  grid-template-columns: 0% 90% 10%;
+  text-align: left;
+  height: 32px;
 }
 
 .note-item:hover {
-  background: #626262;
+  background: #434343;
 }
 
-.note-item button {
+.note-item-button {
   background: none;
   border: none;
   cursor: pointer;
@@ -209,13 +218,23 @@ body {
   margin-top: 0;
 }
 
+.note-item-button:hover {
+  color: rgb(232, 197, 197);
+}
+
+.note-item span {
+  margin-left: 25px;
+  line-height: 1;
+}
+
 /* 🔹 Note Editor */
 .editor {
   flex-grow: 1; /* Take remaining space */
-  padding: 5px 5px 5px 5px;
+  /* padding: 5px 5px 0px 5px; */
   display: flex;
   flex-direction: column;
-  height: 100%; /* Ensure it stretches fully */
+  /* height: 100%; Ensure it stretches fully */
+  height: calc(100% - 26px);
 }
 
 .editor input {
@@ -234,10 +253,15 @@ body {
   font-size: 16px;
   padding: 10px;
   color: white;
-  border: 2px solid #4b4b4b;
+  border: none;
   /* border-radius: 5px; */
   resize: none;
-  background: #222222;
+  background: #1d1d1d;
+}
+
+.editor textarea:focus {
+  border: none;
+  outline: none;
 }
 
 .editor-icon {
@@ -268,6 +292,10 @@ body {
 .note-list-tab {
   background-color: #171717;
   padding: 6px;
+}
+
+.note-list-tab:hover {
+  background-color: #222222;
 }
 
 .note-list-tab-active {
@@ -324,6 +352,18 @@ body {
   color: white;
 }
 
+.settings-save-btn {
+  float: right;
+  /* margin-left: 12px; */
+  background-color: #2d2d2d;
+  height: 100%;
+  font-size: 15px;
+  padding: 0px 15px;
+  border-radius: 0px 0px 6px 0px;
+  border: none;
+  color: white;
+}
+
 .settings-bottom-bar {
   position: absolute;
   bottom: 0;
@@ -341,10 +381,105 @@ body {
 }
 
 .settings-list {
-  height: 100%;
+  height: calc(100% - 30px);
   border-right: 1px solid #2c2c2c;
 }
 
+.settings-list>ul li {
+  background-color: #131313;
+  border-bottom: 1px solid #323232;
+  list-style-type: none;
+  padding: 15px 0px;
+}
+
+.settings-list>ul {
+  margin-top: 10px;
+  border-top: 1px solid #2c2c2c;
+}
+
 .settings-content {
+  height: calc(100% - 30px);
+  text-align: left;
+  padding: 25px;
+}
+
+.bottom-bar {
+  height: 23px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  border-top: 1px solid #414141;
+}
+
+.refresh-btn {
+  background: none;
+  border: none;
+  color: #ddd;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.5s ease;
+  display: inline-flex
+}
+
+.refresh-btn.rotating {
+  transform: rotate(360deg);
+}
+
+.word-line-count {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding-right: 10px;
+  /* border-right: 1px solid #313131; */
+  /* padding: 0px 10px; */
+}
+
+.autosave-status {
+  justify-self: center;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  border-left: 1px solid #313131;
+  border-right: 1px solid #313131;
+  padding: 0px 10px;
+}
+
+.bottom-bar-left {
+  position: absolute;
+  left: 10px
+}
+
+.bottom-bar-right {
+  display: flex;
+  position: absolute;
+  right: 0px;
+  font-size: 14px;
   height: 100%;
+}
+
+.settings-content-item {
+  padding: 10px 0px;
+  border-bottom: 1px solid #3f3f3f;
+  display: flex;
+  gap: 10px;
+}
+
+.settings-content-item>input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.settings-content-item>span {
+  line-height: 1;
+}
+
+.settings-list-active {
+  background-color: #282828 !important;
+}
+
+.manualsave-btn {
+  cursor: pointer;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 75px;
 }

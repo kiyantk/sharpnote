@@ -94,3 +94,58 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+const fs = require("fs");
+
+let configPath = "sharpnote-config.json";
+
+// Read settings
+ipcMain.handle("get-settings", async () => {
+  try {
+    const data = fs.readFileSync(configPath, "utf8");
+    return JSON.parse(data);
+  } catch (err) {
+    console.error("Error reading settings:", err);
+    return null;
+  }
+});
+
+// Save settings
+ipcMain.handle("save-settings", async (event, settings) => {
+  try {
+    fs.writeFileSync(configPath, JSON.stringify(settings, null, 2), "utf8");
+    return { success: true };
+  } catch (err) {
+    console.error("Error saving settings:", err);
+    return { success: false, error: err.message };
+  }
+});
+
+// New handler to update only the lastOpened property
+ipcMain.handle('update-note-last-opened', async (event, noteID) => {
+  try {
+    // Assuming you have a function that updates a single field for a note
+    const updatedNote = await updateNoteLastOpened(noteID); // Implement this function
+
+    return updatedNote; // Return the updated note (just lastOpened)
+  } catch (error) {
+    console.error("Error updating lastOpened:", error);
+    throw error;  // Propagate the error to the renderer
+  }
+});
+
+// Function that updates just the lastOpened field in the database (implement this)
+async function updateNoteLastOpened(noteID) {
+  const stmt = db.prepare(`
+    UPDATE notes
+    SET lastOpened = ?
+    WHERE noteID = ?
+  `);
+
+  // Run the query with the current time as lastOpened
+  stmt.run(new Date().toISOString(), noteID);
+
+  // Fetch and return the updated note (optional, based on your app logic)
+  const updatedNote = db.prepare('SELECT * FROM notes WHERE noteID = ?').get(noteID);
+  return updatedNote;
+}

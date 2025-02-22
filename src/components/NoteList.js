@@ -12,7 +12,9 @@ const NoteList = ({ notes, onAddNote, onDeleteNote, onSelectNote, activeTab, onT
 
   return (
     <div className="note-list">
-      <button onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> New Note</button>
+      <div className="note-list-topbar">
+        <button className="note-list-topbutton" onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> New Note</button>
+      </div>
       <div className="note-list-tabs">
         <div 
           className={`note-list-tab ${activeTab === "all" ? 'note-list-tab-active' : ''}`} 
