@@ -108,7 +108,7 @@ const App = () => {
 
     const newNote = {
       noteID: generateRandomID(),
-      sharpnoteVersion: "1.0",
+      sharpnoteVersion: "1.0.0",
       noteTitle: "New Note",
       noteContent: "",
       noteColor: "#FFFFFF",
