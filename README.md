@@ -16,25 +16,22 @@ SharpNote is a modern desktop note-taking application built with Electron and Re
 
 ## Installation
 ### Windows
-1. Download the latest `SharpNote-Setup.exe` from the [Releases](https://github.com/kiyantk/sharpnote/releases) page.
+1. Download the latest Windows release from the [Releases](https://github.com/kiyantk/sharpnote/releases) page.
 2. Run the installer and follow the setup wizard.
 3. You can now launch SharpNote from the Start Menu or by opening `SharpNote.exe`.
 4. After installation, you can open .sharp and .sharpbook files with SharpNote automatically.
 
 ### macOS
-1. Download the latest `SharpNote.dmg` file from the Releases page.
-2. Open the .dmg and drag SharpNote into your Applications folder.
-3. Open SharpNote from Launchpad or Finder.
-4. If macOS blocks the app, go to System Settings > Privacy & Security and allow it to run.
+1. Download the latest MacOS release from the [Releases](https://github.com/kiyantk/sharpnote/releases) page.
+2. Unzip the file by double-clicking it or using the terminal: `unzip sharpnote-1.0.0-darwin-x64.zip`
+3. Move SharpNote.app to your Applications folder: `mv SharpNote.app /Applications/`
+4. Open SharpNote from the Applications folder.
+5. If macOS blocks the app, go to System Preferences > Security & Privacy and allow it to run by clicking Open Anyway.
 
 ### Linux
-1. Download the latest .AppImage or .deb (for Debian-based distros) from the Releases page.
-2. If using .AppImage:
-   - Make it executable: ```chmod +x SharpNote.AppImage```
-   - Run it: ```./SharpNote.AppImage```
-3. If using .deb:
-   - Install it: ```sudo dpkg -i SharpNote.deb```
-   - Run SharpNote from the applications menu.
+1. Download the latest Linux release file from the [Releases](https://github.com/kiyantk/sharpnote/releases) page.
+2. Extract the archive: `tar -xzvf SharpNote.tar.gz`
+3. Navigate into the extracted directory and run SharpNote: `./SharpNote`
 
 ## Why SharpNote?
 Many note-taking apps either rely on plain .txt files with limited functionality or lock you into corporate ecosystems like OneNote or Notion. SharpNote is designed to be a modern, feature-rich alternative that remains fully offline — giving you complete privacy, control, and ownership of your notes without being tied to a cloud service.
