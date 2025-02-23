@@ -12,7 +12,6 @@ import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 const App = () => {
   const [notes, setNotes] = useState([]);
   const [selectedNoteId, setSelectedNoteId] = useState(null);
-  const [activeEditorNoteContentDecoded, setactiveEditorNoteContentDecoded] = useState(null);
   const [activeEditorNoteContent, setactiveEditorNoteContent] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
   const [isNoteOpened, setIsNoteOpened] = useState(false);
@@ -156,6 +155,7 @@ const App = () => {
       await window.electron.ipcRenderer.invoke("add-note", newNote);
       setNotes((prevNotes) => [...prevNotes, newNote]);
       onRefresh();
+      // Automatically select (open) note here
     } catch (error) {
       console.error("Error adding note:", error);
     }
@@ -215,6 +215,13 @@ const App = () => {
       return { success: false, error: error.message };
     }
   };  
+
+  const closeNote = () => {
+    setIsNoteOpened(false);
+    setSelectedNoteId(null);
+    setactiveEditorNoteContent(null);
+    setAutosaveStatus(4)
+  }
 
   // Open the Edit Note popup
   const openEditPopup = (noteID) => {
@@ -283,7 +290,7 @@ const App = () => {
             selectedNoteId={selectedNoteId}
             onTabSwitch={switchNoteListTab}
           />
-          <NoteEditor selectedNote={selectedNote} onUpdateNote={updateNote} settings={settings} onAutoSaveStatusChange={handleAutoSaveStatusChange} onActiveEditorContentUpdate={setactiveEditorNoteContent} onActiveEditorContentUpdateRaw={setactiveEditorNoteContentDecoded} />
+          <NoteEditor selectedNote={selectedNote} onUpdateNote={updateNote} settings={settings} onAutoSaveStatusChange={handleAutoSaveStatusChange} onActiveEditorContentUpdate={setactiveEditorNoteContent} />
         </div>
         <div>
         {isEditPopupOpen && (
@@ -300,7 +307,17 @@ const App = () => {
         )}
         <SnackbarProvider />
         </div>
-        <BottomBar autosaveStatus={autosaveStatus} editorContent={activeEditorNoteContent} onRefresh={onRefresh} onManualSaveNote={handleManualNoteSave} noteOpened={isNoteOpened} manualSaveIcon={manualSaveIcon} manualSaveText={manualSaveText} />
+        <BottomBar 
+          autosaveStatus={autosaveStatus} 
+          editorContent={activeEditorNoteContent} 
+          onRefresh={onRefresh} 
+          onManualSaveNote={handleManualNoteSave} 
+          noteOpened={isNoteOpened} 
+          manualSaveIcon={manualSaveIcon} 
+          manualSaveText={manualSaveText}
+          onShortcutAddNote={addNote}
+          onShortcutCloseNote={closeNote}
+        />
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate, faToggleOn, faCheck, faToggleOff, faQuestion, faStarOfLife } from "@fortawesome/free-solid-svg-icons";
 
-const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote, noteOpened, manualSaveIcon, manualSaveText }) => {
+const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote, noteOpened, manualSaveIcon, manualSaveText, onShortcutAddNote, onShortcutCloseNote }) => {
   const [rotating, setRotating] = useState(false);
 
   // Function to count words and lines
@@ -53,14 +53,20 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if(noteOpened) {
-        if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+        if(noteOpened) {
           event.preventDefault();
           doManualSave();
-        } else if((event.ctrlKey || event.metaKey) && event.key === "r") {
-          event.preventDefault();
-          handleRefresh()
         }
+      } else if((event.ctrlKey || event.metaKey) && event.key === "r") {
+        event.preventDefault();
+        handleRefresh();
+      } else if((event.ctrlKey || event.metaKey) && event.key === "t") {
+        event.preventDefault();
+        onShortcutAddNote();
+      } else if((event.ctrlKey || event.metaKey) && event.key === "w") {
+        event.preventDefault();
+        onShortcutCloseNote();
       }
     };
 
