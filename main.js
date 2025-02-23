@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, globalShortcut  } = require("electron");
 const db = require("./database");
 const path = require("path");
 
@@ -19,6 +19,11 @@ app.whenReady().then(() => {
     },
   });
 
+  globalShortcut.register("CommandOrControl+Shift+I", () => {
+    if (mainWindow) {
+      mainWindow.webContents.toggleDevTools();
+    }
+  });
   mainWindow.removeMenu(); // Hides the default top menu
   mainWindow.maximize(); // Start in maximized mode
   mainWindow.on('closed', () => {
@@ -113,7 +118,7 @@ let configPath = "sharpnote-config.json";
 
 // Default configuration
 const defaultConfig = {
-  "username": "",
+  "username": null,
   "welcomePopupSeen": false,
   "userSettings": {
     "autoSave": true

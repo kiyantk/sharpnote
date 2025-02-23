@@ -76,6 +76,7 @@ body {
   /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
   /* border-bottom: 1px solid gray; */
   border-bottom: 1px solid #414141;
+  user-select: none;
 }
 
 /* Dropdown Menu */
@@ -85,6 +86,7 @@ body {
   background-color: #121212;
   top: 26px; /* Adjust the position below the button */
   z-index: 100;
+  user-select: none;
 }
 
 .dropdown-menu button {
@@ -212,6 +214,7 @@ body {
   /* padding: 10px; */
   /* height: 100%; Full height */
   height: calc(100% - 26px);
+  user-select: none;
 }
 
 .note-list-topbutton {
@@ -461,6 +464,7 @@ body {
   position: absolute;
   bottom: 0;
   border-top: 1px solid #414141;
+  user-select: none;
 }
 
 .refresh-btn {
@@ -540,4 +544,21 @@ body {
 .note-item-buttons {
   display: flex;
   gap: 4px;
+}
+
+.welcome-popup-top {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #3f3f3f;
+}
+
+.welcome-popup-username-explaining {
+  font-size: 12px;
+  color: gray;
+  margin-top: 2px;
+}
+
+.welcome-popup-content {
+  width: 400px;
+  justify-self: center;
+  margin-top: 20px;
 }

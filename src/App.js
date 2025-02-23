@@ -4,6 +4,7 @@ import BottomBar from "./components/BottomBar";
 import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
 import EditPopup from "./components/EditPopup";
+import WelcomePopup from "./components/WelcomePopup";
 import './App.css';
 import { faXmark, faCheck, faSave } from "@fortawesome/free-solid-svg-icons";
 
@@ -16,12 +17,11 @@ const App = () => {
   const [isNoteOpened, setIsNoteOpened] = useState(false);
   const [manualSaveIcon, setManualSaveIcon] = useState(faSave);
   const [manualSaveText, setManualSaveText] = useState('Save');
-  const [settings, setSettings] = useState({
-    userSettings: { autoSave: true }, // Default settings
-  });
+  const [settings, setSettings] = useState(null);
   const [autosaveStatus, setAutosaveStatus] = useState(0); // Test value: 3 = "Changed"
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [editPopupNote, setEditPopupNote] = useState(null);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -91,6 +91,13 @@ const App = () => {
   useEffect(() => {
     fetchNotes();
   }, []);
+
+  // Check if user has seen Welcome Popup on mount
+  useEffect(() => {
+    if(settings && settings.welcomePopupSeen === false) {
+      setShowWelcomePopup(true)
+    }
+  }, [settings]);
 
   // Random ID generator for noteID's
   const generateRandomID = () => {
@@ -170,7 +177,7 @@ const App = () => {
   // Update the note in the local db
   const updateNote = async (updatedNote) => {
     updatedNote.lastSaved = new Date().toISOString();  // Update lastSaved directly
-    updatedNote.noteVersion++;  // Increment the version
+    updatedNote.noteVersion = updatedNote.noteVersion + 1;  // Increment the version
     try {
       const result = await window.electron.ipcRenderer.invoke("update-note", updatedNote); // Update the note in the database
       if (result.success) {
@@ -210,6 +217,22 @@ const App = () => {
     updateNote(editedNote)
   }
 
+  const applyWelcomeData = async (welcomeData) => {
+    const newConfig = {...settings}
+    newConfig.welcomePopupSeen = true;
+    newConfig.username = welcomeData.username ? welcomeData.username : null
+    setSettings(newConfig);
+    try {
+      const response = await window.electron.ipcRenderer.invoke("save-settings", newConfig);
+      if (!response.success) {
+        console.error("Failed to save settings:", response.error);
+      }
+    } catch (error) {
+      console.error("Error saving settings:", error);
+    }
+    setShowWelcomePopup(false)
+  }
+
   return (
     <div className="App">
       <div className="App-main">
@@ -233,6 +256,11 @@ const App = () => {
             closeEditPopup={closeEditPopup}
             noteToEdit={editPopupNote}  // Pass current settings
             applyEdits={applyNoteEdits} // Pass function to apply new settings
+          />
+        )}
+        {showWelcomePopup && (
+          <WelcomePopup
+            submitWelcomePopup={applyWelcomeData} // Pass function to apply new settings
           />
         )}
         </div>
