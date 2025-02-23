@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate, faToggleOn, faCheck, faToggleOff, faQuestion, faStarOfLife } from "@fortawesome/free-solid-svg-icons";
 
@@ -50,6 +50,26 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
   const doManualSave = () => { 
     onManualSaveNote()
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if(noteOpened) {
+        if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+          event.preventDefault();
+          doManualSave();
+        } else if((event.ctrlKey || event.metaKey) && event.key === "r") {
+          event.preventDefault();
+          handleRefresh()
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+    };
+}, [noteOpened, editorContent]);
 
   return (
     <div className="bottom-bar">
