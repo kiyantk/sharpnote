@@ -15,6 +15,7 @@
     "@testing-library/user-event": "^13.5.0",
     "better-sqlite3": "^11.8.1",
     "concurrently": "^9.1.2",
+    "electron-rebuild": "^3.2.9",
     "fs": "^0.0.1-security",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -28,7 +29,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "postinstall": "electron-rebuild",
+    "postinstall": "electron-rebuild && npx electron-rebuild -f -w better-sqlite3",
     "dev": "concurrently \"npm start\" \"npx wait-on http://localhost:3000 && npm run electron\""
   },
   "eslintConfig": {
