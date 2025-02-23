@@ -82,6 +82,7 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
 
       <div className="bottom-bar-right">
         {/* Right: Word & Line Count */}
+        {noteOpened && (
         <div className="word-line-count">
             {words !== null && lines !== null && (
                 <div>
@@ -89,6 +90,7 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
                 </div>
             )}
         </div>
+        )}
 
         {/* Rightmost: Autosave Status */}
         <div className={`autosave-status ${className}`}>

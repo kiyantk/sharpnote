@@ -13,11 +13,12 @@ db.exec(`
     noteColor TEXT,
     noteAttachments TEXT,
     noteSyntax TEXT,
-    noteAuthor TEXT,
+    noteOriginalAuthor TEXT,
+    noteLastAuthor TEXT,
     created TEXT,
     lastSaved TEXT,
     lastOpened TEXT,
-    exported TEXT,
+    lastExported TEXT,
     noteVersion INTEGER,
     noteTags TEXT
   )

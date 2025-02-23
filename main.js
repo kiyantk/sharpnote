@@ -41,8 +41,8 @@ ipcMain.handle("get-notes", () => {
 // Add a new note
 ipcMain.handle("add-note", (_, newNote) => {
   const stmt = db.prepare(`
-    INSERT INTO notes (noteID, sharpnoteVersion, noteTitle, noteContent, noteColor, noteAttachments, noteSyntax, noteAuthor, created, lastSaved, lastOpened, exported, noteVersion, noteTags)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO notes (noteID, sharpnoteVersion, noteTitle, noteContent, noteColor, noteAttachments, noteSyntax, noteOriginalAuthor, noteLastAuthor, created, lastSaved, lastOpened, lastExported, noteVersion, noteTags)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   stmt.run(
@@ -53,11 +53,12 @@ ipcMain.handle("add-note", (_, newNote) => {
     newNote.noteColor,
     JSON.stringify(newNote.noteAttachments || []), // Store as JSON
     newNote.noteSyntax,
-    newNote.noteAuthor,
+    newNote.noteOriginalAuthor,
+    newNote.noteLastAuthor,
     newNote.noteHistory.created,
     newNote.noteHistory.lastSaved,
     newNote.noteHistory.lastOpened,
-    newNote.noteHistory.exported || "",
+    newNote.noteHistory.lastExported || "",
     newNote.noteHistory.noteVersion,
     JSON.stringify(newNote.noteTags || []) // Store as JSON
   );
@@ -70,7 +71,7 @@ ipcMain.handle("update-note", (_, updatedNote) => {
   try {
     const stmt = db.prepare(`
       UPDATE notes
-      SET noteTitle = ?, noteContent = ?, noteColor = ?, noteAttachments = ?, noteSyntax = ?, noteAuthor = ?, lastSaved = ?, lastOpened = ?, exported = ?, noteVersion = ?, noteTags = ?
+      SET noteTitle = ?, noteContent = ?, noteColor = ?, noteAttachments = ?, noteSyntax = ?, noteOriginalAuthor = ?, noteLastAuthor = ?, lastSaved = ?, lastOpened = ?, lastExported = ?, noteVersion = ?, noteTags = ?
       WHERE noteID = ?
     `);
 
@@ -80,10 +81,11 @@ ipcMain.handle("update-note", (_, updatedNote) => {
       updatedNote.noteColor,
       updatedNote.noteAttachments,
       updatedNote.noteSyntax,
-      updatedNote.noteAuthor,
+      updatedNote.noteOriginalAuthor,
+      updatedNote.noteLastAuthor,
       updatedNote.lastSaved,
       updatedNote.lastOpened,
-      updatedNote.exported || "",
+      updatedNote.lastExported || "",
       updatedNote.noteVersion,
       updatedNote.noteTags,
       updatedNote.noteID

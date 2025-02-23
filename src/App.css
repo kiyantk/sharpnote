@@ -527,7 +527,7 @@ body {
 }
 
 .settings-content-item>span {
-  line-height: 1;
+  line-height: 1.4;
 }
 
 .settings-list-active {
@@ -561,4 +561,40 @@ body {
   width: 400px;
   justify-self: center;
   margin-top: 20px;
+}
+
+.notistack-custom-default {
+  background: rgb(31, 31, 31) !important;
+}
+
+.welcome-popup-username-requirements {
+  font-size: 10px;
+  color: gray;
+  justify-self: left;
+  margin-bottom: 5px;
+}
+
+input:focus {
+  border: none;
+  outline: none;
+}
+
+.welcome-popup-username-container {
+  display: inline-grid;
+  width: 210px;
+  text-align: left;
+}
+
+.settings-shortcut-key {
+  background-color: #393939;
+  border-radius: 5px;
+  padding: 2px 8px;
+}
+
+.settings-content-input {
+  background-color: #2c2c2c;
+  padding: 5px;
+  color: white;
+  border: none;
+  font-size: 14px;
 }

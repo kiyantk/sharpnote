@@ -29,8 +29,11 @@ const WelcomePopup = ({ submitWelcomePopup }) => {
         <div className="welcome-popup-content">
             <div className="editnote-popup-item">
                 <span>Username</span>
-                <input type="text" className="editnote-input editnote-titleinput" maxLength={32} onChange={handleUsernameInputChange}></input>
-                <span className="welcome-popup-username-explaining">This information is optional and will only be stored on your device.<br></br>It will be used as the noteAuthor in your notes to log the creator.</span>
+                <div className="welcome-popup-username-container">
+                  <input type="text" className="editnote-input editnote-titleinput" maxLength={32} onChange={handleUsernameInputChange}></input>
+                  <span className="welcome-popup-username-requirements">Optional<br></br>a-Z, 0-9, -, _ and spaces. Up to 32 characters</span>
+                </div>
+                <span className="welcome-popup-username-explaining">This information is optional and will only be stored on your device.<br></br>It will be used as the note Author in your notes to log the creator.</span>
             </div>
         </div>
         <div className="settings-bottom-bar">

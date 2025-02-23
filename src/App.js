@@ -7,6 +7,7 @@ import EditPopup from "./components/EditPopup";
 import WelcomePopup from "./components/WelcomePopup";
 import './App.css';
 import { faXmark, faCheck, faSave } from "@fortawesome/free-solid-svg-icons";
+import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -22,6 +23,7 @@ const App = () => {
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [editPopupNote, setEditPopupNote] = useState(null);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [localUsername, setLocalUsername] = useState(null);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -62,8 +64,9 @@ const App = () => {
 
   // Apply new settings
   const handleonSettingsChange = (newSettings) => {
-    setSettings(newSettings)
-    newSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1)
+    setSettings(newSettings);
+    setLocalUsername(newSettings.username);
+    if(!isNoteOpened) newSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1);
   };
 
   // Fetch notes from the local db
@@ -79,10 +82,26 @@ const App = () => {
 
   useEffect(() => {
     // Load settings from Electron (preload.js)
-    window.electron.ipcRenderer.invoke("get-settings").then((loadedSettings) => {
+    window.electron.ipcRenderer.invoke("get-settings").then(async (loadedSettings) => {
       if (loadedSettings) {
-        setSettings(loadedSettings);
-        loadedSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1)
+        if(loadedSettings.username && loadedSettings.username.length > 32 || /^\s|\s$/.test(loadedSettings.username) || /\s{2,}/.test(loadedSettings.username) || !/^[a-zA-Z0-9 _-]+$/.test(loadedSettings.username)) {
+          let fixedSettings = {...loadedSettings}
+          fixedSettings.username = null
+          try {
+            const response = await window.electron.ipcRenderer.invoke("save-settings", settings);
+            if (!response.success) {
+              console.error("Failed to save settings:", response.error);
+            }
+          } catch (error) {
+            console.error("Error saving settings:", error);
+          }
+          setSettings(fixedSettings);
+          setLocalUsername(fixedSettings.username);
+        } else {
+          setSettings(loadedSettings);
+          loadedSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1)
+          setLocalUsername(loadedSettings.username)
+        }
       }
     });
   }, []);
@@ -121,12 +140,13 @@ const App = () => {
       noteColor: "#FFFFFF",
       noteAttachments: [],
       noteSyntax: "",
-      noteAuthor: "",
+      noteOriginalAuthor: localUsername ? localUsername : null,
+      noteLastAuthor: localUsername ? localUsername : null,
       noteHistory: {
         created: new Date().toISOString(),
         lastSaved: new Date().toISOString(),
         lastOpened: new Date().toISOString(),
-        exported: "",
+        lastExported: "",
         noteVersion: 1,
       },
       noteTags: [],
@@ -165,7 +185,10 @@ const App = () => {
   // Handle note deletion
   const deleteNote = async (noteID) => {
     if (!window.electron) return;
-
+    if(noteID === selectedNoteId) {
+      setAutosaveStatus(4)
+      setIsNoteOpened(false)
+    }
     try {
       await window.electron.ipcRenderer.invoke("delete-note", noteID);
       setNotes((prevNotes) => prevNotes.filter((note) => note.noteID !== noteID));
@@ -178,6 +201,7 @@ const App = () => {
   const updateNote = async (updatedNote) => {
     updatedNote.lastSaved = new Date().toISOString();  // Update lastSaved directly
     updatedNote.noteVersion = updatedNote.noteVersion + 1;  // Increment the version
+    updatedNote.noteLastAuthor = localUsername ? localUsername : null;
     try {
       const result = await window.electron.ipcRenderer.invoke("update-note", updatedNote); // Update the note in the database
       if (result.success) {
@@ -218,19 +242,30 @@ const App = () => {
   }
 
   const applyWelcomeData = async (welcomeData) => {
-    const newConfig = {...settings}
-    newConfig.welcomePopupSeen = true;
-    newConfig.username = welcomeData.username ? welcomeData.username : null
-    setSettings(newConfig);
-    try {
-      const response = await window.electron.ipcRenderer.invoke("save-settings", newConfig);
-      if (!response.success) {
-        console.error("Failed to save settings:", response.error);
+    if(welcomeData.username && welcomeData.username.length > 32) {
+      enqueueSnackbar('Username may not be longer than 32 characters', {className: 'notistack-custom-default'})
+    } else if(/^\s|\s$/.test(welcomeData.username)) {
+      enqueueSnackbar('Username may not start or end with a space', { className: 'notistack-custom-default' });
+    } else if(/\s{2,}/.test(welcomeData.username)) {
+      enqueueSnackbar('Username may not contain double spaces', { className: 'notistack-custom-default' });
+    } else if(!/^[a-zA-Z0-9 _-]+$/.test(welcomeData.username)) {
+      enqueueSnackbar('Username may only contain letters, numbers, dashes, underscores, and spaces', { className: 'notistack-custom-default' });
+    } else {
+      const newConfig = {...settings}
+      newConfig.welcomePopupSeen = true;
+      newConfig.username = welcomeData.username ? welcomeData.username : null
+      setSettings(newConfig);
+      setLocalUsername(newConfig.username);
+      try {
+        const response = await window.electron.ipcRenderer.invoke("save-settings", newConfig);
+        if (!response.success) {
+          console.error("Failed to save settings:", response.error);
+        }
+      } catch (error) {
+        console.error("Error saving settings:", error);
       }
-    } catch (error) {
-      console.error("Error saving settings:", error);
+      setShowWelcomePopup(false)
     }
-    setShowWelcomePopup(false)
   }
 
   return (
@@ -263,6 +298,7 @@ const App = () => {
             submitWelcomePopup={applyWelcomeData} // Pass function to apply new settings
           />
         )}
+        <SnackbarProvider />
         </div>
         <BottomBar autosaveStatus={autosaveStatus} editorContent={activeEditorNoteContent} onRefresh={onRefresh} onManualSaveNote={handleManualNoteSave} noteOpened={isNoteOpened} manualSaveIcon={manualSaveIcon} manualSaveText={manualSaveText} />
       </div>

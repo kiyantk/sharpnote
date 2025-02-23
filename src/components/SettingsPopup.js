@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
-  const [selectedTab, setSelectedTab] = useState("Editor");
+  const [selectedTab, setSelectedTab] = useState("User");
   const [settings, setSettings] = useState(currentSettings);
 
   useEffect(() => {
@@ -23,6 +23,30 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
       },
     }));
   };
+
+  const handleUsernameChange = (event) => {
+    const newValue = event.target.value;
+  
+    // Allow empty input (so the user can delete everything)
+    if (newValue === "") {
+      setSettings((prev) => ({
+        ...prev,
+        username: ""
+      }));
+      return;
+    }
+  
+    // Validation checks
+    if (newValue.length > 32 || /\s{2,}/.test(newValue) || !/^[a-zA-Z0-9 _-]+$/.test(newValue) || /^\s|\s$/.test(newValue)) {
+      return;
+    }
+  
+    // Update state if the input is valid
+    setSettings((prev) => ({
+      ...prev,
+      username: newValue
+    }));
+  };  
 
   // Save settings
   const saveSettings = async () => {
@@ -46,7 +70,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
           <div className="settings-list">
             <h2>Settings</h2>
             <ul>
-              {["Editor", "App"].map((tab) => (
+              {["User", "Editor", "Shortcuts", "App"].map((tab) => (
                 <li
                   key={tab}
                   className={selectedTab === tab ? "settings-list-active" : ""}
@@ -59,19 +83,46 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
           </div>
 
           <div className="settings-content">
+            {selectedTab === "User" && (
+              <div>
+                <div className="settings-content-item">
+                    <span>Username:</span>
+                    <input
+                      className="settings-content-input"
+                      type="text"
+                      value={settings.username}
+                      onChange={handleUsernameChange}
+                    />
+                </div>
+              </div>
+            )}
             {selectedTab === "Editor" && (
-              <div className="settings-content-item">
-                  <input
-                    type="checkbox"
-                    checked={settings.userSettings.autoSave}
-                    onChange={handleCheckboxChange}
-                  />
-                  <span>Autosave (every minute)</span>
+              <div>
+                <div className="settings-content-item">
+                    <input
+                      type="checkbox"
+                      checked={settings.userSettings.autoSave}
+                      onChange={handleCheckboxChange}
+                    />
+                    <span>Autosave (every minute)</span>
+                </div>
+              </div>
+            )}
+            {selectedTab === "Shortcuts" && (
+              <div>
+                <div className="settings-content-item">
+                    <span>Save opened note: <span className="settings-shortcut-key">CTRL</span> + <span className="settings-shortcut-key">S</span></span>
+                </div>
+                <div className="settings-content-item">
+                  <span>Refresh: <span className="settings-shortcut-key">CTRL</span> + <span className="settings-shortcut-key">R</span></span>
+                </div>
               </div>
             )}
             {selectedTab === "App" && (
-              <div className="settings-content-item">
-                  <span>SharpNote Version: 1.0.0 "Azure"</span>
+              <div>
+                <div className="settings-content-item">
+                    <span>SharpNote Version: 1.0.0 "Azure"</span>
+                </div>
               </div>
             )}
           </div>
