@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "main.js",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
@@ -15,7 +16,6 @@
     "@testing-library/user-event": "^13.5.0",
     "better-sqlite3": "^11.8.1",
     "concurrently": "^9.1.2",
-    "electron-rebuild": "^3.2.9",
     "fs": "^0.0.1-security",
     "notistack": "^3.0.2",
     "react": "^19.0.0",
@@ -32,6 +32,54 @@
     "electron": "electron .",
     "postinstall": "electron-rebuild && npx electron-rebuild -f -w better-sqlite3",
     "dev": "concurrently \"npm start\" \"npx wait-on http://localhost:3000 && npm run electron\""
+  },
+  "build": {
+    "appId": "com.kiyantk.sharpnote",
+    "productName": "SharpNote",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!**/dist/**/*",
+      "!**/*.map",
+      "database.js",
+      "node_modules/**/*",
+      "package.json",
+      "src/**/*"
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerSidebar": "build/sharpnote-v1-installfinished.bmp"
+    },
+    "fileAssociations": [
+      {
+        "ext": "sharp",
+        "name": "SharpNote",
+        "icon": "public/favicon-256x256.ico"
+      },
+      {
+        "ext": "sharpbook",
+        "name": "SharpBook",
+        "icon": "public/favicon-256x256.ico"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "icon": "public/favicon-256x256.ico",
+      "target": "nsis"
+    },
+    "linux": {
+      "icon": "public/logo512.png",
+      "target": [
+        "tar.gz"
+      ]
+    }
   },
   "eslintConfig": {
     "extends": [

@@ -29,7 +29,28 @@ app.whenReady().then(() => {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
+
+  // Use in Dev
+  // mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
+
+  // Steps to build (on Windows)
+  // Ensure package.json contains "homepage": ".",
+  // Run 'npm run build'
+  // Copy main.js to the build folder
+  // Rename main.js in the build folder to electron.js
+  // In the new electron.js, change 'const db = require("./database");' to 'const db = require("../database");'
+  // 'sharpnote-v1-installfinished.bmp' should already be in build folder. If not, put it there from public folder
+  // Copy preload.js to build folder
+  // Open Powershell as Administrator
+  // cd to this repo
+  // WINDOWS: npx electron-builder build --win
+  // LINUX: npx electron-builder build --linux --x64
+  // MACOS: npx @electron/packager <full path to local repo> SharpNote --platform=darwin --arch=x64
+  // Output should be in the 'dist' folder
+
+
+  // USE THIS WHEN BUILDING
+  mainWindow.loadFile(path.join(__dirname, 'index.html'));
 });
 
 // Fetch all notes
