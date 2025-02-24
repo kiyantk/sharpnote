@@ -31,7 +31,7 @@ app.whenReady().then(() => {
   })
 
   // Use in Dev
-  // mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
+  mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
 
   // Steps to build (on Windows)
   // Ensure package.json contains "homepage": ".",
@@ -50,7 +50,7 @@ app.whenReady().then(() => {
 
 
   // USE THIS WHEN BUILDING
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  // mainWindow.loadFile(path.join(__dirname, 'index.html'));
 });
 
 // Fetch all notes

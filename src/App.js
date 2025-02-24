@@ -5,6 +5,8 @@ import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
 import EditPopup from "./components/EditPopup";
 import WelcomePopup from "./components/WelcomePopup";
+import NoteContextMenu from "./components/NoteContextMenu";
+import NoteInfo from "./components/NoteInfo"
 import './App.css';
 import { faXmark, faCheck, faSave } from "@fortawesome/free-solid-svg-icons";
 import { SnackbarProvider, enqueueSnackbar } from 'notistack'
@@ -23,6 +25,10 @@ const App = () => {
   const [editPopupNote, setEditPopupNote] = useState(null);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [localUsername, setLocalUsername] = useState(null);
+  const [activeNoteContextMenu, setActiveNoteContextMenu] = useState(null);
+  const [activeNoteContextMenuEvent, setActiveNoteContextMenuEvent] = useState(null);
+  const [noteInfoPopupNote, setNoteInfoPopupNote] = useState(null);
+  const [isNoteInfoPopupOpen, setIsNoteInfoPopupOpen] = useState(null);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -230,10 +236,33 @@ const App = () => {
     setEditPopupNote(editNote)
   }
 
+  // Open the Edit Note popup
+  const openNoteInfoPopup = (noteID) => {
+    setIsNoteInfoPopupOpen(true);
+    const editNote = notes.find((note) => note.noteID === noteID);
+    setNoteInfoPopupNote(editNote)
+    closeNoteCtx();
+  }
+
   // Handle tab switching in NoteList
   const switchNoteListTab = (tab) => {
     setActiveTab(tab);
   };
+
+  const openNoteContextMenu = (mouseEv ,noteID) => {
+    setActiveNoteContextMenu(noteID)
+    setActiveNoteContextMenuEvent(mouseEv)
+  }
+
+  const closeNoteCtx = () => {
+    setActiveNoteContextMenu(null)
+    setActiveNoteContextMenuEvent(null)
+  }
+
+  const closeNoteInfoPopup = () => {
+    setIsNoteInfoPopupOpen(null)
+    setNoteInfoPopupNote(null)
+  }
 
   // Refresh
   const onRefresh = () => {
@@ -283,12 +312,11 @@ const App = () => {
           <NoteList
             notes={notes}
             onAddNote={addNote}
-            onDeleteNote={deleteNote}
             onSelectNote={selectNote}
-            onEditNote={openEditPopup}
             activeTab={activeTab}
             selectedNoteId={selectedNoteId}
             onTabSwitch={switchNoteListTab}
+            onNoteContextMenu={openNoteContextMenu}
           />
           <NoteEditor selectedNote={selectedNote} onUpdateNote={updateNote} settings={settings} onAutoSaveStatusChange={handleAutoSaveStatusChange} onActiveEditorContentUpdate={setactiveEditorNoteContent} />
         </div>
@@ -303,6 +331,22 @@ const App = () => {
         {showWelcomePopup && (
           <WelcomePopup
             submitWelcomePopup={applyWelcomeData} // Pass function to apply new settings
+          />
+        )}
+        {activeNoteContextMenu && (
+          <NoteContextMenu 
+            currentMouseEvent={activeNoteContextMenuEvent}
+            currentActiveCtx={activeNoteContextMenu}
+            onCloseCtx={closeNoteCtx}
+            onEditNote={openEditPopup}
+            onDeleteNote={deleteNote}
+            onViewNoteInfo={openNoteInfoPopup}
+          />
+        )}
+        {isNoteInfoPopupOpen && (
+          <NoteInfo
+            noteToShow={noteInfoPopupNote} // Pass function to apply new settings
+            onNoteInfoPopupClose={closeNoteInfoPopup}
           />
         )}
         <SnackbarProvider />
