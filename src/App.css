@@ -227,7 +227,7 @@ body {
 }
 
 .note-list-topbar {
-  margin-top: 10px;
+  /* margin-top: 10px; */
   display: grid;
   grid-template-columns: 50% 50%;
   border-bottom: 2px solid #4e4e4e;
@@ -362,7 +362,7 @@ body {
 }
 
 .note-list-notes {
-  margin-top: 10px;
+  margin-top: 9px;
   overflow-y: auto;
   height: calc(100vh - 150px);
 }

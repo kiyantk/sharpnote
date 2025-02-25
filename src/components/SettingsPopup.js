@@ -116,6 +116,12 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                 <div className="settings-content-item">
                   <span>Refresh: <span className="settings-shortcut-key">CTRL</span> + <span className="settings-shortcut-key">R</span></span>
                 </div>
+                <div className="settings-content-item">
+                  <span>New Note: <span className="settings-shortcut-key">CTRL</span> + <span className="settings-shortcut-key">T</span></span>
+                </div>
+                <div className="settings-content-item">
+                  <span>Close Note: <span className="settings-shortcut-key">CTRL</span> + <span className="settings-shortcut-key">W</span></span>
+                </div>
               </div>
             )}
             {selectedTab === "App" && (
