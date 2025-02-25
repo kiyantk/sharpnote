@@ -224,6 +224,11 @@ body {
   background: #2e2e2e;
   color: white;
   border: none;
+  line-height: 1;
+}
+
+.note-list-topbutton svg {
+  margin-right: 5px;
 }
 
 .note-list-topbar {

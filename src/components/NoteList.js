@@ -1,7 +1,7 @@
 import React from "react";
 import NoteItem from "./NoteItem";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faDownload, faBars, faClockRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faBars, faClockRotateLeft, faFolderPlus } from '@fortawesome/free-solid-svg-icons';
 
 const NoteList = ({ notes, onAddNote, onDeleteNote, onSelectNote, activeTab, onTabSwitch, onEditNote, selectedNoteId, onNoteContextMenu }) => {
   // Sort notes based on tab selected (all tab = created, recent tab = lastOpened)
@@ -13,7 +13,7 @@ const NoteList = ({ notes, onAddNote, onDeleteNote, onSelectNote, activeTab, onT
     <div className="note-list">
       <div className="note-list-topbar">
         <button className="note-list-topbutton" onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> New Note</button>
-        <button className="note-list-topbutton" style={{borderLeft: '2px solid #4e4e4e'}}><FontAwesomeIcon icon={faDownload} /> Import</button>
+        <button className="note-list-topbutton" style={{borderLeft: '2px solid #4e4e4e'}}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button>
       </div>
       <div className="note-list-tabs">
         <div 
