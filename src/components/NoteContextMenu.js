@@ -18,6 +18,7 @@ const NoteContextMenu = ({currentActiveCtx, currentMouseEvent, onCloseCtx, onDel
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  
   return (
     <div className="note-context-menu" ref={menuRef} style={{left: currentMouseEvent?.clientX + 10, top: currentMouseEvent?.clientY}}>
       <div>

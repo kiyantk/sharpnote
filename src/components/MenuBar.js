@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SettingsPopup from "./SettingsPopup";
 
 const MenuBar = ({onSettingsChange}) => {
@@ -7,6 +7,21 @@ const MenuBar = ({onSettingsChange}) => {
   const [settings, setSettings] = useState({
     userSettings: { autoSave: true }, // Default settings
   });
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        toggleDropdown();  // Call the onClose function when clicking outside
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     // Load settings from Electron (preload.js)
@@ -37,8 +52,10 @@ const MenuBar = ({onSettingsChange}) => {
     <div className="menu-bar">
       <button onClick={toggleDropdown}>File</button>
       {isDropdownOpen && (
-        <div className="dropdown-menu">
+        <div className="menubar-dropdown-overlay">
+        <div ref={menuRef} className="dropdown-menu">
           <button onClick={openSettingsPopup}>Settings</button>
+        </div>
         </div>
       )}
       {isSettingsPopupOpen && (
