@@ -23,13 +23,13 @@ const NoteContextMenu = ({currentActiveCtx, currentMouseEvent, onCloseCtx, onDel
     <div className="note-context-menu" ref={menuRef} style={{left: currentMouseEvent?.clientX + 10, top: currentMouseEvent?.clientY}}>
       <div>
         <div className="note-context-menu-item" onClick={() => onViewNoteInfo(currentActiveCtx)} >
-          <span><FontAwesomeIcon icon={faCircleInfo} /> Note Info</span>
+          <span><FontAwesomeIcon icon={faCircleInfo} /> <span className="note-context-menu-text">Note Info</span></span>
         </div>
         <div className="note-context-menu-item" onClick={() => onEditNote(currentActiveCtx)}>
-          <span><FontAwesomeIcon icon={faEdit} /> Edit Note</span>
+          <span><FontAwesomeIcon icon={faEdit} /> <span className="note-context-menu-text">Edit Note</span></span>
         </div>
         <div className="note-context-menu-item" onClick={() => {onCloseCtx(); onDeleteNote(currentActiveCtx)}}>
-          <span><FontAwesomeIcon icon={faTrash} /> Delete Note</span>
+          <span><FontAwesomeIcon icon={faTrash} /> <span className="note-context-menu-text">Delete Note</span></span>
         </div>
       </div>
     </div>

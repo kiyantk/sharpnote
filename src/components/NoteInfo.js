@@ -60,7 +60,7 @@ const NoteInfo = ({ noteToShow, onNoteInfoPopupClose }) => {
                   <input type="text" disabled className="noteinfo-input editnote-titleinput" value={noteToShow.sharpnoteVersion}></input>
               </div>
               <div className="editnote-popup-item">
-                  <span>Revision</span>
+                  <span>Revisions</span>
                   <input type="text" disabled className="noteinfo-input editnote-titleinput" value={noteToShow.noteVersion}></input>
               </div>
               <div className="editnote-popup-item">

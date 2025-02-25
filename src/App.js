@@ -277,6 +277,18 @@ const App = () => {
     updateNote(editedNote)
   }
 
+  const onExportDone = (numExported, isSharpbook) => {
+    if(isSharpbook) {
+      enqueueSnackbar(`Exported Sharpbook (${numExported} ${numExported > 1 ? 'notes' : 'note'})`, {className: 'notistack-custom-default', variant: 'success'})
+    } else {
+      enqueueSnackbar(`Exported ${numExported} ${numExported > 1 ? 'notes' : 'note'}`, {className: 'notistack-custom-default', variant: 'success'})
+    }
+  }
+
+  const showNoneSelectedError = () => {
+    enqueueSnackbar("No notes were selected", {className: 'notistack-custom-default'})
+  }
+
   const applyWelcomeData = async (welcomeData) => {
     if(welcomeData.username && welcomeData.username.length > 32) {
       enqueueSnackbar('Username may not be longer than 32 characters', {className: 'notistack-custom-default'})
@@ -307,7 +319,11 @@ const App = () => {
   return (
     <div className="App">
       <div className="App-main">
-        <MenuBar onSettingsChange={handleonSettingsChange} />
+        <MenuBar 
+          onSettingsChange={handleonSettingsChange} 
+          allNotes={notes} onExport={onExportDone} 
+          noneSelectedError={showNoneSelectedError} 
+        />
         <div className="content">
           <NoteList
             notes={notes}
@@ -318,7 +334,13 @@ const App = () => {
             onTabSwitch={switchNoteListTab}
             onNoteContextMenu={openNoteContextMenu}
           />
-          <NoteEditor selectedNote={selectedNote} onUpdateNote={updateNote} settings={settings} onAutoSaveStatusChange={handleAutoSaveStatusChange} onActiveEditorContentUpdate={setactiveEditorNoteContent} />
+          <NoteEditor 
+            selectedNote={selectedNote} 
+            onUpdateNote={updateNote} 
+            settings={settings} 
+            onAutoSaveStatusChange={handleAutoSaveStatusChange} 
+            onActiveEditorContentUpdate={setactiveEditorNoteContent} 
+          />
         </div>
         <div>
         {isEditPopupOpen && (

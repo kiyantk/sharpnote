@@ -97,6 +97,7 @@ body {
   border: none;
   width: 100%;
   text-align: left;
+  cursor: pointer;
 }
 
 .dropdown-menu button:hover {
@@ -130,7 +131,7 @@ body {
 
 .settings-popup {
   position: relative;
-  background-color: rgb(27, 27, 27);
+  background-color: #1b1b1b;
   padding: 0px;
   border-radius: 8px;
   width: 70%;
@@ -159,9 +160,15 @@ body {
   padding: 0px;
   border-radius: 8px;
   width: 40%;
-  padding-top: 10px;
+  padding-top: 2px;
   height: 40%;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.editnote-popup h2 {
+  border-bottom: 1px solid #2c2c2c;
+  padding-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .editnote-popup-content {
@@ -462,6 +469,7 @@ body {
   border-bottom: 1px solid #323232;
   list-style-type: none;
   padding: 15px 0px;
+  cursor: pointer;
 }
 
 .settings-list>ul {
@@ -582,6 +590,7 @@ body {
 
 .notistack-custom-default {
   background: rgb(31, 31, 31) !important;
+  user-select: none;
 }
 
 .welcome-popup-username-requirements {
@@ -664,7 +673,7 @@ input:focus {
   padding: 0px;
   border-radius: 8px;
   width: 40%;
-  padding-top: 10px;
+  padding-top: 2px;
   height: 48%;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
@@ -679,4 +688,90 @@ input:focus {
 
 .noteinfo-popup-content-container {
   justify-items: center;
+}
+
+.note-browser-small {
+  width: 90%;
+  justify-self: center;
+  max-height: 32%;
+  overflow-y: auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border: 1px solid #5c5c5c;
+  /* margin-top: 15px; */
+}
+
+.note-browser-item {
+  background: #2e2e2e;
+  /* border-radius: 5px; */
+  margin-bottom: 5px;
+  cursor: pointer;
+  padding: 0px 0px 0px 10px;
+  text-align: left;
+  height: 27px;
+  align-content: center;
+}
+
+.note-browser-item:hover {
+  background: #565656;
+}
+
+.note-export-typeselect {
+  background-color: #333333;
+  border: none;
+  padding: 10px 0px;
+  color: white;
+  /* text-align: center; */
+  width: 20%;
+  margin-top: 5px;
+}
+
+.note-export-popup-content {
+  display: contents;
+  width: 100%;
+  gap: 20px;
+  margin-top: 15px;
+  justify-self: center;
+  justify-items: center;
+}
+
+.note-export-filetype {
+  margin-left: 5px;
+  vertical-align: sub;
+}
+
+.note-export-methodselect {
+  background-color: #333333;
+  border: none;
+  padding: 10px 0px;
+  color: white;
+  /* text-align: center; */
+  width: 40%;
+  margin-top: 5px;
+}
+
+.export-popup-item {
+  display: grid;
+  justify-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.exportnote-nameinput {
+  background-color: #333333;
+  border: none;
+  padding: 10px;
+  color: white;
+  margin-top: 5px;
+}
+
+.note-context-menu-text {
+  line-height: 1.1; 
+  align-items: end;
+}
+
+.noteinfo-popup h2 {
+  border-bottom: 1px solid #2c2c2c;
+  padding-bottom: 5px;
+  margin-bottom: 6px;
 }
