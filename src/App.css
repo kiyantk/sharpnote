@@ -152,6 +152,8 @@ body {
   display: grid;
   justify-items: center;
   margin-bottom: 10px;
+  width: fit-content;
+  justify-self: center;
 }
 
 .editnote-popup {
@@ -270,7 +272,7 @@ body {
   margin-bottom: 5px;
   cursor: pointer;
   padding: 0px 0px 0px 10px;
-  grid-template-columns: 0% 85% 15%;
+  grid-template-columns: 8% 92%;
   text-align: left;
   height: 32px;
 }
@@ -298,8 +300,12 @@ body {
 }
 
 .note-item span {
-  margin-left: 25px;
+  /* margin-left: 25px; */
   line-height: 1;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  overflow-x: clip;
+  text-wrap-mode: nowrap;
 }
 
 /* 🔹 Note Editor */
@@ -787,4 +793,8 @@ input:focus {
 
 .note-item-deletemode:hover {
   background-color: rgba(211, 131, 131, 0.248) !important;
+}
+
+.hide-vertical-overflow-text {
+  overflow-y: hidden;
 }

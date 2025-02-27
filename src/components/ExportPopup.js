@@ -142,7 +142,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
           {allNotesCopy.map((note) => (
             <div
               key={note.noteID}
-              className={`note-browser-item ${selectedNotes.includes(note) ? "note-browser-selected" : ""}`}
+              className={`note-browser-item hide-vertical-overflow-text ${selectedNotes.includes(note) ? "note-browser-selected" : ""}`}
               onClick={() =>
                 exportType === "single"
                   ? setSelectedNotes([note])

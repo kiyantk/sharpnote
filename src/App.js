@@ -208,6 +208,10 @@ const App = () => {
 
   // Update the note in the local db
   const updateNote = async (updatedNote) => {
+    if(updatedNote.noteTitle.length > 100) {
+      enqueueSnackbar('Note Title cannot be longer than 100 characters', { className: 'notistack-custom-default' });
+      return { success: false, error: "INVALID" }
+    }
     updatedNote.lastSaved = new Date().toISOString();  // Update lastSaved directly
     updatedNote.noteVersion = updatedNote.noteVersion + 1;  // Increment the version
     updatedNote.noteLastAuthor = localUsername ? localUsername : null;
@@ -385,6 +389,7 @@ const App = () => {
             onCloseCtx={closeNoteCtx}
             onEditNote={openEditPopup}
             onViewNoteInfo={openNoteInfoPopup}
+            onDeleteNote={deleteNote}
           />
         )}
         {isNoteInfoPopupOpen && (

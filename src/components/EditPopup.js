@@ -8,7 +8,9 @@ const EditPopup = ({ closeEditPopup, noteToEdit, applyEdits }) => {
   const saveSettings = async () => {
     try {
       applyEdits(editedNoteToSave)
-      closeEditPopup(); // Close the popup after saving
+      if(editedNoteToSave.noteTitle.length <= 100) {
+        closeEditPopup(); // Close the popup after saving
+      }
     } catch (error) {
       console.error("Error saving settings:", error);
     }
@@ -35,12 +37,13 @@ const EditPopup = ({ closeEditPopup, noteToEdit, applyEdits }) => {
       <div className="editnote-popup">
         <div>
             <h2>Edit Note</h2>
-            <span>Editing '{noteToEdit.noteTitle}'</span>
+            {/* <span>Editing '{noteToEdit.noteTitle}'</span> */}
         </div>
         <div className="editnote-popup-content">
             <div className="editnote-popup-item">
                 <span>Note Title</span>
-                <input type="text" className="editnote-input editnote-titleinput" value={editedNoteToDisplay.noteTitle} onChange={handleTitleInputChange}></input>
+                <input type="text" className="editnote-input editnote-titleinput" value={editedNoteToDisplay.noteTitle} maxLength={100} onChange={handleTitleInputChange}></input>
+                <span className="welcome-popup-username-requirements">Up to 100 characters</span>
             </div>
             <div className="editnote-popup-item">
                 <span>Note Color</span>

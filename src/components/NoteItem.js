@@ -19,7 +19,7 @@ const NoteItem = ({ note, onDeleteNote, onSelectNote, selectedNoteId, onNoteCont
       onNoteContextMenu(e, note.noteID);
     }}>
       <FontAwesomeIcon style={{ color: note.noteColor }} icon={faStickyNote} />
-      <span>{note.noteTitle}</span>
+      <span className="hide-vertical-overflow-text">{note.noteTitle}</span>
     </div>
   );
 };
