@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, globalShortcut  } = require("electron");
+const { app, BrowserWindow, ipcMain, globalShortcut, shell } = require("electron");
 const db = require("./database");
 const path = require("path");
 
@@ -28,6 +28,11 @@ app.whenReady().then(() => {
   mainWindow.maximize(); // Start in maximized mode
   mainWindow.on('closed', () => {
     mainWindow = null
+  })
+
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    shell.openExternal(details.url); // Open URL in user's browser.
+    return { action: "deny" }; // Prevent the app from opening the URL.
   })
 
   // Use in Dev

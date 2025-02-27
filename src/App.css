@@ -81,12 +81,12 @@ body {
 
 /* Dropdown Menu */
 .dropdown-menu {
-  width: fit-content;
   position: fixed;
   background-color: #121212;
   top: 26px; /* Adjust the position below the button */
   left: 11px;
   z-index: 100;
+  width: 225px;
   user-select: none;
 }
 
@@ -593,6 +593,11 @@ body {
   user-select: none;
 }
 
+.notistack-custom-danger {
+  background: #9f2a2a !important;
+  user-select: none;
+}
+
 .welcome-popup-username-requirements {
   font-size: 10px;
   color: gray;
@@ -774,4 +779,12 @@ input:focus {
   border-bottom: 1px solid #2c2c2c;
   padding-bottom: 5px;
   margin-bottom: 6px;
+}
+
+.menubar-dropdown-divider {
+  border-bottom: 1px solid #515151 !important;
+}
+
+.note-item-deletemode:hover {
+  background-color: rgba(211, 131, 131, 0.248) !important;
 }

@@ -9,7 +9,7 @@ import NoteContextMenu from "./components/NoteContextMenu";
 import NoteInfo from "./components/NoteInfo"
 import './App.css';
 import { faXmark, faCheck, faSave } from "@fortawesome/free-solid-svg-icons";
-import { SnackbarProvider, enqueueSnackbar } from 'notistack'
+import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from 'notistack'
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -29,6 +29,9 @@ const App = () => {
   const [activeNoteContextMenuEvent, setActiveNoteContextMenuEvent] = useState(null);
   const [noteInfoPopupNote, setNoteInfoPopupNote] = useState(null);
   const [isNoteInfoPopupOpen, setIsNoteInfoPopupOpen] = useState(null);
+  const [deleteModeOn, setDeleteMode] = useState(false);
+  const [deleteModeSnackKey, setDeleteModeSnackKey] = useState(null);
+  const [leftPanelVisible, setLeftPanelVisible] = useState(true);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -316,6 +319,21 @@ const App = () => {
     }
   }
 
+  const toggleDeleteMode = () => {
+    setDeleteMode(!deleteModeOn)
+    if(!deleteModeOn) {
+      const snackKey = enqueueSnackbar('Delete Mode on. Clicking on a note will delete it! Disable by pressing toggle button again.', { className: 'notistack-custom-danger', persist: true });
+      setDeleteModeSnackKey(snackKey)
+    } else {
+      closeSnackbar(deleteModeSnackKey)
+      setDeleteModeSnackKey(null)
+    }
+  }
+
+  const onToggleLeftPanel = () => {
+    setLeftPanelVisible(!leftPanelVisible)
+  }
+
   return (
     <div className="App">
       <div className="App-main">
@@ -323,6 +341,8 @@ const App = () => {
           onSettingsChange={handleonSettingsChange} 
           allNotes={notes} onExport={onExportDone} 
           noneSelectedError={showNoneSelectedError} 
+          toggleDeleteMode={toggleDeleteMode}
+          toggleLeftPanel={onToggleLeftPanel}
         />
         <div className="content">
           <NoteList
@@ -333,6 +353,9 @@ const App = () => {
             selectedNoteId={selectedNoteId}
             onTabSwitch={switchNoteListTab}
             onNoteContextMenu={openNoteContextMenu}
+            deleteModeOn={deleteModeOn}
+            onDeleteNote={deleteNote}
+            leftPanelVisible={leftPanelVisible}
           />
           <NoteEditor 
             selectedNote={selectedNote} 
@@ -361,7 +384,6 @@ const App = () => {
             currentActiveCtx={activeNoteContextMenu}
             onCloseCtx={closeNoteCtx}
             onEditNote={openEditPopup}
-            onDeleteNote={deleteNote}
             onViewNoteInfo={openNoteInfoPopup}
           />
         )}

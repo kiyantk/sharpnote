@@ -3,11 +3,13 @@ import SettingsPopup from "./SettingsPopup";
 import ExportPopup from "./ExportPopup";
 import ImportPopup from "./ImportPopup";
 
-const MenuBar = ({onSettingsChange, allNotes, onExport, noneSelectedError}) => {
+const MenuBar = ({onSettingsChange, allNotes, onExport, noneSelectedError, toggleDeleteMode, toggleLeftPanel}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSettingsPopupOpen, setIsSettingsPopupOpen] = useState(false);
   const [isExportPopupOpen, setIsExportPopupOpen] = useState(false);
   const [isImportPopupOpen, setIsImportPopupOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState(0);
+  const [dropdownType, setDropdownType] = useState(null)
   const [settings, setSettings] = useState({
     userSettings: { autoSave: true }, // Default settings
   });
@@ -43,7 +45,12 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, noneSelectedError}) => {
   };
 
   // Toggle dropdown
-  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const toggleDropdown = (event, type) => {
+    setDropdownType(type)
+    if(event !== undefined) { setDropdownPosition(event.target.offsetLeft) }
+    
+    setIsDropdownOpen((prev) => !prev);
+  }
 
   // Open / Close Settings popup
   const openSettingsPopup = () => {
@@ -70,16 +77,74 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, noneSelectedError}) => {
     window.close()
   }
 
+  const goToDocs = () => {
+    window.open("https://docs.kiy.li/sharpnote", "_blank")
+  }
+
+  const doUndo = () => {
+    // 
+  }
+
+  const doRedo = () => {
+    // 
+  }
+
+  const doCut = () => {
+    // 
+  }
+
+  const doCopy = () => {
+    // 
+  }
+
+  const doPaste = () => {
+    // 
+  }
+
+  const toggleDelMode = () => {
+    toggleDropdown();
+    toggleDeleteMode();
+  }
+
   return (
     <div className="menu-bar">
-      <button onClick={toggleDropdown}>File</button>
-      {isDropdownOpen && (
+      <button onClick={(e) => toggleDropdown(e, "file")}>File</button>
+      <button onClick={(e) => toggleDropdown(e, "edit")}>Edit</button>
+      <button onClick={(e) => toggleDropdown(e, "view")}>View</button>
+      <button onClick={(e) => toggleDropdown(e, "help")}>Help</button>
+      {(isDropdownOpen && dropdownType === "file") && (
         <div className="menubar-dropdown-overlay">
-        <div ref={menuRef} className="dropdown-menu">
+        <div ref={menuRef} className="dropdown-menu" style={{left: dropdownPosition}}>
+          <button className="menubar-dropdown-divider" onClick={openSettingsPopup}>Settings</button>
           <button onClick={openExportPopup}>Export</button>
-          <button onClick={openImportPopup}>Import</button>
-          <button onClick={openSettingsPopup}>Settings</button>
+          <button className="menubar-dropdown-divider" onClick={openImportPopup}>Import</button>
           <button onClick={closeSharpnote}>Exit</button>
+        </div>
+        </div>
+      )}
+      {(isDropdownOpen && dropdownType === "edit") && (
+        <div className="menubar-dropdown-overlay">
+        <div ref={menuRef} className="dropdown-menu" style={{left: dropdownPosition}}>
+          <button onClick={doUndo}>Undo</button>
+          <button className="menubar-dropdown-divider" onClick={doRedo}>Redo</button>
+          <button onClick={doCut}>Cut</button>
+          <button onClick={doCopy}>Copy</button>
+          <button className="menubar-dropdown-divider" onClick={doPaste}>Paste</button>
+          <button onClick={toggleDelMode}>Toggle Delete Mode</button>
+        </div>
+        </div>
+      )}
+      {(isDropdownOpen && dropdownType === "view") && (
+        <div className="menubar-dropdown-overlay">
+        <div ref={menuRef} className="dropdown-menu" style={{left: dropdownPosition}}>
+          <button onClick={toggleLeftPanel}>Toggle Left Panel</button>
+        </div>
+        </div>
+      )}
+      {(isDropdownOpen && dropdownType === "help") && (
+        <div className="menubar-dropdown-overlay">
+        <div ref={menuRef} className="dropdown-menu" style={{left: dropdownPosition}}>
+          <button onClick={goToDocs}>Documentation</button>
         </div>
         </div>
       )}
