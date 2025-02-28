@@ -35,6 +35,7 @@ const App = () => {
   const [leftPanelVisible, setLeftPanelVisible] = useState(true);
   const [noteToExportNoteThruCtx, setNoteToExportNoteThruCtx] = useState(null);
   const [haveToOpenNote, setHaveToOpenNote] = useState(null);
+  const [usernameFixed, setUsernameFixed] = useState(false);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -88,6 +89,7 @@ const App = () => {
       setNotes(savedNotes || []);
     } catch (error) {
       console.error("Error fetching notes:", error);
+      enqueueSnackbar('An error occured while trying to load your notes', { className: 'notistack-custom-default' });
     }
   };
 
@@ -95,24 +97,34 @@ const App = () => {
     // Load settings from Electron (preload.js)
     window.electron.ipcRenderer.invoke("get-settings").then(async (loadedSettings) => {
       if (loadedSettings) {
-        if(loadedSettings.username && loadedSettings.username.length > 32 || /^\s|\s$/.test(loadedSettings.username) || /\s{2,}/.test(loadedSettings.username) || !/^[a-zA-Z0-9 _-]+$/.test(loadedSettings.username)) {
-          let fixedSettings = {...loadedSettings}
-          fixedSettings.username = null
+        // Remove any characters that are not a-z, A-Z, 0-9, -, _, or spaces
+        let validUsername = loadedSettings.username.replace(/[^a-zA-Z0-9\-_ ]/g, '');
+        // Trim to 32 characters if longer
+        if (validUsername.length > 32) {
+          validUsername = validUsername.substring(0, 32);
+        }
+      
+        // Update settings.username if it was modified
+        if (validUsername !== loadedSettings.username) {
+          loadedSettings.username = validUsername;
+          setUsernameFixed(true);
+          setSettings(loadedSettings);
+          setLocalUsername(loadedSettings.username);
+          // Save fixed settings
           try {
-            const response = await window.electron.ipcRenderer.invoke("save-settings", settings);
+            const response = await window.electron.ipcRenderer.invoke("save-settings", loadedSettings);
             if (!response.success) {
               console.error("Failed to save settings:", response.error);
+              enqueueSnackbar('An error occured while trying to save settings', { className: 'notistack-custom-default' });
             }
           } catch (error) {
             console.error("Error saving settings:", error);
+            enqueueSnackbar('An error occured while trying to save settings', { className: 'notistack-custom-default' });
           }
-          setSettings(fixedSettings);
-          setLocalUsername(fixedSettings.username);
-        } else {
-          setSettings(loadedSettings);
-          loadedSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1)
-          setLocalUsername(loadedSettings.username)
         }
+        setSettings(loadedSettings);
+        loadedSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1)
+        setLocalUsername(loadedSettings.username)
       }
     });
   }, []);
@@ -123,10 +135,14 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if(usernameFixed) enqueueSnackbar('Username was updated due to invalid characters or length', { className: 'notistack-custom-default' });
+  }, [usernameFixed]);
+
+  useEffect(() => {
     if(haveToOpenNote) selectNote(haveToOpenNote);
   }, [notes, haveToOpenNote]);
 
-  // Check if user has seen Welcome Popup on mount
+  // Check if user has seen Welcome Popup on mount & check username
   useEffect(() => {
     if(settings && settings.welcomePopupSeen === false) {
       setShowWelcomePopup(true)
@@ -175,6 +191,7 @@ const App = () => {
       setHaveToOpenNote(newNote.noteID)
     } catch (error) {
       console.error("Error adding note:", error);
+      enqueueSnackbar('An error occured while trying to add a new note', { className: 'notistack-custom-default' });
     }
   };
 
@@ -206,7 +223,8 @@ const App = () => {
       setNotes((prevNotes) => [...prevNotes, newNote]);
       onRefresh();
     } catch (error) {
-      console.error("Error adding note:", error);
+      console.error("Error importing note:", error);
+      enqueueSnackbar('An error occured while trying to import a note', { className: 'notistack-custom-default' });
     }
   };  
 
@@ -228,7 +246,8 @@ const App = () => {
       setIsNoteOpened(true)
       setHaveToOpenNote(null)
     } catch (error) {
-      console.error("Error updating note:", error);
+      console.error("Error opening note:", error);
+      enqueueSnackbar('An error occured while trying to open this note', { className: 'notistack-custom-default' });
     }
   };
   
@@ -244,6 +263,7 @@ const App = () => {
       setNotes((prevNotes) => prevNotes.filter((note) => note.noteID !== noteID));
     } catch (error) {
       console.error("Error deleting note:", error);
+      enqueueSnackbar('An error occured while trying to delete this note', { className: 'notistack-custom-default' });
     }
   };
 
@@ -266,6 +286,7 @@ const App = () => {
       }
     } catch (error) {
       console.error("Error updating note:", error);
+      enqueueSnackbar('An error occured while trying to update this note', { className: 'notistack-custom-default' });
       return { success: false, error: error.message };
     }
   };  
@@ -357,9 +378,11 @@ const App = () => {
         const response = await window.electron.ipcRenderer.invoke("save-settings", newConfig);
         if (!response.success) {
           console.error("Failed to save settings:", response.error);
+          enqueueSnackbar('An error occured while trying to save settings', { className: 'notistack-custom-default' });
         }
       } catch (error) {
         console.error("Error saving settings:", error);
+        enqueueSnackbar('An error occured while trying to save settings', { className: 'notistack-custom-default' });
       }
       setShowWelcomePopup(false)
     }

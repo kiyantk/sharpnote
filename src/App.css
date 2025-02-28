@@ -804,6 +804,8 @@ input:focus {
 
 .note-item-deletemode:hover {
   background-color: rgba(211, 131, 131, 0.248) !important;
+  border-top: 1px solid #6f4646;
+  border-bottom: 1px solid #6f4646;
 }
 
 .hide-vertical-overflow-text {
