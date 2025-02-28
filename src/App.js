@@ -34,6 +34,7 @@ const App = () => {
   const [deleteModeSnackKey, setDeleteModeSnackKey] = useState(null);
   const [leftPanelVisible, setLeftPanelVisible] = useState(true);
   const [noteToExportNoteThruCtx, setNoteToExportNoteThruCtx] = useState(null);
+  const [haveToOpenNote, setHaveToOpenNote] = useState(null);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -121,6 +122,10 @@ const App = () => {
     fetchNotes();
   }, []);
 
+  useEffect(() => {
+    if(haveToOpenNote) selectNote(haveToOpenNote);
+  }, [notes, haveToOpenNote]);
+
   // Check if user has seen Welcome Popup on mount
   useEffect(() => {
     if(settings && settings.welcomePopupSeen === false) {
@@ -166,7 +171,8 @@ const App = () => {
       await window.electron.ipcRenderer.invoke("add-note", newNote);
       setNotes((prevNotes) => [...prevNotes, newNote]);
       onRefresh();
-      // Automatically select (open) note here
+      // Automatically select (open) note
+      setHaveToOpenNote(newNote.noteID)
     } catch (error) {
       console.error("Error adding note:", error);
     }
@@ -199,7 +205,6 @@ const App = () => {
       await window.electron.ipcRenderer.invoke("add-note", newNote);
       setNotes((prevNotes) => [...prevNotes, newNote]);
       onRefresh();
-      // Automatically select (open) note here
     } catch (error) {
       console.error("Error adding note:", error);
     }
@@ -221,6 +226,7 @@ const App = () => {
       setSelectedNoteId(noteID);
       setAutosaveStatus(2)
       setIsNoteOpened(true)
+      setHaveToOpenNote(null)
     } catch (error) {
       console.error("Error updating note:", error);
     }

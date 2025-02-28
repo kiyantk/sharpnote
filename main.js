@@ -19,11 +19,21 @@ app.whenReady().then(() => {
     },
   });
 
-  globalShortcut.register("CommandOrControl+Shift+I", () => {
-    if (mainWindow) {
-      mainWindow.webContents.toggleDevTools();
-    }
-  });
+  app.on('browser-window-focus', () => {
+    globalShortcut.register('CommandOrControl+R', () => {
+      win.reload()
+    })
+    globalShortcut.register('CommandOrControl+Shift+I', () => {
+      if (mainWindow) {
+        mainWindow.webContents.toggleDevTools();
+      }
+    })
+  })
+  
+  app.on('browser-window-blur', () => {
+    globalShortcut.unregisterAll()
+  })
+
   mainWindow.removeMenu(); // Hides the default top menu
   mainWindow.maximize(); // Start in maximized mode
   mainWindow.on('closed', () => {

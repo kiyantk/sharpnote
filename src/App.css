@@ -209,6 +209,7 @@ body {
   cursor: pointer;
   height: 100%;
   width: 65px;
+  outline: none;
 }
 
 .menu-bar button:hover {
@@ -269,12 +270,14 @@ body {
   align-items: center;
   background: #2e2e2e;
   /* border-radius: 5px; */
-  margin-bottom: 5px;
+  margin-bottom: 4.8px;
   cursor: pointer;
   padding: 0px 0px 0px 10px;
   grid-template-columns: 8% 92%;
   text-align: left;
   height: 32px;
+  border-bottom: 1px solid #363636;
+  border-top: 1px solid #363636;
 }
 
 .note-item:hover {
@@ -394,7 +397,7 @@ body {
 .note-list-notes {
   margin-top: 9px;
   overflow-y: auto;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 131px);
 }
 
 /* width */
