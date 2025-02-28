@@ -449,6 +449,14 @@ body {
   color: white;
 }
 
+.settings-close-btn:hover {
+  background: #1f1f1f;
+}
+
+.settings-save-btn:hover {
+  background: #1f1f1f;
+}
+
 .settings-bottom-bar {
   position: absolute;
   bottom: 0;
@@ -658,9 +666,9 @@ input:focus {
   background-color: #2e2e2e;
 }
 
-.note-context-menu-item span {
-  display: flex;
-  gap: 10px;
+.note-context-menu-item>span {
+  display: grid;
+  grid-template-columns: 15% 85%;
   align-items: center;
 }
 
@@ -797,4 +805,56 @@ input:focus {
 
 .hide-vertical-overflow-text {
   overflow-y: hidden;
+}
+
+.file-select-btn {
+  background-color: #404040;
+  padding: 7px;
+  color: white;
+  border: none;
+  font-size: 13px;
+}
+
+.file-select-btn:hover {
+  background-color: #464646 !important;
+}
+
+.import-valid-file-text {
+  color: #b3e6b3;
+  vertical-align: middle;
+}
+
+.import-invalid-file-text {
+  color: #e6b3b3;
+  vertical-align: middle;
+}
+
+.import-file-info {
+  margin-top: 10px;
+}
+
+.note-import-fileselector {
+  display: inline-flex;
+}
+
+.note-import-selectedfilename {
+  line-height: 1.6;
+  padding-left: 7px;
+  padding-right: 7px;
+  border-top: 1px solid #404040;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  background-color: #525252;
+  max-width: 350px;
+  text-overflow: ellipsis;
+  overflow-x: clip;
+}
+
+.import-popup-item {
+  display: grid;
+  justify-items: center;
+  margin-bottom: 10px;
+  width: fit-content;
+  justify-self: center;
+  margin-top: 10px;
 }

@@ -26,12 +26,14 @@ const App = () => {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [localUsername, setLocalUsername] = useState(null);
   const [activeNoteContextMenu, setActiveNoteContextMenu] = useState(null);
+  const [activeNoteContextMenuFull, setActiveNoteContextMenuFull] = useState(null);
   const [activeNoteContextMenuEvent, setActiveNoteContextMenuEvent] = useState(null);
   const [noteInfoPopupNote, setNoteInfoPopupNote] = useState(null);
   const [isNoteInfoPopupOpen, setIsNoteInfoPopupOpen] = useState(null);
   const [deleteModeOn, setDeleteMode] = useState(false);
   const [deleteModeSnackKey, setDeleteModeSnackKey] = useState(null);
   const [leftPanelVisible, setLeftPanelVisible] = useState(true);
+  const [noteToExportNoteThruCtx, setNoteToExportNoteThruCtx] = useState(null);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -170,6 +172,39 @@ const App = () => {
     }
   };
 
+  const importNote = async (newNote) => {
+    if (!window.electron) return;
+  
+    try {
+      // Ensure noteAttachments and noteTags are properly formatted as arrays
+      if (typeof newNote.noteAttachments === "string") {
+        try {
+          newNote.noteAttachments = JSON.parse(newNote.noteAttachments);
+        } catch (e) {
+          console.warn("Invalid JSON in noteAttachments, resetting to empty array.");
+          newNote.noteAttachments = [];
+        }
+      }
+  
+      if (typeof newNote.noteTags === "string") {
+        try {
+          newNote.noteTags = JSON.parse(newNote.noteTags);
+        } catch (e) {
+          console.warn("Invalid JSON in noteTags, resetting to empty array.");
+          newNote.noteTags = [];
+        }
+      }
+  
+      // Import the note
+      await window.electron.ipcRenderer.invoke("add-note", newNote);
+      setNotes((prevNotes) => [...prevNotes, newNote]);
+      onRefresh();
+      // Automatically select (open) note here
+    } catch (error) {
+      console.error("Error adding note:", error);
+    }
+  };  
+
   // Handle note opening
   const selectNote = async (noteID) => {
     selectedNote = notes.find((note) => note.noteID === noteID);
@@ -256,8 +291,9 @@ const App = () => {
     setActiveTab(tab);
   };
 
-  const openNoteContextMenu = (mouseEv ,noteID) => {
-    setActiveNoteContextMenu(noteID)
+  const openNoteContextMenu = (mouseEv ,ctxNote) => {
+    setActiveNoteContextMenu(ctxNote.noteID)
+    setActiveNoteContextMenuFull(ctxNote)
     setActiveNoteContextMenuEvent(mouseEv)
   }
 
@@ -338,6 +374,47 @@ const App = () => {
     setLeftPanelVisible(!leftPanelVisible)
   }
 
+  const importData = (toImport) => {
+    if (toImport.noteID) {
+      // Check if noteID is already in use
+      if (notes.some(note => note.noteID === toImport.noteID)) {
+        // Generate a new unique noteID
+        toImport.noteID = generateRandomID();
+        enqueueSnackbar("Note with imported note's noteID already exists. Generated new ID for imported note.", { className: 'notistack-custom-default' });
+      }
+  
+      // Flatten noteHistory fields
+      // if (toImport.noteHistory) {
+      //   Object.assign(toImport, toImport.noteHistory);
+      //   delete toImport.noteHistory;
+      // }
+  
+      // Import the note
+      importNote(toImport);
+      enqueueSnackbar("Note import complete", { className: 'notistack-custom-default', variant: 'success' });
+    } else if (toImport.sharpbookID) {
+      // Import each note in sharpbook
+      toImport.notes.forEach(note => {
+        // Check if noteID is already in use
+        if (notes.some(existingNote => existingNote.noteID === note.noteID)) {
+          note.noteID = generateRandomID();
+        }
+  
+        // Import the note
+        importNote(note);
+      });
+      enqueueSnackbar("Notes import complete", { className: 'notistack-custom-default', variant: 'success' });
+    }
+  };
+
+  const exportThruCtx = (note) => {
+    setNoteToExportNoteThruCtx(note)
+  }
+
+  const clearPreSelectThruCtx = () => {
+    setNoteToExportNoteThruCtx(null)
+  }
+
   return (
     <div className="App">
       <div className="App-main">
@@ -347,6 +424,9 @@ const App = () => {
           noneSelectedError={showNoneSelectedError} 
           toggleDeleteMode={toggleDeleteMode}
           toggleLeftPanel={onToggleLeftPanel}
+          onImport={importData}
+          exportNoteThruCtx={noteToExportNoteThruCtx}
+          onPreSelectReceived={clearPreSelectThruCtx}
         />
         <div className="content">
           <NoteList
@@ -386,10 +466,12 @@ const App = () => {
           <NoteContextMenu 
             currentMouseEvent={activeNoteContextMenuEvent}
             currentActiveCtx={activeNoteContextMenu}
+            currentActiveCtxFull={activeNoteContextMenuFull}
             onCloseCtx={closeNoteCtx}
             onEditNote={openEditPopup}
             onViewNoteInfo={openNoteInfoPopup}
             onDeleteNote={deleteNote}
+            onExportThruCtx={exportThruCtx}
           />
         )}
         {isNoteInfoPopupOpen && (

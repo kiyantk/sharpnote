@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import { faStickyNote } from "@fortawesome/free-solid-svg-icons";
 
-const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedError }) => {
+const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedError, preSelectedSingle, onPreSelectReceived }) => {
   const [exportType, setExportType] = useState("single");
   const [selectedNotes, setSelectedNotes] = useState([]);
   const [filename, setFilename] = useState("");
@@ -108,6 +108,13 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
   }, [selectedNotes]);
 
   useEffect(() => {
+    if(preSelectedSingle) {
+      setSelectedNotes([preSelectedSingle])
+    }
+    console.log(preSelectedSingle)
+  }, [preSelectedSingle]);
+
+  useEffect(() => {
     if(exportType === "all") {
       setFilename("Sharpbook");
       setSelectedNotes(allNotesCopy);
@@ -116,7 +123,13 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
       setSelectedNotes([]);
     } else {
       setFilename("");
-      setSelectedNotes([]);
+      if(preSelectedSingle) {
+        setSelectedNotes([preSelectedSingle])
+        onPreSelectReceived()
+      } else {
+        setSelectedNotes([]);
+      }
+
     }
   }, [exportType]);
 

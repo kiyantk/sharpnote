@@ -16,7 +16,7 @@ const NoteItem = ({ note, onDeleteNote, onSelectNote, selectedNoteId, onNoteCont
     <div className={`note-item ${note.noteID === selectedNoteId ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''}`} onClick={() => handleNoteClick()} 
     onContextMenu={(e) => {
       e.preventDefault();
-      onNoteContextMenu(e, note.noteID);
+      onNoteContextMenu(e, note);
     }}>
       <FontAwesomeIcon style={{ color: note.noteColor }} icon={faStickyNote} />
       <span className="hide-vertical-overflow-text">{note.noteTitle}</span>

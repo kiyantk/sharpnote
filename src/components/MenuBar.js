@@ -3,7 +3,7 @@ import SettingsPopup from "./SettingsPopup";
 import ExportPopup from "./ExportPopup";
 import ImportPopup from "./ImportPopup";
 
-const MenuBar = ({onSettingsChange, allNotes, onExport, noneSelectedError, toggleDeleteMode, toggleLeftPanel}) => {
+const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedError, toggleDeleteMode, toggleLeftPanel, exportNoteThruCtx, onPreSelectReceived}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSettingsPopupOpen, setIsSettingsPopupOpen] = useState(false);
   const [isExportPopupOpen, setIsExportPopupOpen] = useState(false);
@@ -37,6 +37,10 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, noneSelectedError, toggl
       }
     });
   }, []);
+
+  useEffect(() => {
+    if(exportNoteThruCtx) setIsExportPopupOpen(true)
+  }, [exportNoteThruCtx]);
 
   // Apply new settings from Settings popup
   const applySettings = (newSettings) => {
@@ -162,11 +166,14 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, noneSelectedError, toggl
           settings={settings}
           onExport={onExport}
           noneSelectedError={noneSelectedError}
+          preSelectedSingle={exportNoteThruCtx}
+          onPreSelectReceived={onPreSelectReceived}
         />
       )}
       {isImportPopupOpen && (
         <ImportPopup
           closePopup={closeImportPopup}
+          onImport={onImport}
         />
       )}
     </div>
