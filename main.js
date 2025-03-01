@@ -156,7 +156,9 @@ const defaultConfig = {
   "username": null,
   "welcomePopupSeen": false,
   "userSettings": {
-    "autoSave": true
+    "autoSave": true,
+    "showMenubarIcons": true,
+    "noteItemStyle": "normal"
   },
   "structure": {
     "folders": [],
