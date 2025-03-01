@@ -20,9 +20,6 @@ app.whenReady().then(() => {
   });
 
   app.on('browser-window-focus', () => {
-    globalShortcut.register('CommandOrControl+R', () => {
-      win.reload()
-    })
     globalShortcut.register('CommandOrControl+Shift+I', () => {
       if (mainWindow) {
         mainWindow.webContents.toggleDevTools();

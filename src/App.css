@@ -100,6 +100,17 @@ body {
   cursor: pointer;
 }
 
+.dropdown-menu-with-icons button {
+  display: grid;
+  grid-template-columns: 10% 90%;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.dropdown-menu-with-icons button>span {
+  line-height: 1.4;
+}
+
 .dropdown-menu button:hover {
   background-color: #f0f0f0;
 }
@@ -280,8 +291,61 @@ body {
   border-top: 1px solid #363636;
 }
 
-.note-item:hover {
+.note-item:hover, .note-item-style-slim:hover, .note-item-style-big:hover, .note-item-style-detailed:hover {
   background: #434343;
+}
+
+.note-item-style-slim {
+  display: grid;
+  justify-content: space-between;
+  align-items: center;
+  background: #2e2e2e;
+  margin-bottom: 4.8px;
+  cursor: pointer;
+  padding: 0px 0px 0px 10px;
+  grid-template-columns: 8% 92%;
+  text-align: left;
+  height: 22px;
+  border-bottom: 1px solid #363636;
+  border-top: 1px solid #363636;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.note-item-style-big {
+  display: grid;
+  justify-content: space-between;
+  align-items: center;
+  background: #2e2e2e;
+  margin-bottom: 4.8px;
+  cursor: pointer;
+  padding: 0px 0px 0px 10px;
+  grid-template-columns: 8% 92%;
+  text-align: left;
+  height: 45px;
+  border-bottom: 1px solid #363636;
+  border-top: 1px solid #363636;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.note-item-style-detailed {
+  display: grid;
+  justify-content: space-between;
+  align-items: center;
+  background: #2e2e2e;
+  margin-bottom: 4.8px;
+  cursor: pointer;
+  padding: 0px 0px 0px 10px;
+  grid-template-columns: 8% 92%;
+  text-align: left;
+  height: 85px;
+  border-bottom: 1px solid #363636;
+  border-top: 1px solid #363636;
+  font-size: 17px;
+  line-height: 1.5;
+  grid-template-rows: 30% 70%;
+  overflow-x: clip;
 }
 
 .note-item-button {
@@ -561,6 +625,7 @@ body {
   border-bottom: 1px solid #3f3f3f;
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .settings-content-item>input[type="checkbox"] {
@@ -862,4 +927,28 @@ input:focus {
   width: fit-content;
   justify-self: center;
   margin-top: 10px;
+}
+
+.settings-list-item {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  place-items: center;
+}
+
+.note-item-detailed-contentpreview {
+  font-size: 12px;
+  line-height: 1.5em;
+  height: 3em;
+  overflow: hidden;
+  display: block;
+  width: 280px;
+  overflow-wrap: anywhere;
+  color: #c6c6c6;
+  font-style: italic;
+}
+
+.note-item-detailed-lastsaved {
+  font-size: 12px;
+  color: #b4b4b4;
 }

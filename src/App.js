@@ -469,6 +469,7 @@ const App = () => {
             deleteModeOn={deleteModeOn}
             onDeleteNote={deleteNote}
             leftPanelVisible={leftPanelVisible}
+            settings={settings}
           />
           <NoteEditor 
             selectedNote={selectedNote} 

@@ -3,7 +3,7 @@ import NoteItem from "./NoteItem";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faBars, faClockRotateLeft, faFolderPlus } from '@fortawesome/free-solid-svg-icons';
 
-const NoteList = ({ notes, onAddNote, onDeleteNote, onSelectNote, activeTab, onTabSwitch, onEditNote, selectedNoteId, onNoteContextMenu, deleteModeOn, leftPanelVisible }) => {
+const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, activeTab, onTabSwitch, onEditNote, selectedNoteId, onNoteContextMenu, deleteModeOn, leftPanelVisible }) => {
   // Sort notes based on tab selected (all tab = created, recent tab = lastOpened)
   const sortedNotes = activeTab === "recent"
   ? notes.sort((a, b) => new Date(b.lastOpened) - new Date(a.lastOpened))
@@ -43,6 +43,7 @@ const NoteList = ({ notes, onAddNote, onDeleteNote, onSelectNote, activeTab, onT
             onEditNote={onEditNote}
             onNoteContextMenu={onNoteContextMenu}
             deleteModeOn={deleteModeOn}
+            settings={settings}
           />
         ))}
       </div>

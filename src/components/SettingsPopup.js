@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faDesktop, faDisplay, faKeyboard, faPencil, faRectangleList, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
   const [selectedTab, setSelectedTab] = useState("User");
@@ -23,6 +25,27 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
       },
     }));
   };
+
+  // Set local settings
+  const handleCheckboxChangeShowMenubarIcons = (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      userSettings: {
+        ...prev.userSettings,
+        showMenubarIcons: event.target.checked,
+      },
+    }));
+  };
+
+  const handleNoteItemStyleChange = (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      userSettings: {
+        ...prev.userSettings,
+        noteItemStyle: event.target.value,
+      },
+    }));
+  }
 
   const handleUsernameChange = (event) => {
     const newValue = event.target.value;
@@ -61,6 +84,14 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
       console.error("Error saving settings:", error);
     }
   };
+
+  const tabIcons = {
+    "User": faUser,
+    "Display": faDisplay,
+    "Editor": faPencil,
+    "Shortcuts": faKeyboard,
+    "App": faRectangleList
+  };
   
 
   return (
@@ -70,13 +101,14 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
           <div className="settings-list">
             <h2>Settings</h2>
             <ul>
-              {["User", "Editor", "Shortcuts", "App"].map((tab) => (
+              {["User", "Display", "Editor", "Shortcuts", "App"].map((tab) => (
                 <li
                   key={tab}
-                  className={selectedTab === tab ? "settings-list-active" : ""}
+                  className={`settings-list-item ${selectedTab === tab ? "settings-list-active" : ""}`}
                   onClick={() => setSelectedTab(tab)}
                 >
-                  {tab}
+                  <FontAwesomeIcon icon={tabIcons[tab]} />
+                  <span>{tab}</span>
                 </li>
               ))}
             </ul>
@@ -105,6 +137,31 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                       onChange={handleCheckboxChange}
                     />
                     <span>Autosave (every minute)</span>
+                </div>
+              </div>
+            )}
+            {selectedTab === "Display" && (
+              <div>
+                <div className="settings-content-item">
+                    <span>Note Item style</span>
+                    <select
+                        value={settings.userSettings.noteItemStyle}
+                        onChange={(e) => handleNoteItemStyleChange(e)}
+                        className="note-export-typeselect"
+                      >
+                        <option value="normal">Normal</option>
+                        <option value="slim">Slim</option>
+                        <option value="big">Big</option>
+                        <option value="detailed">Detailed</option>
+                    </select>
+                </div>
+                <div className="settings-content-item">
+                    <input
+                      type="checkbox"
+                      checked={settings.userSettings.showMenubarIcons}
+                      onChange={handleCheckboxChangeShowMenubarIcons}
+                    />
+                    <span>Show icons in menubar</span>
                 </div>
               </div>
             )}
