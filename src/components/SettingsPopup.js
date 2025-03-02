@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleInfo, faDesktop, faDisplay, faKeyboard, faLaptop, faPencil, faRectangleList, faTabletAlt, faToolbox, faUser, faWindowMaximize } from '@fortawesome/free-solid-svg-icons';
+import { faDisplay, faHardDrive, faKeyboard, faPencil, faToolbox, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
   const [selectedTab, setSelectedTab] = useState("User");
@@ -57,6 +57,16 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     }));
   }
 
+  const handleCheckboxChangeDisableImportChecks = (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      userSettings: {
+        ...prev.userSettings,
+        disableImportChecks: event.target.checked,
+      },
+    }));
+  }
+
   const handleUsernameChange = (event) => {
     const newValue = event.target.value;
   
@@ -99,6 +109,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     "User": faUser,
     "Display": faDisplay,
     "Editor": faPencil,
+    "Storage": faHardDrive,
     "Shortcuts": faKeyboard,
     "App": faToolbox
   };
@@ -114,7 +125,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
           <div className="settings-list">
             <h2>Settings</h2>
             <ul>
-              {["User", "Display", "Editor", "Shortcuts", "App"].map((tab) => (
+              {["User", "Display", "Editor", "Storage", "Shortcuts", "App"].map((tab) => (
                 <li
                   key={tab}
                   className={`settings-list-item ${selectedTab === tab ? "settings-list-active" : ""}`}
@@ -146,7 +157,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                 <div className="settings-content-item">
                     <input
                       type="checkbox"
-                      checked={settings.userSettings.autoSave}
+                      checked={settings?.userSettings.autoSave}
                       onChange={handleCheckboxChange}
                     />
                     <span>Autosave (every minute)</span>
@@ -154,7 +165,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                 <div className="settings-content-item">
                     <input
                       type="checkbox"
-                      checked={settings.userSettings.showUnsavedChangesWarning}
+                      checked={settings?.userSettings.showUnsavedChangesWarning}
                       onChange={handleCheckboxChangeUnsavedChangesWarning}
                     />
                     <span>Show unsaved changes warning</span>
@@ -166,7 +177,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                 <div className="settings-content-item">
                     <span>Note Item style:</span>
                     <select
-                        value={settings.userSettings.noteItemStyle}
+                        value={settings?.userSettings.noteItemStyle}
                         onChange={(e) => handleNoteItemStyleChange(e)}
                         className="settings-itemstyle-select"
                       >
@@ -179,10 +190,25 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                 <div className="settings-content-item">
                     <input
                       type="checkbox"
-                      checked={settings.userSettings.showMenubarIcons}
+                      checked={settings?.userSettings.showMenubarIcons}
                       onChange={handleCheckboxChangeShowMenubarIcons}
                     />
                     <span>Show icons in menubar</span>
+                </div>
+              </div>
+            )}
+            {selectedTab === "Storage" && (
+              <div>
+                <div className="settings-content-item">
+                    <input
+                      type="checkbox"
+                      checked={settings?.userSettings.disableImportChecks}
+                      onChange={handleCheckboxChangeDisableImportChecks}
+                    />
+                    <span>Disable Import Checks</span>
+                    <span className="settings-popup-warning-text">You should only enable this if validity checks fail on imports that should work.
+                      <br></br>The checks are executed to ensure the integrity of your imports. Enable at your own risk.
+                    </span>
                 </div>
               </div>
             )}

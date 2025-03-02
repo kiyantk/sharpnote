@@ -124,37 +124,37 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
       <button onClick={(e) => toggleDropdown(e, "help")}>Help</button>
       {(isDropdownOpen && dropdownType === "file") && (
         <div className="menubar-dropdown-overlay">
-        <div ref={menuRef} className={`dropdown-menu ${settings.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
-          <button className="menubar-dropdown-divider" onClick={openSettingsPopup}><FontAwesomeIcon icon={faCog} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Settings</span></button>
-          <button onClick={openExportPopup}><FontAwesomeIcon icon={faDownload} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Export</span></button>
-          <button className="menubar-dropdown-divider" onClick={openImportPopup}><FontAwesomeIcon icon={faFileImport} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Import</span></button>
-          <button onClick={closeSharpnote}><FontAwesomeIcon icon={faRectangleXmark} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Exit</span></button>
+        <div ref={menuRef} className={`dropdown-menu ${settings?.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
+          <button className="menubar-dropdown-divider" onClick={openSettingsPopup}><FontAwesomeIcon icon={faCog} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Settings</span></button>
+          <button onClick={openExportPopup}><FontAwesomeIcon icon={faDownload} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Export</span></button>
+          <button className="menubar-dropdown-divider" onClick={openImportPopup}><FontAwesomeIcon icon={faFileImport} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Import</span></button>
+          <button onClick={closeSharpnote}><FontAwesomeIcon icon={faRectangleXmark} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Exit</span></button>
         </div>
         </div>
       )}
       {(isDropdownOpen && dropdownType === "edit") && (
         <div className="menubar-dropdown-overlay">
-        <div ref={menuRef} className={`dropdown-menu ${settings.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
-          <button onClick={doUndo}><FontAwesomeIcon style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}} icon={faUndo} /><span>Undo</span></button>
-          <button className="menubar-dropdown-divider" onClick={doRedo}><FontAwesomeIcon style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}} icon={faRedo} /><span>Redo</span></button>
-          <button onClick={doCut}><FontAwesomeIcon icon={faCut} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}} /><span>Cut</span></button>
-          <button onClick={doCopy}><FontAwesomeIcon icon={faCopy} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}} /><span>Copy</span></button>
-          <button className="menubar-dropdown-divider" onClick={doPaste}><FontAwesomeIcon icon={faClipboard} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}} /><span>Paste</span></button>
-          <button onClick={toggleDelMode}><FontAwesomeIcon icon={faTrash} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}} /><span>Toggle Delete Mode</span></button>
+        <div ref={menuRef} className={`dropdown-menu ${settings?.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
+          <button onClick={doUndo}><FontAwesomeIcon style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}} icon={faUndo} /><span>Undo</span></button>
+          <button className="menubar-dropdown-divider" onClick={doRedo}><FontAwesomeIcon style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}} icon={faRedo} /><span>Redo</span></button>
+          <button onClick={doCut}><FontAwesomeIcon icon={faCut} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}} /><span>Cut</span></button>
+          <button onClick={doCopy}><FontAwesomeIcon icon={faCopy} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}} /><span>Copy</span></button>
+          <button className="menubar-dropdown-divider" onClick={doPaste}><FontAwesomeIcon icon={faClipboard} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}} /><span>Paste</span></button>
+          <button onClick={toggleDelMode}><FontAwesomeIcon icon={faTrash} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}} /><span>Toggle Delete Mode</span></button>
         </div>
         </div>
       )}
       {(isDropdownOpen && dropdownType === "view") && (
         <div className="menubar-dropdown-overlay">
-        <div ref={menuRef} className={`dropdown-menu ${settings.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
-          <button onClick={toggleLeftPanel}><FontAwesomeIcon icon={faArrowsLeftRightToLine} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Toggle Left Panel</span></button>
+        <div ref={menuRef} className={`dropdown-menu ${settings?.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
+          <button onClick={toggleLeftPanel}><FontAwesomeIcon icon={faArrowsLeftRightToLine} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Toggle Left Panel</span></button>
         </div>
         </div>
       )}
       {(isDropdownOpen && dropdownType === "help") && (
         <div className="menubar-dropdown-overlay">
-        <div ref={menuRef} className={`dropdown-menu ${settings.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
-          <button onClick={goToDocs}><FontAwesomeIcon icon={faBook} style={{display: settings.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Documentation</span></button>
+        <div ref={menuRef} className={`dropdown-menu ${settings?.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
+          <button onClick={goToDocs}><FontAwesomeIcon icon={faBook} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Documentation</span></button>
         </div>
         </div>
       )}
@@ -181,6 +181,7 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
           closePopup={closeImportPopup}
           onImport={onImport}
           presetFile={fileToImport}
+          settings={settings}
         />
       )}
     </div>

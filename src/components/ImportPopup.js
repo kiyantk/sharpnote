@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck, faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 
-const ImportPopup = ({ closePopup, onImport, presetFile }) => {
+const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
   const [importedFile, setImportedFile] = useState(null);
   const [fileValid, setFileValid] = useState(false);
   const [fileInvalid, setFileInvalid] = useState(false);
@@ -11,81 +11,85 @@ const ImportPopup = ({ closePopup, onImport, presetFile }) => {
   const [invalidSubnotes, setInvalidSubnotes] = useState(0);
 
   const checkImportValid = (json) => {
-    const authorRegex = /^[a-zA-Z0-9\-_ ]*$/;
-    if(json.noteID) {
-      // Checks for a .sharp
-      if(json.hasOwnProperty('sharpnoteVersion') && 
-         json.hasOwnProperty('noteTitle') && 
-         json.hasOwnProperty('noteContent') && 
-         json.hasOwnProperty('noteColor') && 
-         json.hasOwnProperty('noteOriginalAuthor') && 
-         json.noteOriginalAuthor.length <= 32 &&
-         json.noteLastAuthor.length <= 32 &&
-         json.noteHistory.created &&
-         authorRegex.test(json.noteOriginalAuthor)
-        ) {
-          const newjson = {...json}
-          if(json.noteOriginalAuthor === "" || json.noteOriginalAuthor === null) {
-            newjson.noteOriginalAuthor = ""
-          } else if(json.noteTitle === "" || json.noteTitle === null) {
-            newjson.noteTitle = ""
-          } else if(json.noteContent === "" || json.noteContent === null) {
-            newjson.noteContent = ""
-          } else if(json.noteColor === "" || json.noteColor === null) {
-            newjson.noteColor = ""
-          } else {
-            return {newJSON: json, valid: false}
-          }
-          return {newJSON: newjson, valid: true}
-      } else {
-        return {newJSON: json, valid: false}
-      }
-    } else if(json.sharpbookID) {
-      // Checks for a .sharpbook
-      if(json.hasOwnProperty('notes') && 
-         json.hasOwnProperty('sharpnoteVersion') && 
-         json.notes.length > 0 &&
-         json.hasOwnProperty('bookAuthor') &&
-         json.bookAuthor.length <= 32 &&
-         authorRegex.test(json.bookAuthor)
-      ) {
-        const newjson = {...json, notes: [...json.notes]}; // Ensure deep copy
-        if (json.bookAuthor === "" || json.bookAuthor === null) {
-          newjson.bookAuthor = "";
+    if(!settings.userSettings.disableImportChecks) {
+      const authorRegex = /^[a-zA-Z0-9\-_ ]*$/;
+      if(json.noteID) {
+        // Checks for a .sharp
+        if(json.hasOwnProperty('sharpnoteVersion') && 
+           json.hasOwnProperty('noteTitle') && 
+           json.hasOwnProperty('noteContent') && 
+           json.hasOwnProperty('noteColor') && 
+           json.hasOwnProperty('noteOriginalAuthor') && 
+           json.noteOriginalAuthor.length <= 32 &&
+           json.noteLastAuthor.length <= 32 &&
+           json.noteHistory.created &&
+           authorRegex.test(json.noteOriginalAuthor)
+          ) {
+            const newjson = {...json}
+            if(json.noteOriginalAuthor === "" || json.noteOriginalAuthor === null) {
+              newjson.noteOriginalAuthor = ""
+            } else if(json.noteTitle === "" || json.noteTitle === null) {
+              newjson.noteTitle = ""
+            } else if(json.noteContent === "" || json.noteContent === null) {
+              newjson.noteContent = ""
+            } else if(json.noteColor === "" || json.noteColor === null) {
+              newjson.noteColor = ""
+            } else {
+              return {newJSON: json, valid: false}
+            }
+            return {newJSON: newjson, valid: true}
+        } else {
+          return {newJSON: json, valid: false}
         }
-        
-        let invalidSubnotesCount = 0;
-        newjson.notes = json.notes.filter(note => {
-          const isValid = (
-            note.hasOwnProperty('noteID') &&
-            note.hasOwnProperty('sharpnoteVersion') &&
-            note.hasOwnProperty('noteTitle') &&
-            note.hasOwnProperty('noteContent') &&
-            note.hasOwnProperty('noteColor') &&
-            note.hasOwnProperty('noteOriginalAuthor') &&
-            note.noteOriginalAuthor.length <= 32 &&
-            note.noteLastAuthor.length <= 32 &&
-            note.noteHistory.created &&
-            authorRegex.test(note.noteOriginalAuthor)
-          );
-        
-          if (!isValid) {
-            invalidSubnotesCount++;
+      } else if(json.sharpbookID) {
+        // Checks for a .sharpbook
+        if(json.hasOwnProperty('notes') && 
+           json.hasOwnProperty('sharpnoteVersion') && 
+           json.notes.length > 0 &&
+           json.hasOwnProperty('bookAuthor') &&
+           json.bookAuthor.length <= 32 &&
+           authorRegex.test(json.bookAuthor)
+        ) {
+          const newjson = {...json, notes: [...json.notes]}; // Ensure deep copy
+          if (json.bookAuthor === "" || json.bookAuthor === null) {
+            newjson.bookAuthor = "";
           }
-        
-          return isValid; // Keep only valid notes
-        });
-        
-        setInvalidSubnotes(invalidSubnotesCount);
-        
-        return { newJSON: newjson, valid: true };
-        
+
+          let invalidSubnotesCount = 0;
+          newjson.notes = json.notes.filter(note => {
+            const isValid = (
+              note.hasOwnProperty('noteID') &&
+              note.hasOwnProperty('sharpnoteVersion') &&
+              note.hasOwnProperty('noteTitle') &&
+              note.hasOwnProperty('noteContent') &&
+              note.hasOwnProperty('noteColor') &&
+              note.hasOwnProperty('noteOriginalAuthor') &&
+              note.noteOriginalAuthor.length <= 32 &&
+              note.noteLastAuthor.length <= 32 &&
+              note.noteHistory.created &&
+              authorRegex.test(note.noteOriginalAuthor)
+            );
+          
+            if (!isValid) {
+              invalidSubnotesCount++;
+            }
+          
+            return isValid; // Keep only valid notes
+          });
+
+          setInvalidSubnotes(invalidSubnotesCount);
+
+          return { newJSON: newjson, valid: true };
+
+        } else {
+          return {newJSON: json, valid: false}
+        }
       } else {
+        // If it is neither or doesnt atleast have those fields, invalid
         return {newJSON: json, valid: false}
       }
     } else {
-      // If it is neither or doesnt atleast have those fields, invalid
-      return {newJSON: json, valid: false}
+      return { newJSON: json, valid: true };
     }
   }
 

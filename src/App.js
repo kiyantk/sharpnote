@@ -89,7 +89,7 @@ const App = () => {
   const handleonSettingsChange = (newSettings) => {
     setSettings(newSettings);
     setLocalUsername(newSettings.username);
-    if(!isNoteOpened) newSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1);
+    if(!isNoteOpened) newSettings?.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1);
   };
 
   // Fetch notes from the local db
@@ -108,33 +108,34 @@ const App = () => {
     // Load settings from Electron (preload.js)
     window.electron.ipcRenderer.invoke("get-settings").then(async (loadedSettings) => {
       if (loadedSettings) {
-        // Remove any characters that are not a-z, A-Z, 0-9, -, _, or spaces
-        let validUsername = loadedSettings.username.replace(/[^a-zA-Z0-9\-_ ]/g, '');
-        // Trim to 32 characters if longer
-        if (validUsername.length > 32) {
-          validUsername = validUsername.substring(0, 32);
-        }
-      
-        // Update settings.username if it was modified
-        if (validUsername !== loadedSettings.username) {
-          loadedSettings.username = validUsername;
-          setUsernameFixed(true);
-          setSettings(loadedSettings);
-          setLocalUsername(loadedSettings.username);
-          // Save fixed settings
-          try {
-            const response = await window.electron.ipcRenderer.invoke("save-settings", loadedSettings);
-            if (!response.success) {
-              console.error("Failed to save settings:", response.error);
+        if(loadedSettings.username) {
+          // Remove any characters that are not a-z, A-Z, 0-9, -, _, or spaces
+          let validUsername = loadedSettings.username.replace(/[^a-zA-Z0-9\-_ ]/g, '');
+          // Trim to 32 characters if longer
+          if (validUsername.length > 32) {
+            validUsername = validUsername.substring(0, 32);
+          }
+          // Update settings.username if it was modified
+          if (validUsername !== loadedSettings.username) {
+            loadedSettings.username = validUsername;
+            setUsernameFixed(true);
+            setSettings(loadedSettings);
+            setLocalUsername(loadedSettings.username);
+            // Save fixed settings
+            try {
+              const response = await window.electron.ipcRenderer.invoke("save-settings", loadedSettings);
+              if (!response.success) {
+                console.error("Failed to save settings:", response.error);
+                enqueueSnackbar('An error occured while trying to save settings', { className: 'notistack-custom-default' });
+              }
+            } catch (error) {
+              console.error("Error saving settings:", error);
               enqueueSnackbar('An error occured while trying to save settings', { className: 'notistack-custom-default' });
             }
-          } catch (error) {
-            console.error("Error saving settings:", error);
-            enqueueSnackbar('An error occured while trying to save settings', { className: 'notistack-custom-default' });
           }
         }
         setSettings(loadedSettings);
-        loadedSettings.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1)
+        loadedSettings?.userSettings.autoSave ? setAutosaveStatus(4) : setAutosaveStatus(1)
         setLocalUsername(loadedSettings.username)
       }
     });
@@ -255,7 +256,7 @@ const App = () => {
 
   // Handle note opening
   const selectNote = async (noteID) => {
-    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings.userSettings.showUnsavedChangesWarning) {
+    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings?.userSettings.showUnsavedChangesWarning) {
       setIsUnsavedChangesPopupOpen(true)
       setUnsavedChangesPopupNoteToSwitchTo(noteID)
       setUnsavedChangesPopupType("switch")
@@ -337,7 +338,7 @@ const App = () => {
   }, [notes]);
 
   const closeNote = () => {
-    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings.userSettings.showUnsavedChangesWarning) {
+    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings?.userSettings.showUnsavedChangesWarning) {
       setIsUnsavedChangesPopupOpen(true)
       setUnsavedChangesPopupType("close")
       return
@@ -389,7 +390,7 @@ const App = () => {
 
   // Refresh
   const onRefresh = () => {
-    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings.userSettings.showUnsavedChangesWarning) {
+    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings?.userSettings.showUnsavedChangesWarning) {
       setIsUnsavedChangesPopupOpen(true)
       setUnsavedChangesPopupType("refresh")
       return

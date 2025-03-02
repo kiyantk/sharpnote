@@ -661,7 +661,7 @@ body {
 
 .welcome-popup-top {
   padding-bottom: 10px;
-  border-bottom: 1px solid #3f3f3f;
+  /* border-bottom: 1px solid #3f3f3f; */
 }
 
 .welcome-popup-username-explaining {
@@ -691,6 +691,11 @@ body {
   color: gray;
   justify-self: left;
   margin-bottom: 5px;
+}
+
+.settings-popup-warning-text {
+  font-size: 10px;
+  color: gray;
 }
 
 input:focus {

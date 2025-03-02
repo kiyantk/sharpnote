@@ -13,9 +13,9 @@ const NoteItem = ({ note, settings, onDeleteNote, onSelectNote, selectedNoteId, 
   }
 
   const getNoteItemStyle = () => {
-    if(settings && settings.userSettings) {
-      if(settings.userSettings.noteItemStyle === "normal") return "note-item"
-      return "note-item-style-" + settings.userSettings.noteItemStyle
+    if(settings && settings?.userSettings) {
+      if(settings?.userSettings.noteItemStyle === "normal") return "note-item"
+      return "note-item-style-" + settings?.userSettings.noteItemStyle
     } else {
       return "note-item"
     }
@@ -41,7 +41,7 @@ const NoteItem = ({ note, settings, onDeleteNote, onSelectNote, selectedNoteId, 
     }}>
       <FontAwesomeIcon style={{ color: note.noteColor }} icon={faStickyNote} />
       <span className="hide-vertical-overflow-text">{note.noteTitle}</span>
-      {settings.userSettings.noteItemStyle === "detailed" && (
+      {settings?.userSettings.noteItemStyle === "detailed" && (
         <div style={{width: '287px'}}>
           <span className="hide-vertical-overflow-text note-item-detailed-contentpreview">{atob(note.noteContent)}</span>
           <span className="note-item-detailed-lastsaved">{formatDate(note.lastSaved)}</span>

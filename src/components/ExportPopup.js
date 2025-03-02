@@ -125,7 +125,6 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     if(preSelectedSingle) {
       setSelectedNotes([preSelectedSingle])
     }
-    console.log(preSelectedSingle)
   }, [preSelectedSingle]);
 
   useEffect(() => {

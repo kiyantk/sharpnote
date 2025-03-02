@@ -208,7 +208,8 @@ const defaultConfig = {
     "autoSave": true,
     "showMenubarIcons": true,
     "noteItemStyle": "normal",
-    "showUnsavedChangesWarning": true
+    "showUnsavedChangesWarning": true,
+    "disableImportChecks": false
   },
   "structure": {
     "folders": [],
@@ -258,7 +259,14 @@ ipcMain.handle('update-note-last-opened', async (event, noteID) => {
 });
 
 ipcMain.handle("open-sharpnote-location", () => {
-  shell.openPath(app.getAppPath()) 
+  let appPath = app.getAppPath();
+
+  // In production, go two levels up to reach the app root
+  if (app.isPackaged) {
+    appPath = path.join(appPath, "..", "..");
+  }
+
+  shell.openPath(appPath);
 });
 
 // Function that updates just the lastOpened field in the database (implement this)
