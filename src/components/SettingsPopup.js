@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDesktop, faDisplay, faKeyboard, faPencil, faRectangleList, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faDesktop, faDisplay, faKeyboard, faLaptop, faPencil, faRectangleList, faTabletAlt, faToolbox, faUser, faWindowMaximize } from '@fortawesome/free-solid-svg-icons';
 
 const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
   const [selectedTab, setSelectedTab] = useState("User");
@@ -100,7 +100,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     "Display": faDisplay,
     "Editor": faPencil,
     "Shortcuts": faKeyboard,
-    "App": faRectangleList
+    "App": faToolbox
   };
   
   const openAppLocation = () => {
@@ -130,7 +130,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
           <div className="settings-content">
             {selectedTab === "User" && (
               <div>
-                <div className="settings-content-item">
+                <div className="settings-content-item settings-content-item-noalign">
                     <span>Username:</span>
                     <input
                       className="settings-content-input"
@@ -168,7 +168,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                     <select
                         value={settings.userSettings.noteItemStyle}
                         onChange={(e) => handleNoteItemStyleChange(e)}
-                        className="note-export-typeselect"
+                        className="settings-itemstyle-select"
                       >
                         <option value="normal">Normal</option>
                         <option value="slim">Slim</option>
@@ -205,7 +205,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
             {selectedTab === "App" && (
               <div>
                 <div className="settings-content-item">
-                    <span>SharpNote Version: 1.0.0 "Azure"</span>
+                    <span>SharpNote Version: 1.1.0 "Blossom"</span>
                 </div>
                 <div className="settings-content-item">
                     <span>App Location:</span>

@@ -23,7 +23,7 @@ SharpNote is a modern desktop note-taking application built with Electron and Re
 
 ### macOS
 1. Download the latest MacOS release from the [Releases](https://github.com/kiyantk/sharpnote/releases) page.
-2. Unzip the file by double-clicking it or using the terminal: `unzip sharpnote-1.0.0-darwin-x64.zip`
+2. Unzip the file by double-clicking it or using the terminal: `unzip sharpnote-[version]-darwin-x64.zip`
 3. Move SharpNote.app to your Applications folder: `mv SharpNote.app /Applications/`
 4. Open SharpNote from the Applications folder.
 5. If macOS blocks the app, go to System Preferences > Security & Privacy and allow it to run by clicking Open Anyway.

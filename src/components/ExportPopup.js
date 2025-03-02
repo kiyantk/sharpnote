@@ -61,7 +61,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
         // Export as a single .sharpbook file
         const bookContent = {
           sharpbookID: generateRandomID(),
-          sharpnoteVersion: "1.0.0",
+          sharpnoteVersion: "1.1.0",
           bookExported: currentTime,
           bookAuthor: settings.username,
           bookType: exportType,

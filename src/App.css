@@ -551,6 +551,8 @@ body {
   list-style-type: none;
   padding: 15px 0px;
   cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
 }
 
 .settings-list>ul {
@@ -626,6 +628,10 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.settings-content-item-noalign {
+  align-items: unset !important;
 }
 
 .settings-content-item>input[type="checkbox"] {
@@ -834,6 +840,16 @@ input:focus {
   width: 20%;
   margin-top: 5px;
   margin-left: 10px;
+}
+
+.settings-itemstyle-select {
+  background-color: #333333;
+  border: none;
+  padding: 10px 0px;
+  color: white;
+  /* text-align: center; */
+  width: 20%;
+  margin-top: 5px;
 }
 
 .note-export-popup-content {
