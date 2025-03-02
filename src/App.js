@@ -61,7 +61,6 @@ const App = () => {
         ...selectedNote,
         noteContent: encodedCurrentContent
       }
-      console.log('here',notes)
       const result = await updateNote(fullManualSaveNote)
       if(result.success) {
         setAutosaveStatus(2)
@@ -144,12 +143,6 @@ const App = () => {
   useEffect(() => {
     fetchNotes();
   }, []);
-
-
-  // Call fetchNotes on mount
-  useEffect(() => {
-    console.log(noteContentChanged)
-  }, [noteContentChanged]);
 
   useEffect(() => {
     if(usernameFixed) enqueueSnackbar('Username was updated due to invalid characters or length', { className: 'notistack-custom-default' });

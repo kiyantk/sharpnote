@@ -186,7 +186,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
         <div className="note-export-popup-content">
         <div className="export-popup-item">
           <span>Export Type</span>
-          <div>
+          <div className="export-popup-type-container">
             <FontAwesomeIcon icon={getExportTypeIcon()} />
             <select
                 value={exportType}
