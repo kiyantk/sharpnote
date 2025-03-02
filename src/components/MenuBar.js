@@ -5,7 +5,7 @@ import ImportPopup from "./ImportPopup";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowsLeftRightToLine, faBook, faClipboard, faCog, faCopy, faCut, faDownload, faFileImport, faRectangleXmark, faRedo, faTrash, faUndo } from "@fortawesome/free-solid-svg-icons";
 
-const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedError, toggleDeleteMode, toggleLeftPanel, exportNoteThruCtx, onPreSelectReceived, fileToImport}) => {
+const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedError, toggleDeleteMode, toggleLeftPanel, exportNoteThruCtx, onPreSelectReceived, presetFile}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSettingsPopupOpen, setIsSettingsPopupOpen] = useState(false);
   const [isExportPopupOpen, setIsExportPopupOpen] = useState(false);
@@ -45,8 +45,8 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
   }, [exportNoteThruCtx]);
 
   useEffect(() => {
-    if(fileToImport) setIsImportPopupOpen(true)
-  }, [fileToImport]);
+    if(presetFile) setIsImportPopupOpen(true)
+  }, [presetFile]);
 
   // Apply new settings from Settings popup
   const applySettings = (newSettings) => {
@@ -180,7 +180,7 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
         <ImportPopup
           closePopup={closeImportPopup}
           onImport={onImport}
-          presetFile={fileToImport}
+          presetFile={presetFile}
           settings={settings}
         />
       )}

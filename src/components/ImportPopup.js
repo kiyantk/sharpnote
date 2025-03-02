@@ -93,12 +93,6 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     }
   }
 
-  useEffect(() => {
-    if (presetFile) {
-      handleFileSelectByOpenFile(presetFile)
-    }
-  }, [presetFile]);
-
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -168,6 +162,12 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     onImport(importedFile)
     closePopup();
   }
+
+  useEffect(() => {
+    if (presetFile) {
+      handleFileSelectByOpenFile(presetFile)
+    }
+  }, [presetFile]);
 
   return (
     <div className="settings-popup-overlay">

@@ -1,7 +1,18 @@
+const { app } = require("electron");
 const Database = require("better-sqlite3");
+const path = require("path");
+
+let appPath = app.getAppPath();
+
+// In production, go two levels up to reach the app root
+if (app.isPackaged) {
+  appPath = path.join(appPath, "..", "..");
+}
+
+let dbPath = appPath + "/notes.db"
 
 // Open (or create) the database file
-const db = new Database("notes.db");
+const db = new Database(dbPath);
 
 // Create a notes table if it doesn't exist
 db.exec(`

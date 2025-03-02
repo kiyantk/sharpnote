@@ -47,17 +47,6 @@ app.whenReady().then(() => {
     mainWindow.webContents.send('check-unsaved-changes') // Notify React app
   })
 
-  app.on('open-file', (event, filePath) => {
-    event.preventDefault();
-    if (mainWindow) {
-      mainWindow.webContents.send('file-opened', filePath);
-    } else {
-      app.once('ready', () => {
-        mainWindow.webContents.send('file-opened', filePath);
-      });
-    }
-  });
-
   app.on('ready', () => {
     process.chdir(path.dirname(app.getPath('exe'))); // Ensures correct working directory
   });
@@ -198,7 +187,14 @@ app.on('window-all-closed', () => {
 
 const fs = require("fs");
 
-let configPath = "sharpnote-config.json";
+let appPath = app.getAppPath();
+
+// In production, go two levels up to reach the app root
+if (app.isPackaged) {
+  appPath = path.join(appPath, "..", "..");
+}
+
+let configPath = appPath + "/sharpnote-config.json";
 
 // Default configuration
 const defaultConfig = {
