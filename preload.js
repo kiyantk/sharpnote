@@ -9,4 +9,6 @@ contextBridge.exposeInMainWorld("electron", {
     on: (channel, callback) => ipcRenderer.on(channel, (event, ...args) => callback(...args)),
     removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
   },
+  checkUnsavedChanges: (callback) => ipcRenderer.on('check-unsaved-changes', callback),
+  confirmQuit: () => ipcRenderer.send('confirm-quit')
 });

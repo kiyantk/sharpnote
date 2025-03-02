@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MenuBar from "./components/MenuBar";
 import BottomBar from "./components/BottomBar";
 import NoteList from "./components/NoteList";
@@ -7,6 +7,7 @@ import EditPopup from "./components/EditPopup";
 import WelcomePopup from "./components/WelcomePopup";
 import NoteContextMenu from "./components/NoteContextMenu";
 import NoteInfo from "./components/NoteInfo"
+import UnsavedChanges from "./components/UnsavedChanges"
 import './App.css';
 import { faXmark, faCheck, faSave } from "@fortawesome/free-solid-svg-icons";
 import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from 'notistack'
@@ -36,6 +37,14 @@ const App = () => {
   const [noteToExportNoteThruCtx, setNoteToExportNoteThruCtx] = useState(null);
   const [haveToOpenNote, setHaveToOpenNote] = useState(null);
   const [usernameFixed, setUsernameFixed] = useState(false);
+  const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
+  const [unsavedChangesPopupNoteToSwitchTo, setUnsavedChangesPopupNoteToSwitchTo] = useState(null);
+  const [userJustAnsweredYesToUnsavedChangesPopup, setUserJustAnsweredYesToUnsavedChangesPopup] = useState(false);
+  const [unsavedChangesPopupType, setUnsavedChangesPopupType] = useState(null);
+  const [noteContentChanged, setNoteContentChanged] = useState(false);
+  const noteContentChangedRef = useRef(noteContentChanged);
+  const notesRef = useRef(notes);
+  const [fileToImport, setFileToImport] = useState(null);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -46,12 +55,13 @@ const App = () => {
 
   // Manual note saving logic
   const handleManualNoteSave = async () => {
-    if(activeEditorNoteContent !== selectedNote.noteContent) {
+    if(noteContentChanged) {
       const encodedCurrentContent = btoa(String.fromCharCode(...new TextEncoder().encode(activeEditorNoteContent)))
       const fullManualSaveNote = {
         ...selectedNote,
         noteContent: encodedCurrentContent
       }
+      console.log('here',notes)
       const result = await updateNote(fullManualSaveNote)
       if(result.success) {
         setAutosaveStatus(2)
@@ -62,6 +72,7 @@ const App = () => {
           setManualSaveIcon(faSave);
           setManualSaveText('Save')
         }, 1000);
+        setNoteContentChanged(false);
       } else {
         setManualSaveIcon(faXmark);
         setManualSaveText('Failed')
@@ -134,13 +145,19 @@ const App = () => {
     fetchNotes();
   }, []);
 
+
+  // Call fetchNotes on mount
+  useEffect(() => {
+    console.log(noteContentChanged)
+  }, [noteContentChanged]);
+
   useEffect(() => {
     if(usernameFixed) enqueueSnackbar('Username was updated due to invalid characters or length', { className: 'notistack-custom-default' });
   }, [usernameFixed]);
 
   useEffect(() => {
-    if(haveToOpenNote) selectNote(haveToOpenNote);
-  }, [notes, haveToOpenNote]);
+    if(haveToOpenNote && haveToOpenNote !== null) selectNote(haveToOpenNote);
+  }, [haveToOpenNote]);
 
   // Check if user has seen Welcome Popup on mount & check username
   useEffect(() => {
@@ -188,12 +205,26 @@ const App = () => {
       setNotes((prevNotes) => [...prevNotes, newNote]);
       onRefresh();
       // Automatically select (open) note
+      // handleManualNoteSave();
       setHaveToOpenNote(newNote.noteID)
     } catch (error) {
       console.error("Error adding note:", error);
       enqueueSnackbar('An error occured while trying to add a new note', { className: 'notistack-custom-default' });
     }
   };
+
+  useEffect(() => {
+    if (window.electron) {
+      window.electron.checkUnsavedChanges(() => {
+        if(noteContentChangedRef.current) {
+          setIsUnsavedChangesPopupOpen(true)
+          setUnsavedChangesPopupType("exit")
+        } else {
+          handleConfirmQuit();
+        }
+      })
+    }
+  }, [])
 
   const importNote = async (newNote) => {
     if (!window.electron) return;
@@ -230,6 +261,16 @@ const App = () => {
 
   // Handle note opening
   const selectNote = async (noteID) => {
+    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings.userSettings.showUnsavedChangesWarning) {
+      setIsUnsavedChangesPopupOpen(true)
+      setUnsavedChangesPopupNoteToSwitchTo(noteID)
+      setUnsavedChangesPopupType("switch")
+      return
+    }
+    if(userJustAnsweredYesToUnsavedChangesPopup === true) {
+      setUserJustAnsweredYesToUnsavedChangesPopup(false)
+    }
+      
     selectedNote = notes.find((note) => note.noteID === noteID);
     setactiveEditorNoteContent(selectedNote.noteContent)
   
@@ -279,7 +320,7 @@ const App = () => {
     try {
       const result = await window.electron.ipcRenderer.invoke("update-note", updatedNote); // Update the note in the database
       if (result.success) {
-        setNotes(notes.map((note) => (note.noteID === updatedNote.noteID ? updatedNote : note))); // Update state
+        setNotes(notesRef.current.map((note) => (note.noteID === updatedNote.noteID ? updatedNote : note))); // Update state
         return { success: true };
       } else {
         return { success: false, error: result.message };
@@ -291,7 +332,23 @@ const App = () => {
     }
   };  
 
+  useEffect(() => {
+    noteContentChangedRef.current = noteContentChanged;
+  }, [noteContentChanged]);
+
+  useEffect(() => {
+    notesRef.current = notes;
+  }, [notes]);
+
   const closeNote = () => {
+    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings.userSettings.showUnsavedChangesWarning) {
+      setIsUnsavedChangesPopupOpen(true)
+      setUnsavedChangesPopupType("close")
+      return
+    }
+    if(userJustAnsweredYesToUnsavedChangesPopup === true) {
+      setUserJustAnsweredYesToUnsavedChangesPopup(false)
+    }
     setIsNoteOpened(false);
     setSelectedNoteId(null);
     setactiveEditorNoteContent(null);
@@ -336,6 +393,15 @@ const App = () => {
 
   // Refresh
   const onRefresh = () => {
+    if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings.userSettings.showUnsavedChangesWarning) {
+      setIsUnsavedChangesPopupOpen(true)
+      setUnsavedChangesPopupType("refresh")
+      return
+    }
+    if(userJustAnsweredYesToUnsavedChangesPopup === true) {
+      setUserJustAnsweredYesToUnsavedChangesPopup(false)
+    }
+    closeNote();
     fetchNotes();
   };
 
@@ -347,9 +413,11 @@ const App = () => {
     updateNote(editedNote)
   }
 
-  const onExportDone = (numExported, isSharpbook) => {
+  const onExportDone = (numExported, isSharpbook, isDB) => {
     if(isSharpbook) {
       enqueueSnackbar(`Exported Sharpbook (${numExported} ${numExported > 1 ? 'notes' : 'note'})`, {className: 'notistack-custom-default', variant: 'success'})
+    } else if(isDB) {
+      enqueueSnackbar(`Exported Database`, {className: 'notistack-custom-default', variant: 'success'})
     } else {
       enqueueSnackbar(`Exported ${numExported} ${numExported > 1 ? 'notes' : 'note'}`, {className: 'notistack-custom-default', variant: 'success'})
     }
@@ -444,6 +512,48 @@ const App = () => {
     setNoteToExportNoteThruCtx(null)
   }
 
+  const handleUnsavedChangesAnswer = async (answer) => {
+    if(answer === "yes") {
+      // If user answered yes, switch note anyway
+      setUserJustAnsweredYesToUnsavedChangesPopup(true);
+    }
+    setIsUnsavedChangesPopupOpen(false)
+  }
+
+  const handleConfirmQuit = () => {
+    window.electron.confirmQuit() // Tell main process to quit
+  }
+
+  useEffect(() => {
+    if (userJustAnsweredYesToUnsavedChangesPopup) {
+      switch(unsavedChangesPopupType) {
+        case "switch":
+          setHaveToOpenNote(unsavedChangesPopupNoteToSwitchTo);
+          break
+        case "close":
+          closeNote();
+          break
+        case "refresh":
+          onRefresh();
+          break
+        case "exit":
+          handleConfirmQuit();
+          break
+      }
+      setNoteContentChanged(false);
+    }
+  }, [userJustAnsweredYesToUnsavedChangesPopup, unsavedChangesPopupType, unsavedChangesPopupNoteToSwitchTo]);
+
+  useEffect(() => {
+    window.electron.ipcRenderer.on('file-opened', (event, filePath) => {
+      setFileToImport(filePath);
+    });
+  
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('file-opened');
+    };
+  }, []);
+
   return (
     <div className="App">
       <div className="App-main">
@@ -456,6 +566,7 @@ const App = () => {
           onImport={importData}
           exportNoteThruCtx={noteToExportNoteThruCtx}
           onPreSelectReceived={clearPreSelectThruCtx}
+          presetFile={fileToImport}
         />
         <div className="content">
           <NoteList
@@ -477,6 +588,7 @@ const App = () => {
             settings={settings} 
             onAutoSaveStatusChange={handleAutoSaveStatusChange} 
             onActiveEditorContentUpdate={setactiveEditorNoteContent} 
+            onNoteChanged={setNoteContentChanged}
           />
         </div>
         <div>
@@ -506,8 +618,15 @@ const App = () => {
         )}
         {isNoteInfoPopupOpen && (
           <NoteInfo
-            noteToShow={noteInfoPopupNote} // Pass function to apply new settings
+            noteToShow={noteInfoPopupNote}
             onNoteInfoPopupClose={closeNoteInfoPopup}
+          />
+        )}
+        {isUnsavedChangesPopupOpen && (
+          <UnsavedChanges
+            onUnsavedChangesAnswer={handleUnsavedChangesAnswer}
+            noteToSwitchTo={unsavedChangesPopupNoteToSwitchTo}
+            unsavedChangesType={unsavedChangesPopupType}
           />
         )}
         <SnackbarProvider />

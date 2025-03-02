@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChange, onActiveEditorContentUpdate }) => {
+const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChange, onActiveEditorContentUpdate, onNoteChanged }) => {
   const [content, setContent] = useState(selectedNote?.noteContent || "");
   const [lastSaved, setLastSaved] = useState(selectedNote?.lastSaved || "");
 
@@ -20,6 +20,7 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
             // If the editor content is not the same as the latest stored noteContent, trigger update
             const encodedContent = btoa(String.fromCharCode(...new TextEncoder().encode(content)))
             const updatedNote = { ...selectedNote, noteContent: encodedContent, lastSaved: new Date().toISOString() };
+            onNoteChanged(false);
             onUpdateNote(updatedNote); // Update note in DB and state
             setLastSaved(updatedNote.lastSaved); // Update the last saved time
             onAutoSaveStatusChange(2); // Set status to "Up to date"
@@ -52,6 +53,7 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
   const handleUpdate = (field, value) => {
     setContent(value); // Update content state
     selectedNoteDeepCopy.noteContent = value
+    onNoteChanged(true);
     if(settings?.userSettings.autoSave) {
       onAutoSaveStatusChange(3); // Mark as "unsaved changes"
     }

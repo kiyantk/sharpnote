@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck, faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 
-const ImportPopup = ({ closePopup, onImport }) => {
+const ImportPopup = ({ closePopup, onImport, presetFile }) => {
   const [importedFile, setImportedFile] = useState(null);
   const [fileValid, setFileValid] = useState(false);
   const [fileInvalid, setFileInvalid] = useState(false);
@@ -89,8 +89,43 @@ const ImportPopup = ({ closePopup, onImport }) => {
     }
   }
 
+  useEffect(() => {
+    if (presetFile) {
+      handleFileSelectByOpenFile(presetFile)
+    }
+  }, [presetFile]);
+
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
+    if (!file) return;
+    setFileName(file.name)
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+        const validCheck = checkImportValid(json);
+        if(validCheck.valid === true) {
+          if(validCheck.newJSON !== json) {
+            setImportedFile(validCheck.newJSON);
+          } else {
+            setImportedFile(json);
+          }
+          setFileValid(true);
+          setFileInvalid(false);
+        } else {
+          setFileValid(false);
+          setFileInvalid(true);
+        }
+      } catch {
+        setImportedFile(null);
+        setFileValid(false);
+        setFileInvalid(true);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleFileSelectByOpenFile = (file) => {
     if (!file) return;
     setFileName(file.name)
     const reader = new FileReader();

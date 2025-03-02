@@ -765,6 +765,28 @@ input:focus {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
+.unsavedchanges-popup {
+  position: relative;
+  background-color: rgb(27, 27, 27);
+  padding: 0px;
+  border-radius: 8px;
+  width: 30%;
+  padding-top: 4px;
+  height: 16%;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.settings-normal-button {
+  background-color: #3d3d3d;
+  color: white;
+  border: none;
+  padding: 6px;
+}
+
+.settings-normal-button:hover {
+  background-color: #545454 !important;
+}
+
 .noteinfo-input {
   background-color: #333333;
   border: none;
@@ -811,6 +833,7 @@ input:focus {
   /* text-align: center; */
   width: 20%;
   margin-top: 5px;
+  margin-left: 10px;
 }
 
 .note-export-popup-content {

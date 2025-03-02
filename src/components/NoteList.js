@@ -13,7 +13,7 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
     <div className="note-list" style={{display: leftPanelVisible ? 'initial' : 'none'}}>
       <div className="note-list-topbar">
         <button className="note-list-topbutton" onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> New Note</button>
-        <button className="note-list-topbutton" style={{borderLeft: '2px solid #4e4e4e'}}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button>
+        {/* <button className="note-list-topbutton" style={{borderLeft: '2px solid #4e4e4e'}}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button> */}
       </div>
       <div className="note-list-tabs">
         <div 

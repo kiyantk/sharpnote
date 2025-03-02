@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, globalShortcut, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, globalShortcut, shell, dialog } = require("electron");
 const db = require("./database");
 const path = require("path");
 
@@ -42,6 +42,26 @@ app.whenReady().then(() => {
     return { action: "deny" }; // Prevent the app from opening the URL.
   })
 
+  mainWindow.on('close', (event) => {
+    event.preventDefault() // Prevent default quit behavior
+    mainWindow.webContents.send('check-unsaved-changes') // Notify React app
+  })
+
+  app.on('open-file', (event, filePath) => {
+    event.preventDefault();
+    if (mainWindow) {
+      mainWindow.webContents.send('file-opened', filePath);
+    } else {
+      app.once('ready', () => {
+        mainWindow.webContents.send('file-opened', filePath);
+      });
+    }
+  });
+
+  app.on('ready', () => {
+    process.chdir(path.dirname(app.getPath('exe'))); // Ensures correct working directory
+  });
+
   // Use in Dev
   mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
 
@@ -64,6 +84,35 @@ app.whenReady().then(() => {
   // USE THIS WHEN BUILDING
   // mainWindow.loadFile(path.join(__dirname, 'index.html'));
 });
+
+ipcMain.handle("export-database", async (event, defaultFilename) => {
+  const mainWindow = BrowserWindow.getFocusedWindow();
+
+  // Show save dialog
+  const { filePath } = await dialog.showSaveDialog(mainWindow, {
+    title: "Save Notes Database",
+    defaultPath: defaultFilename,
+    filters: [{ name: "Database Files", extensions: ["db"] }],
+  });
+
+  if (!filePath) {
+    return { success: false, error: "User canceled the save dialog." };
+  }
+
+  const dbPath = path.join(app.getAppPath(), "notes.db"); // Path to notes.db in app root
+
+  try {
+    await fs.promises.copyFile(dbPath, filePath);
+    return { success: true, path: filePath };
+  } catch (err) {
+    console.error("Error exporting database:", err);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.on('confirm-quit', () => {
+  app.exit() // Quit when confirmed
+})
 
 // Fetch all notes
 ipcMain.handle("get-notes", () => {
@@ -158,7 +207,8 @@ const defaultConfig = {
   "userSettings": {
     "autoSave": true,
     "showMenubarIcons": true,
-    "noteItemStyle": "normal"
+    "noteItemStyle": "normal",
+    "showUnsavedChangesWarning": true
   },
   "structure": {
     "folders": [],
@@ -205,6 +255,10 @@ ipcMain.handle('update-note-last-opened', async (event, noteID) => {
     console.error("Error updating lastOpened:", error);
     throw error;  // Propagate the error to the renderer
   }
+});
+
+ipcMain.handle("open-sharpnote-location", () => {
+  shell.openPath(app.getAppPath()) 
 });
 
 // Function that updates just the lastOpened field in the database (implement this)

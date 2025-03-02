@@ -47,6 +47,16 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     }));
   }
 
+  const handleCheckboxChangeUnsavedChangesWarning = (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      userSettings: {
+        ...prev.userSettings,
+        showUnsavedChangesWarning: event.target.checked,
+      },
+    }));
+  }
+
   const handleUsernameChange = (event) => {
     const newValue = event.target.value;
   
@@ -93,6 +103,9 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     "App": faRectangleList
   };
   
+  const openAppLocation = () => {
+    window.electron.ipcRenderer.invoke('open-sharpnote-location');
+  }
 
   return (
     <div className="settings-popup-overlay">
@@ -138,12 +151,20 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                     />
                     <span>Autosave (every minute)</span>
                 </div>
+                <div className="settings-content-item">
+                    <input
+                      type="checkbox"
+                      checked={settings.userSettings.showUnsavedChangesWarning}
+                      onChange={handleCheckboxChangeUnsavedChangesWarning}
+                    />
+                    <span>Show unsaved changes warning</span>
+                </div>
               </div>
             )}
             {selectedTab === "Display" && (
               <div>
                 <div className="settings-content-item">
-                    <span>Note Item style</span>
+                    <span>Note Item style:</span>
                     <select
                         value={settings.userSettings.noteItemStyle}
                         onChange={(e) => handleNoteItemStyleChange(e)}
@@ -185,6 +206,10 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
               <div>
                 <div className="settings-content-item">
                     <span>SharpNote Version: 1.0.0 "Azure"</span>
+                </div>
+                <div className="settings-content-item">
+                    <span>App Location:</span>
+                    <button className="settings-normal-button" onClick={openAppLocation}>Open in File Explorer</button>
                 </div>
               </div>
             )}

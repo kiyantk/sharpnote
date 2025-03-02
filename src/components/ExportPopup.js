@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { saveAs } from "file-saver";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
-import { faStickyNote } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faDatabase, faStickyNote } from "@fortawesome/free-solid-svg-icons";
 
 const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedError, preSelectedSingle, onPreSelectReceived }) => {
   const [exportType, setExportType] = useState("single");
@@ -45,7 +45,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     const handleFocus = (isSharpbook) => {
       if (isSaving) {
         isSaving = false;
-        onExport(selectedNotes.length, isSharpbook); // Trigger after focus comes back
+        onExport(selectedNotes.length, isSharpbook, false); // Trigger after focus comes back
         window.removeEventListener('focus', handleFocus);
       }
     };
@@ -88,18 +88,32 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
             await writable.close();
             if(exportNum - 1 === selectedNotes.length) {
               isSaving = false;
-              onExport(selectedNotes.length, false); // Trigger after focus comes back
+              onExport(selectedNotes.length, false, false); // Trigger after focus comes back
             }
           }
         } catch (error) {
           console.error("Folder selection failed:", error);
         }
       }      
+    } else if (exportType === "database") {
+      try {
+        const response = await window.electron.ipcRenderer.invoke("export-database", filename || "notes.db");
+  
+        if (response.success) {
+          onExport(selectedNotes.length, false, true);
+        } else {
+          console.error(`Failed to export database: ${response.error}`);
+        }
+      } catch (error) {
+        console.error("Export error:", error);
+        console.error("An unexpected error occurred.");
+      }
+      return;
     } else if(selectedNotes.length === 0) {
       noneSelectedError();
     }
   };
-  
+
 
   useEffect(() => {
     if(exportType === "single" && selectedNotes.length === 1) {
@@ -121,6 +135,8 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     } else if(exportType === "selection") {
       setFilename("Sharpbook");
       setSelectedNotes([]);
+    } else if(exportType === "database") {
+      setFilename("notes");
     } else {
       setFilename("");
       if(preSelectedSingle) {
@@ -133,6 +149,36 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     }
   }, [exportType]);
 
+  const getFileType = () => {
+    if(exportType) {
+      switch(exportType) {
+        case "single":
+          return ".sharp";
+        case "all":
+          return ".sharpbook";
+        case "selection":
+          return ".sharpbook";
+        case "database":
+          return ".db";     
+      }
+    }
+  }
+
+  const getExportTypeIcon = () => {
+    if(exportType) {
+      switch(exportType) {
+        case "single":
+          return faStickyNote;
+        case "all":
+          return faBook;
+        case "selection":
+          return faBook;
+        case "database":
+          return faDatabase;  
+      }
+    }
+  }
+
   return (
     <div className="settings-popup-overlay">
       <div className="noteinfo-popup">
@@ -140,15 +186,19 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
         <div className="note-export-popup-content">
         <div className="export-popup-item">
           <span>Export Type</span>
-          <select
-              value={exportType}
-              onChange={(e) => setExportType(e.target.value)}
-              className="note-export-typeselect"
-            >
-              <option value="single">Single Note</option>
-              <option value="all">All Notes</option>
-              <option value="selection">Selection of Notes</option>
-          </select>
+          <div>
+            <FontAwesomeIcon icon={getExportTypeIcon()} />
+            <select
+                value={exportType}
+                onChange={(e) => setExportType(e.target.value)}
+                className="note-export-typeselect"
+              >
+                <option value="single">Single Note</option>
+                <option value="all">All Notes</option>
+                <option value="selection">Selection of Notes</option>
+                <option value="database">Notes Database</option>
+            </select>
+          </div>
         </div>
         <div className="note-browser-small" style={{ display: (exportType === 'single' || exportType === 'selection') ? 'block' : 'none' }}>
           {/* Note Browser (like VS Code file explorer) */}
@@ -196,7 +246,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
                 value={filename}
                 onChange={(e) => setFilename(e.target.value)}
               />
-              <span className="note-export-filetype">{exportType === 'single' ? '.sharp' : '.sharpbook'}</span>
+              <span className="note-export-filetype">{getFileType()}</span>
             </div>
           </div>
         )}
