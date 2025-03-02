@@ -45,6 +45,7 @@ const App = () => {
   const noteContentChangedRef = useRef(noteContentChanged);
   const notesRef = useRef(notes);
   const [fileToImport, setFileToImport] = useState(null);
+  const [hasClickedAwayFromStartScreen, setHasClickedAwayFromStartScreen] = useState(false)
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -263,6 +264,8 @@ const App = () => {
     if(userJustAnsweredYesToUnsavedChangesPopup === true) {
       setUserJustAnsweredYesToUnsavedChangesPopup(false)
     }
+
+    if(!hasClickedAwayFromStartScreen) setHasClickedAwayFromStartScreen(true)
       
     selectedNote = notes.find((note) => note.noteID === noteID);
     setactiveEditorNoteContent(selectedNote.noteContent)
@@ -582,6 +585,7 @@ const App = () => {
             onAutoSaveStatusChange={handleAutoSaveStatusChange} 
             onActiveEditorContentUpdate={setactiveEditorNoteContent} 
             onNoteChanged={setNoteContentChanged}
+            hasClickedAwayFromStartScreen={hasClickedAwayFromStartScreen}
           />
         </div>
         <div>

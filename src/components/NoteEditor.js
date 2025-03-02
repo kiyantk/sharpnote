@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChange, onActiveEditorContentUpdate, onNoteChanged }) => {
+const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChange, onActiveEditorContentUpdate, onNoteChanged, hasClickedAwayFromStartScreen }) => {
   const [content, setContent] = useState(selectedNote?.noteContent || "");
   const [lastSaved, setLastSaved] = useState(selectedNote?.lastSaved || "");
 
@@ -61,13 +61,19 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
   };
     
   // If no note is selected, show start screen
-  if (!selectedNote) {
+  if (!selectedNote && !hasClickedAwayFromStartScreen) {
     return (
         <div className="editor editor-empty">
             <img className="editor-icon" src={process.env.PUBLIC_URL + "/logo-v1-light-darkgraytransparant-sharp.png"} alt="Logo" />
             <p className="editor-empty-title">Welcome to SharpNote</p>
             <p className="editor-empty-text">Click on 'New Note' on the left panel to create a new note.</p>
         </div>
+    );
+  } 
+
+  if (!selectedNote && hasClickedAwayFromStartScreen) {
+    return (
+        <div className="editor editor-empty"></div>
     );
   } 
 
