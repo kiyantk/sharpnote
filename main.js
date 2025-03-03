@@ -52,7 +52,7 @@ app.whenReady().then(() => {
   });
 
   // Use in Dev
-  mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
+  // mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
 
   // Steps to build (on Windows)
   // Ensure package.json contains "homepage": ".",
@@ -71,7 +71,25 @@ app.whenReady().then(() => {
 
 
   // USE THIS WHEN BUILDING
-  // mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+});
+
+const fs = require("fs");
+
+ipcMain.handle("get-opened-file", async () => {
+  if (process.argv.length >= 2) {
+    const filePath = process.argv[1];
+
+    try {
+      const fileContents = fs.readFileSync(filePath, "utf8"); // Read as text
+      return { name: filePath.split(/[/\\]/).pop(), content: fileContents };
+    } catch (error) {
+      console.error("Error reading file:", error);
+      return null;
+    }
+  } else {
+    return null;
+  }
 });
 
 ipcMain.handle("export-database", async (event, defaultFilename) => {
@@ -184,8 +202,6 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-const fs = require("fs");
 
 let appPath = app.getAppPath();
 

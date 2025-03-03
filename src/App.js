@@ -139,6 +139,11 @@ const App = () => {
         setLocalUsername(loadedSettings.username)
       }
     });
+
+    window.electron.ipcRenderer.invoke("get-opened-file").then(async (openedFilePath) => {
+      console.log(openedFilePath)
+      setFileToImport(openedFilePath);
+    });
   }, []);
 
   // Call fetchNotes on mount
@@ -540,16 +545,6 @@ const App = () => {
       setNoteContentChanged(false);
     }
   }, [userJustAnsweredYesToUnsavedChangesPopup, unsavedChangesPopupType, unsavedChangesPopupNoteToSwitchTo]);
-
-  useEffect(() => {
-    window.electron.ipcRenderer.on('file-opened', (event, filePath) => {
-      setFileToImport(filePath);
-    });
-  
-    return () => {
-      window.electron.ipcRenderer.removeAllListeners('file-opened');
-    };
-  }, []);
 
   return (
     <div className="App">
