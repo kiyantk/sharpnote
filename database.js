@@ -9,7 +9,7 @@ if (app.isPackaged) {
   appPath = path.join(appPath, "..", "..");
 }
 
-let dbPath = appPath + "/notes.db"
+let dbPath = appPath + "/sharpnote.db"
 
 // Open (or create) the database file
 const db = new Database(dbPath);
@@ -19,6 +19,7 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS notes (
     noteID TEXT PRIMARY KEY,
     sharpnoteVersion TEXT,
+    sharpnoteType TEXT,
     noteTitle TEXT,
     noteContent TEXT,
     noteColor TEXT,
@@ -26,12 +27,26 @@ db.exec(`
     noteSyntax TEXT,
     noteOriginalAuthor TEXT,
     noteLastAuthor TEXT,
+    noteFolder TEXT,
     created TEXT,
     lastSaved TEXT,
     lastOpened TEXT,
     lastExported TEXT,
     noteVersion INTEGER,
     noteTags TEXT
+  )
+`);
+
+// Create a notes table if it doesn't exist
+db.exec(`
+  CREATE TABLE IF NOT EXISTS folders (
+    folderID TEXT PRIMARY KEY,
+    sharpnoteType TEXT,
+    folderTitle TEXT,
+    folderNotes TEXT,
+    folderColor TEXT,
+    folderOriginalAuthor TEXT,
+    created TEXT
   )
 `);
 

@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 
-const NoteItem = ({ note, settings, onDeleteNote, onSelectNote, selectedNoteId, onNoteContextMenu, deleteModeOn }) => {
+const NoteItem = ({ note, settings, onDeleteNote, onSelectNote, selectedNoteId, onNoteContextMenu, deleteModeOn, isOpenedUnderFolder }) => {
   const handleNoteClick = () => {
     if(deleteModeOn) {
-      onDeleteNote(note.noteID)
+      onDeleteNote(note)
     } else {
       onSelectNote(note.noteID)
     }
@@ -34,7 +34,7 @@ const NoteItem = ({ note, settings, onDeleteNote, onSelectNote, selectedNoteId, 
   };
 
   return (
-    <div className={`${getNoteItemStyle()} ${note.noteID === selectedNoteId ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''}`} onClick={() => handleNoteClick()} 
+    <div className={`${getNoteItemStyle()} ${note.noteID === selectedNoteId ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''} ${isOpenedUnderFolder ? 'note-item-under-folder' : ''}`} onClick={() => handleNoteClick()} 
     onContextMenu={(e) => {
       e.preventDefault();
       onNoteContextMenu(e, note);

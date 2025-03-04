@@ -175,7 +175,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
             {selectedTab === "Display" && (
               <div>
                 <div className="settings-content-item">
-                    <span>Note Item style:</span>
+                    <span>Note List item style:</span>
                     <select
                         value={settings?.userSettings.noteItemStyle}
                         onChange={(e) => handleNoteItemStyleChange(e)}
@@ -231,7 +231,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
             {selectedTab === "App" && (
               <div>
                 <div className="settings-content-item">
-                    <span>SharpNote Version: 1.1.0 "Blossom"</span>
+                    <span>SharpNote Version: 1.2.0 "Crimson"</span>
                 </div>
                 <div className="settings-content-item">
                     <span>App Location:</span>

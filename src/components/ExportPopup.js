@@ -26,6 +26,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
   
     const formatNoteForExport = (note) => ({
       ...note,
+      noteFolder: null,
       noteHistory: {
         created: note.created,
         lastSaved: note.lastSaved,
@@ -61,7 +62,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
         // Export as a single .sharpbook file
         const bookContent = {
           sharpbookID: generateRandomID(),
-          sharpnoteVersion: "1.1.0",
+          sharpnoteVersion: "1.2.0",
           bookExported: currentTime,
           bookAuthor: settings.username,
           bookType: exportType,
@@ -97,7 +98,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
       }      
     } else if (exportType === "database") {
       try {
-        const response = await window.electron.ipcRenderer.invoke("export-database", filename || "notes.db");
+        const response = await window.electron.ipcRenderer.invoke("export-database", filename || "sharpnote.db");
   
         if (response.success) {
           onExport(selectedNotes.length, false, true);

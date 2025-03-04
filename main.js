@@ -52,7 +52,7 @@ app.whenReady().then(() => {
   });
 
   // Use in Dev
-  // mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
+  mainWindow.loadURL("http://localhost:3000"); // Change if using packaged app
 
   // Steps to build (on Windows)
   // Ensure package.json contains "homepage": ".",
@@ -67,11 +67,12 @@ app.whenReady().then(() => {
   // WINDOWS: npx electron-builder build --win
   // LINUX: npx electron-builder build --linux --x64
   // MACOS: npx @electron/packager <full path to local repo> SharpNote --platform=darwin --arch=x64
+  // REMOVE DIST BEFORE MOVING ON TO DIFFERENT PLATFORM; ESPECIALLY WHEN BUILDING MACOS AS NOT DOING SO WILL CAUSE THE MACOS BUILD TO CONTAIN THE DIST FOLDER
   // Output should be in the 'dist' folder
 
 
   // USE THIS WHEN BUILDING
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  // mainWindow.loadFile(path.join(__dirname, 'index.html'));
 });
 
 const fs = require("fs");
@@ -106,7 +107,7 @@ ipcMain.handle("export-database", async (event, defaultFilename) => {
     return { success: false, error: "User canceled the save dialog." };
   }
 
-  const dbPath = path.join(app.getAppPath(), "notes.db"); // Path to notes.db in app root
+  const dbPath = path.join(app.getAppPath(), "sharpnote.db"); // Path to sharpnote.db in app root
 
   try {
     await fs.promises.copyFile(dbPath, filePath);
@@ -127,16 +128,23 @@ ipcMain.handle("get-notes", () => {
   return stmt.all();
 });
 
+// Fetch all notes
+ipcMain.handle("get-folders", () => {
+  const stmt = db.prepare("SELECT * FROM folders ORDER BY created DESC");
+  return stmt.all();
+});
+
 // Add a new note
 ipcMain.handle("add-note", (_, newNote) => {
   const stmt = db.prepare(`
-    INSERT INTO notes (noteID, sharpnoteVersion, noteTitle, noteContent, noteColor, noteAttachments, noteSyntax, noteOriginalAuthor, noteLastAuthor, created, lastSaved, lastOpened, lastExported, noteVersion, noteTags)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO notes (noteID, sharpnoteVersion, sharpnoteType, noteTitle, noteContent, noteColor, noteAttachments, noteSyntax, noteOriginalAuthor, noteLastAuthor, noteFolder, created, lastSaved, lastOpened, lastExported, noteVersion, noteTags)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   stmt.run(
     newNote.noteID,
     newNote.sharpnoteVersion,
+    newNote.sharpnoteType,
     newNote.noteTitle,
     newNote.noteContent,
     newNote.noteColor,
@@ -144,6 +152,7 @@ ipcMain.handle("add-note", (_, newNote) => {
     newNote.noteSyntax,
     newNote.noteOriginalAuthor,
     newNote.noteLastAuthor,
+    newNote.noteFolder,
     newNote.noteHistory.created,
     newNote.noteHistory.lastSaved,
     newNote.noteHistory.lastOpened,
@@ -153,6 +162,25 @@ ipcMain.handle("add-note", (_, newNote) => {
   );
 
   return newNote;
+});
+
+// Add a new folder
+ipcMain.handle("add-folder", (_, newFolder) => {
+  const stmt = db.prepare(`
+    INSERT INTO folders (folderID, sharpnoteType, folderTitle, folderNotes, folderColor, folderOriginalAuthor, created)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  stmt.run(
+    newFolder.folderID,
+    newFolder.sharpnoteType,
+    newFolder.folderTitle,
+    JSON.stringify(newFolder.folderNotes || []),
+    newFolder.folderColor,
+    newFolder.folderOriginalAuthor,
+    newFolder.created
+  );
+
+  return newFolder;
 });
 
 // Update a note
@@ -179,6 +207,50 @@ ipcMain.handle("update-note", (_, updatedNote) => {
       updatedNote.noteTags,
       updatedNote.noteID
     );
+
+    // Check if any rows were updated
+    if (result.changes > 0) {
+      return { success: true };
+    } else {
+      return { success: false, message: "No rows were updated. The noteID might be incorrect." };
+    }
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Update a note
+ipcMain.handle("set-notefolder", (_, updatedNote) => {
+  try {
+    const stmt = db.prepare(`
+      UPDATE notes
+      SET noteFolder = ?
+      WHERE noteID = ?
+    `);
+
+    stmt.run(updatedNote.noteFolder, updatedNote.noteID);
+
+    // Check if any rows were updated
+    if (result.changes > 0) {
+      return { success: true };
+    } else {
+      return { success: false, message: "No rows were updated. The noteID might be incorrect." };
+    }
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Update a foldernotes
+ipcMain.handle("set-foldernotes", (_, updatedFolder) => {
+  try {
+    const stmt = db.prepare(`
+      UPDATE folders
+      SET folderNotes = ?
+      WHERE folderID = ?
+    `);
+
+    stmt.run(JSON.stringify(updatedFolder.folderNotes || []), updatedFolder.folderID);
 
     // Check if any rows were updated
     if (result.changes > 0) {

@@ -729,6 +729,8 @@ input:focus {
   background-color: #1a1a1a;
   /* height: 200px; */
   box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+  display: grid;
+  grid-template-columns: auto auto;
 }
 
 .note-context-menu-item {
@@ -999,4 +1001,29 @@ input:focus {
 
 .export-popup-type-container {
   width: 100%;
+}
+
+.folder-selector-container {
+  width: 200px;
+  background-color: #131313;
+  position: relative;
+  height: 192px;
+  overflow-y: auto;
+}
+
+.note-context-menu-container {
+  width: 200px;
+}
+
+.opened-folder-notes-container {
+  display: block;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  /* background-color: #1e1e1e; */
+  margin-top: -4.8px;
+}
+
+.note-item-under-folder {
+  margin-left: 19px;
+  border-left: 1px solid #363636;
 }

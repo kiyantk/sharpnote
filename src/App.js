@@ -14,6 +14,7 @@ import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from 'notistack'
 
 const App = () => {
   const [notes, setNotes] = useState([]);
+  const [folders, setFolders] = useState([]);
   const [selectedNoteId, setSelectedNoteId] = useState(null);
   const [activeEditorNoteContent, setactiveEditorNoteContent] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
@@ -46,6 +47,7 @@ const App = () => {
   const notesRef = useRef(notes);
   const [fileToImport, setFileToImport] = useState(null);
   const [hasClickedAwayFromStartScreen, setHasClickedAwayFromStartScreen] = useState(false)
+  const [openedFolders, setOpenedFolders] = useState([])
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -104,6 +106,18 @@ const App = () => {
     }
   };
 
+  // Fetch notes from the local db
+  const fetchFolders = async () => {
+    if (!window.electron) return;
+    try {
+      const savedFolders = await window.electron.ipcRenderer.invoke("get-folders");
+      setFolders(savedFolders || []);
+    } catch (error) {
+      console.error("Error fetching folders:", error);
+      enqueueSnackbar('An error occured while trying to load your folders', { className: 'notistack-custom-default' });
+    }
+  };
+
   useEffect(() => {
     // Load settings from Electron (preload.js)
     window.electron.ipcRenderer.invoke("get-settings").then(async (loadedSettings) => {
@@ -141,7 +155,6 @@ const App = () => {
     });
 
     window.electron.ipcRenderer.invoke("get-opened-file").then(async (openedFilePath) => {
-      console.log(openedFilePath)
       setFileToImport(openedFilePath);
     });
   }, []);
@@ -149,6 +162,7 @@ const App = () => {
   // Call fetchNotes on mount
   useEffect(() => {
     fetchNotes();
+    fetchFolders();
   }, []);
 
   useEffect(() => {
@@ -182,7 +196,8 @@ const App = () => {
 
     const newNote = {
       noteID: generateRandomID(),
-      sharpnoteVersion: "1.1.0",
+      sharpnoteVersion: "1.2.0",
+      sharpnoteType: "note",
       noteTitle: "New Note",
       noteContent: "",
       noteColor: "#FFFFFF",
@@ -190,6 +205,7 @@ const App = () => {
       noteSyntax: "",
       noteOriginalAuthor: localUsername ? localUsername : null,
       noteLastAuthor: localUsername ? localUsername : null,
+      noteFolder: null,
       noteHistory: {
         created: new Date().toISOString(),
         lastSaved: new Date().toISOString(),
@@ -212,6 +228,29 @@ const App = () => {
       enqueueSnackbar('An error occured while trying to add a new note', { className: 'notistack-custom-default' });
     }
   };
+
+  const addFolder = async () => {
+    if (!window.electron) return;
+
+    const newFolder = {
+      folderID: generateRandomID(),
+      sharpnoteType: "folder",
+      folderTitle: "New Folder",
+      folderNotes: [],
+      folderColor: "#FFFFFF",
+      folderOriginalAuthor: localUsername ? localUsername : null,
+      created: new Date().toISOString(),
+    };
+    try {
+      await window.electron.ipcRenderer.invoke("add-folder", newFolder);
+
+      setFolders((prevFolders) => [...prevFolders, newFolder]);
+      onRefresh();
+    } catch (error) {
+      console.error("Error adding folder:", error);
+      enqueueSnackbar('An error occured while trying to add a new folder', { className: 'notistack-custom-default' });
+    }
+  }
 
   useEffect(() => {
     if (window.electron) {
@@ -293,17 +332,51 @@ const App = () => {
       enqueueSnackbar('An error occured while trying to open this note', { className: 'notistack-custom-default' });
     }
   };
+
+  const openFolder = (folderID) => {
+    if (openedFolders.includes(folderID)) {
+      setOpenedFolders(openedFolders.filter(id => id !== folderID)); // Return a new array without the folderID
+    } else {
+      setOpenedFolders([...openedFolders, folderID]); // Create a new array with the added folderID
+    }
+  };  
   
   // Handle note deletion
-  const deleteNote = async (noteID) => {
+  const deleteNote = async (note) => {
     if (!window.electron) return;
-    if(noteID === selectedNoteId) {
+    if(note.noteID === selectedNoteId) {
       setAutosaveStatus(4)
       setIsNoteOpened(false)
     }
     try {
-      await window.electron.ipcRenderer.invoke("delete-note", noteID);
-      setNotes((prevNotes) => prevNotes.filter((note) => note.noteID !== noteID));
+      // Find the folder the note was in
+      const oldFolderID = note.noteFolder;
+      let updatedFolders = folders.map((folder) => {
+        if (folder.folderID === oldFolderID) {
+          // Ensure folderNotes is an array
+          let folderNotes = Array.isArray(folder.folderNotes)
+            ? folder.folderNotes
+            : JSON.parse(folder.folderNotes || "[]");
+
+          // Remove the noteID from the folderNotes
+          let updatedFolderNotes = folderNotes.filter((id) => id !== note.noteID);
+
+          // Update folder in state
+          return { ...folder, folderNotes: updatedFolderNotes };
+        }
+        return folder;
+      });
+
+      setFolders(updatedFolders);
+
+      // Find the updated folder and update it in the database
+      const updatedFolder = updatedFolders.find((f) => f.folderID === oldFolderID);
+      if (updatedFolder) {
+        await window.electron.ipcRenderer.invoke("set-foldernotes", updatedFolder);
+      }
+
+      await window.electron.ipcRenderer.invoke("delete-note", note.noteID);
+      setNotes((prevNotes) => prevNotes.filter((prevnote) => prevnote.noteID !== note.noteID));
     } catch (error) {
       console.error("Error deleting note:", error);
       enqueueSnackbar('An error occured while trying to delete this note', { className: 'notistack-custom-default' });
@@ -405,6 +478,7 @@ const App = () => {
     }
     closeNote();
     fetchNotes();
+    fetchFolders();
   };
 
   // Closing the Edit Note popup
@@ -526,6 +600,77 @@ const App = () => {
     window.electron.confirmQuit() // Tell main process to quit
   }
 
+  const onMoveToSelected = async (note, folder) => {
+    if (!window.electron) return;
+    if(note.noteID === selectedNoteId) {
+      setAutosaveStatus(4)
+      setIsNoteOpened(false)
+    }
+    try {
+    // Store the previous folder ID before changing
+    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS vv
+    const oldFolderID = note.noteFolder;
+    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS ^^
+
+    // Toggle noteFolder
+    note.noteFolder = note.noteFolder === folder.folderID ? null : folder.folderID;
+
+    // Ensure folderNotes is an array (if it's stored as a string, parse it)
+    let folderNotes = Array.isArray(folder.folderNotes) 
+      ? folder.folderNotes 
+      : JSON.parse(folder.folderNotes || "[]"); // Default to empty array if invalid
+
+    // Handle folderNotes (add/remove noteID)
+    let updatedFolderNotes = folderNotes.includes(note.noteID)
+      ? folderNotes.filter(id => id !== note.noteID) // Remove if present
+      : [...folderNotes, note.noteID]; // Add if not present
+
+    // Update folder's notes
+    folder.folderNotes = updatedFolderNotes;
+
+    // Find the old folder (if the note was previously in one)
+    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS vv
+    let updatedFolders = await window.electron.ipcRenderer.invoke("get-folders"); // Fetch latest folders
+    let oldFolder = updatedFolders.find((f) => f.folderID === oldFolderID);
+
+    if (oldFolder) {
+      // Ensure oldFolder.folderNotes is an array
+      let oldFolderNotes = Array.isArray(oldFolder.folderNotes)
+        ? oldFolder.folderNotes
+        : JSON.parse(oldFolder.folderNotes || "[]");
+
+      // Remove noteID from the old folder
+      oldFolder.folderNotes = oldFolderNotes.filter((id) => id !== note.noteID);
+
+      // Save changes to old folder
+      await window.electron.ipcRenderer.invoke("set-foldernotes", oldFolder);
+    }
+    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS ^^
+      
+      await window.electron.ipcRenderer.invoke("set-notefolder", note);
+      await window.electron.ipcRenderer.invoke("set-foldernotes", folder);
+      setNotes((prevNotes) =>
+        prevNotes.map((prevNote) =>
+          prevNote.noteID === note.noteID ? { ...prevNote, noteFolder: note.noteFolder } : prevNote
+        )
+      );
+      setFolders((prevFolders) =>
+        prevFolders.map((prevFolder) => {
+          if (prevFolder.folderID === folder.folderID) {
+            return { ...prevFolder, folderNotes: updatedFolderNotes }; // Update new folder
+          }
+          if (prevFolder.folderID === oldFolderID) {
+            return { ...prevFolder, folderNotes: oldFolder?.folderNotes || [] }; // Update old folder - REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS
+          }
+          return prevFolder;
+        })
+      );
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      enqueueSnackbar('An error occured while trying to add this note to the folder', { className: 'notistack-custom-default' });
+    }
+  }
+
   useEffect(() => {
     if (userJustAnsweredYesToUnsavedChangesPopup) {
       switch(unsavedChangesPopupType) {
@@ -573,6 +718,10 @@ const App = () => {
             onDeleteNote={deleteNote}
             leftPanelVisible={leftPanelVisible}
             settings={settings}
+            onAddFolder={addFolder}
+            onClickFolder={openFolder}
+            folders={folders}
+            openedFolders={openedFolders}
           />
           <NoteEditor 
             selectedNote={selectedNote} 
@@ -607,6 +756,8 @@ const App = () => {
             onViewNoteInfo={openNoteInfoPopup}
             onDeleteNote={deleteNote}
             onExportThruCtx={exportThruCtx}
+            folders={folders}
+            onMoveToSelected={onMoveToSelected}
           />
         )}
         {isNoteInfoPopupOpen && (
