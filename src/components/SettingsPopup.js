@@ -47,6 +47,16 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     }));
   }
 
+  const handleFolderDeleteBehaviourChange = (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      userSettings: {
+        ...prev.userSettings,
+        folderDeleteBehaviour: event.target.value,
+      },
+    }));
+  }
+
   const handleCheckboxChangeUnsavedChangesWarning = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -209,6 +219,17 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                     <span className="settings-popup-warning-text">You should only enable this if validity checks fail on imports that should work.
                       <br></br>The checks are executed to ensure the integrity of your imports. Enable at your own risk.
                     </span>
+                </div>
+                <div className="settings-content-item">
+                    <span>Folder delete behaviour:</span>
+                    <select
+                        value={settings?.userSettings.folderDeleteBehaviour}
+                        onChange={(e) => handleFolderDeleteBehaviourChange(e)}
+                        className="settings-itemstyle-select"
+                      >
+                        <option value="deletenotes">Delete notes</option>
+                        <option value="keepnotes">Keep notes</option>
+                    </select>
                 </div>
               </div>
             )}

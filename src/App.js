@@ -383,6 +383,69 @@ const App = () => {
     }
   };
 
+    // Handle note deletion
+    const deleteNoteUnderFolder = async (noteID) => {
+      if (!window.electron) return;
+      if(noteID === selectedNoteId) {
+        setAutosaveStatus(4)
+        setIsNoteOpened(false)
+      }
+      try {
+        await window.electron.ipcRenderer.invoke("delete-note", noteID);
+        setNotes((prevNotes) => prevNotes.filter((prevnote) => prevnote.noteID !== noteID));
+      } catch (error) {
+        console.error("Error deleting note in folder:", error);
+        enqueueSnackbar('An error occured while trying to delete a note', { className: 'notistack-custom-default' });
+      }
+    };
+
+    const deleteFolder = async (folder) => {
+      if (!window.electron) return;
+      
+      try {
+        if (settings.userSettings.folderDeleteBehaviour === "deletenotes") {
+          // Delete each note in the folder first
+          for (const noteID of folder.folderNotes) {
+            await deleteNoteUnderFolder(noteID);
+          }
+    
+          // Remove the folder itself
+          await window.electron.ipcRenderer.invoke("delete-folder", folder.folderID);
+    
+          // Update state: Remove deleted notes and folder
+          setNotes((prevNotes) => prevNotes.filter(note => !folder.folderNotes.includes(note.noteID)));
+          setFolders((prevFolders) => prevFolders.filter(f => f.folderID !== folder.folderID));
+    
+        } else if (settings.userSettings.folderDeleteBehaviour === "keepnotes") {
+          // Remove the folder but keep notes, setting their folder to null
+          await window.electron.ipcRenderer.invoke("delete-folder", folder.folderID);
+    
+          // Update each note in the database
+          for (const noteID of folder.folderNotes) {
+            const updatedNote = { 
+              ...notes.find(note => note.noteID === noteID), 
+              noteFolder: null 
+            };
+            if (updatedNote) {
+              await window.electron.ipcRenderer.invoke("set-notefolder", updatedNote);
+            }
+          }
+    
+          // Update state: Remove folder, update notes
+          setFolders((prevFolders) => prevFolders.filter(f => f.folderID !== folder.folderID));
+          setNotes((prevNotes) => 
+            prevNotes.map(note => 
+              folder.folderNotes.includes(note.noteID) ? { ...note, noteFolder: null } : note
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Error deleting folder:", error);
+        enqueueSnackbar('An error occurred while trying to delete this folder', { className: 'notistack-custom-default' });
+      }
+    };
+    
+
   // Update the note in the local db
   const updateNote = async (updatedNote) => {
     if(updatedNote.noteTitle.length > 100) {
@@ -720,6 +783,7 @@ const App = () => {
             settings={settings}
             onAddFolder={addFolder}
             onClickFolder={openFolder}
+            onDeleteFolder={deleteFolder}
             folders={folders}
             openedFolders={openedFolders}
           />

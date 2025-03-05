@@ -11,7 +11,7 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
   const [fullFolderNotes, setFullFolderNotes] = useState([]);
   const handleNoteClick = () => {
     if(deleteModeOn) {
-      onDeleteFolder(folder.folderID)
+      onDeleteFolder(folder)
     } else {
       onClickFolder(folder.folderID)
     }

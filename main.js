@@ -269,6 +269,12 @@ ipcMain.handle("delete-note", (_, noteID) => {
   stmt.run(noteID);
 });
 
+// Delete a folder
+ipcMain.handle("delete-folder", (_, folderID) => {
+  const stmt = db.prepare("DELETE FROM folders WHERE folderID = ?");
+  stmt.run(folderID);
+});
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
@@ -293,7 +299,8 @@ const defaultConfig = {
     "showMenubarIcons": true,
     "noteItemStyle": "normal",
     "showUnsavedChangesWarning": true,
-    "disableImportChecks": false
+    "disableImportChecks": false,
+    "folderDeleteBehaviour": "deletenotes"
   },
   "structure": {
     "folders": [],
