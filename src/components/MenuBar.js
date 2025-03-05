@@ -172,7 +172,7 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
           settings={settings}
           onExport={onExport}
           noneSelectedError={noneSelectedError}
-          preSelectedSingle={exportNoteThruCtx}
+          preSelecteds={exportNoteThruCtx}
           onPreSelectReceived={onPreSelectReceived}
         />
       )}

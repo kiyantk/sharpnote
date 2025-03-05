@@ -219,7 +219,33 @@ ipcMain.handle("update-note", (_, updatedNote) => {
   }
 });
 
-// Update a note
+// Update a folder
+ipcMain.handle("update-folder", (_, updatedFolder) => {
+  try {
+    const stmt = db.prepare(`
+      UPDATE folders
+      SET folderTitle = ?, folderColor = ?
+      WHERE folderID = ?
+    `);
+
+    const result = stmt.run(
+      updatedFolder.folderTitle,
+      updatedFolder.folderColor,
+      updatedFolder.folderID
+    );
+
+    // Check if any rows were updated
+    if (result.changes > 0) {
+      return { success: true };
+    } else {
+      return { success: false, message: "No rows were updated. The folderID might be incorrect." };
+    }
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Set note's noteFolder
 ipcMain.handle("set-notefolder", (_, updatedNote) => {
   try {
     const stmt = db.prepare(`
@@ -300,7 +326,8 @@ const defaultConfig = {
     "noteItemStyle": "normal",
     "showUnsavedChangesWarning": true,
     "disableImportChecks": false,
-    "folderDeleteBehaviour": "deletenotes"
+    "folderDeleteBehaviour": "deletenotes",
+    "showTextStatistics": true
   },
   "structure": {
     "folders": [],

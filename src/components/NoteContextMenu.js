@@ -25,15 +25,15 @@ const NoteContextMenu = ({folders, currentActiveCtx, currentActiveCtxFull, curre
   return (
     <div className="note-context-menu" ref={menuRef} style={{left: currentMouseEvent?.clientX + 10, top: currentMouseEvent?.clientY}}>
       <div className="note-context-menu-container">
-        <div className="note-context-menu-item" onClick={() => {onCloseCtx(); onViewNoteInfo(currentActiveCtx)}} >
+        <div className="note-context-menu-item" onClick={() => {onCloseCtx(); onViewNoteInfo(currentActiveCtx, "note")}} >
           <span><FontAwesomeIcon icon={faCircleInfo} /> <span className="note-context-menu-text">Note Info</span></span>
         </div>
-        <div className="note-context-menu-item" onClick={() => {onCloseCtx(); onEditNote(currentActiveCtx)}}>
+        <div className="note-context-menu-item" onClick={() => {onCloseCtx(); onEditNote(currentActiveCtx, "note")}}>
           <span><FontAwesomeIcon icon={faEdit} /> <span className="note-context-menu-text">Edit Note</span></span>
         </div>
         <div 
           className="note-context-menu-item"
-          style={{backgroundColor: needToSelectFolder ? "#131313" : ""}}
+          style={{backgroundColor: needToSelectFolder ? "#131313" : "", display: folders.length > 0 ? '' : 'none'}}
           onClick={() => {setNeedToSelectFolder(true)}}
         >
           <span><FontAwesomeIcon icon={faRightToBracket} /> <span className="note-context-menu-text">Move to Folder</span></span>

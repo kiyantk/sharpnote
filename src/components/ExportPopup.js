@@ -4,12 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import { faBook, faDatabase, faStickyNote } from "@fortawesome/free-solid-svg-icons";
 
-const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedError, preSelectedSingle, onPreSelectReceived }) => {
+const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedError, preSelecteds, onPreSelectReceived }) => {
   const [exportType, setExportType] = useState("single");
-  const [selectedNotes, setSelectedNotes] = useState([]);
+  const [selectedNotes, setSelectedNotes] = useState(null);
   const [filename, setFilename] = useState("");
   const [packIntoSingleFile, setPackIntoSingleFile] = useState("pack");
   const allNotesCopy = [...allNotes]
+  const [preSelectedsIsMultiple, setPreSelectedsIsMultiple] = useState(false);
 
   // Random ID generator for noteID's
   const generateRandomID = () => {
@@ -46,18 +47,18 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     const handleFocus = (isSharpbook) => {
       if (isSaving) {
         isSaving = false;
-        onExport(selectedNotes.length, isSharpbook, false); // Trigger after focus comes back
+        onExport(selectedNotes?.length, isSharpbook, false); // Trigger after focus comes back
         window.removeEventListener('focus', handleFocus);
       }
     };
   
-    if (exportType === "single" && selectedNotes.length === 1) {
+    if (exportType === "single" && selectedNotes?.length === 1) {
       const note = formatNoteForExport(selectedNotes[0]);
       const fileContent = JSON.stringify(note, null, 2);
       const blob = new Blob([fileContent], { type: "application/json" });
       saveAs(blob, `${filename || note.noteTitle}.sharp`);
       window.addEventListener('focus', handleFocus(false));
-    } else if ((exportType === "all" || exportType === "selection") && selectedNotes.length > 0) {
+    } else if ((exportType === "all" || exportType === "selection") && selectedNotes?.length > 0) {
       if (packIntoSingleFile === "pack") {
         // Export as a single .sharpbook file
         const bookContent = {
@@ -87,9 +88,9 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
             const writable = await fileHandle.createWritable();
             await writable.write(JSON.stringify(formattedNote, null, 2));
             await writable.close();
-            if(exportNum - 1 === selectedNotes.length) {
+            if(exportNum - 1 === selectedNotes?.length) {
               isSaving = false;
-              onExport(selectedNotes.length, false, false); // Trigger after focus comes back
+              onExport(selectedNotes?.length, false, false); // Trigger after focus comes back
             }
           }
         } catch (error) {
@@ -101,7 +102,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
         const response = await window.electron.ipcRenderer.invoke("export-database", filename || "sharpnote.db");
   
         if (response.success) {
-          onExport(selectedNotes.length, false, true);
+          onExport(selectedNotes?.length, false, true);
         } else {
           console.error(`Failed to export database: ${response.error}`);
         }
@@ -110,23 +111,27 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
         console.error("An unexpected error occurred.");
       }
       return;
-    } else if(selectedNotes.length === 0) {
+    } else if(selectedNotes?.length === 0) {
       noneSelectedError();
     }
   };
 
 
   useEffect(() => {
-    if(exportType === "single" && selectedNotes.length === 1) {
+    if(exportType === "single" && selectedNotes && selectedNotes.length === 1) {
       setFilename(selectedNotes[0].noteTitle);
     }
   }, [selectedNotes]);
 
   useEffect(() => {
-    if(preSelectedSingle) {
-      setSelectedNotes([preSelectedSingle])
+    if(preSelecteds) {
+      if(preSelecteds.length > 1) {
+        setExportType("selection")
+        setPreSelectedsIsMultiple(true)
+      }
+      setSelectedNotes(preSelecteds)
     }
-  }, [preSelectedSingle]);
+  }, [preSelecteds]);
 
   useEffect(() => {
     if(exportType === "all") {
@@ -134,18 +139,19 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
       setSelectedNotes(allNotesCopy);
     } else if(exportType === "selection") {
       setFilename("Sharpbook");
-      setSelectedNotes([]);
+      if(!preSelectedsIsMultiple) {
+        setSelectedNotes([]);
+      } 
     } else if(exportType === "database") {
-      setFilename("notes");
+      setFilename("sharpnote");
     } else {
       setFilename("");
-      if(preSelectedSingle) {
-        setSelectedNotes([preSelectedSingle])
+      if(preSelecteds) {
+        setSelectedNotes(preSelecteds)
         onPreSelectReceived()
       } else {
         setSelectedNotes([]);
       }
-
     }
   }, [exportType]);
 
@@ -205,7 +211,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
           {allNotesCopy.map((note) => (
             <div
               key={note.noteID}
-              className={`note-browser-item hide-vertical-overflow-text ${selectedNotes.includes(note) ? "note-browser-selected" : ""}`}
+              className={`note-browser-item hide-vertical-overflow-text ${selectedNotes?.includes(note) ? "note-browser-selected" : ""}`}
               onClick={() =>
                 exportType === "single"
                   ? setSelectedNotes([note])
@@ -216,7 +222,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
                     )
               }
             >
-              <FontAwesomeIcon style={{ marginRight: '15px' }} icon={selectedNotes.includes(note) ? faCircleCheck : faCircle} />
+              <FontAwesomeIcon style={{ marginRight: '15px' }} icon={selectedNotes?.includes(note) ? faCircleCheck : faCircle} />
               <FontAwesomeIcon style={{ color: note.noteColor, marginRight: '5px' }} icon={faStickyNote} />
               {note.noteTitle}
             </div>

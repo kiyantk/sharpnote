@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate, faToggleOn, faCheck, faToggleOff, faQuestion, faStarOfLife } from "@fortawesome/free-solid-svg-icons";
 
-const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote, noteOpened, manualSaveIcon, manualSaveText, onShortcutAddNote, onShortcutCloseNote }) => {
+const BottomBar = ({ autosaveStatus, editorContent, isEditorContentDecoded, onRefresh, onManualSaveNote, noteOpened, manualSaveIcon, manualSaveText, onShortcutAddNote, onShortcutCloseNote, settings }) => {
   const [rotating, setRotating] = useState(false);
+  let editorContentToUse = ''
 
   // Function to count words and lines
   const getWordAndLineCount = (text) => {
@@ -12,14 +13,12 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
         const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
         return { words, lines };
     } else {
-        const lines = null;
-        const words = null;
-        return { words, lines };
+      return { words: null, lines: null };
     }
   };
 
   // Get word and line count from editor's content
-  const { words, lines } = getWordAndLineCount(editorContent);
+  const { words, lines } = settings?.userSettings?.showTextStatistics ? getWordAndLineCount(isEditorContentDecoded ? editorContent : atob(editorContent)) : '';
 
   // Autosave status logic
   const getAutosaveStatus = () => {
@@ -88,7 +87,7 @@ const BottomBar = ({ autosaveStatus, editorContent, onRefresh, onManualSaveNote,
 
       <div className="bottom-bar-right">
         {/* Right: Word & Line Count */}
-        {noteOpened && (
+        {noteOpened && settings.userSettings.showTextStatistics && (
         <div className="word-line-count">
             {words !== null && lines !== null && (
                 <div>

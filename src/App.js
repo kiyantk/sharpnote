@@ -6,11 +6,12 @@ import NoteEditor from "./components/NoteEditor";
 import EditPopup from "./components/EditPopup";
 import WelcomePopup from "./components/WelcomePopup";
 import NoteContextMenu from "./components/NoteContextMenu";
-import NoteInfo from "./components/NoteInfo"
-import UnsavedChanges from "./components/UnsavedChanges"
+import NoteInfo from "./components/NoteInfo";
+import UnsavedChanges from "./components/UnsavedChanges";
+import FolderContextMenu from "./components/FolderContextMenu";
 import './App.css';
 import { faXmark, faCheck, faSave } from "@fortawesome/free-solid-svg-icons";
-import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from 'notistack'
+import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from 'notistack';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -31,11 +32,12 @@ const App = () => {
   const [activeNoteContextMenuFull, setActiveNoteContextMenuFull] = useState(null);
   const [activeNoteContextMenuEvent, setActiveNoteContextMenuEvent] = useState(null);
   const [noteInfoPopupNote, setNoteInfoPopupNote] = useState(null);
+  const [noteInfoPopupType, setNoteInfoPopupType] = useState(null);
   const [isNoteInfoPopupOpen, setIsNoteInfoPopupOpen] = useState(null);
   const [deleteModeOn, setDeleteMode] = useState(false);
   const [deleteModeSnackKey, setDeleteModeSnackKey] = useState(null);
   const [leftPanelVisible, setLeftPanelVisible] = useState(true);
-  const [noteToExportNoteThruCtx, setNoteToExportNoteThruCtx] = useState(null);
+  const [notesToExportNoteThruCtx, setNotesToExportNoteThruCtx] = useState(null);
   const [haveToOpenNote, setHaveToOpenNote] = useState(null);
   const [usernameFixed, setUsernameFixed] = useState(false);
   const [isUnsavedChangesPopupOpen, setIsUnsavedChangesPopupOpen] = useState(false);
@@ -45,9 +47,15 @@ const App = () => {
   const [noteContentChanged, setNoteContentChanged] = useState(false);
   const noteContentChangedRef = useRef(noteContentChanged);
   const notesRef = useRef(notes);
+  const foldersRef = useRef(folders);
   const [fileToImport, setFileToImport] = useState(null);
   const [hasClickedAwayFromStartScreen, setHasClickedAwayFromStartScreen] = useState(false)
   const [openedFolders, setOpenedFolders] = useState([])
+  const [isEditorContentDecoded, setIsEditorContentDecoded] = useState(false)
+  const [activeFolderContextMenu, setActiveFolderContextMenu] = useState(null);
+  const [activeFolderContextMenuFull, setActiveFolderContextMenuFull] = useState(null);
+  const [activeFolderContextMenuEvent, setActiveFolderContextMenuEvent] = useState(null);
+  const [editPopupType, setEditPopupType] = useState(null);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -314,6 +322,7 @@ const App = () => {
       
     selectedNote = notes.find((note) => note.noteID === noteID);
     setactiveEditorNoteContent(selectedNote.noteContent)
+    setIsEditorContentDecoded(false)
   
     try {
       // Update the note in the database
@@ -470,6 +479,28 @@ const App = () => {
     }
   };  
 
+  // Update the folder in the local db
+  const updateFolder = async (updatedFolder) => {
+    if(updatedFolder.folderTitle.length > 100) {
+      enqueueSnackbar('Folder Title cannot be longer than 100 characters', { className: 'notistack-custom-default' });
+      return { success: false, error: "INVALID" }
+    }
+    try {
+      const result = await window.electron.ipcRenderer.invoke("update-folder", updatedFolder); // Update the note in the database
+      if (result.success) {
+        setFolders(foldersRef.current.map((folder) => (folder.folderID === updatedFolder.folderID ? updatedFolder : folder))); // Update state
+        return { success: true };
+      } else {
+        return { success: false, error: result.message };
+      }
+    } catch (error) {
+      console.error("Error updating note:", error);
+      enqueueSnackbar('An error occured while trying to update this folder', { className: 'notistack-custom-default' });
+      return { success: false, error: error.message };
+    }
+  };  
+  
+
   useEffect(() => {
     noteContentChangedRef.current = noteContentChanged;
   }, [noteContentChanged]);
@@ -477,6 +508,10 @@ const App = () => {
   useEffect(() => {
     notesRef.current = notes;
   }, [notes]);
+
+  useEffect(() => {
+    foldersRef.current = folders;
+  }, [folders]);
 
   const closeNote = () => {
     if(selectedNote && noteContentChangedRef.current && !userJustAnsweredYesToUnsavedChangesPopup && settings?.userSettings.showUnsavedChangesWarning) {
@@ -494,17 +529,30 @@ const App = () => {
   }
 
   // Open the Edit Note popup
-  const openEditPopup = (noteID) => {
+  const openEditPopup = (noteID, type) => {
     setIsEditPopupOpen(true);
-    const editNote = notes.find((note) => note.noteID === noteID);
+    let editNote = null;
+    if(type === "note") {
+      editNote = notes.find((note) => note.noteID === noteID);
+    } else if(type === "folder") {
+      editNote = folders.find((folder) => folder.folderID === noteID);
+    }
     setEditPopupNote(editNote)
+    setEditPopupType(type)
   }
 
   // Open the Edit Note popup
-  const openNoteInfoPopup = (noteID) => {
+  const openNoteInfoPopup = (noteID, type) => {
     setIsNoteInfoPopupOpen(true);
-    const editNote = notes.find((note) => note.noteID === noteID);
+    let editNote = null;
+    if(type === "note") {
+      editNote = notes.find((note) => note.noteID === noteID);
+    } else if(type === "folder") {
+      editNote = folders.find((folder) => folder.folderID === noteID);
+    }
+    
     setNoteInfoPopupNote(editNote)
+    setNoteInfoPopupType(type)
     closeNoteCtx();
   }
 
@@ -519,9 +567,22 @@ const App = () => {
     setActiveNoteContextMenuEvent(mouseEv)
   }
 
+  const openFolderContextMenu = (mouseEv ,ctxFolder) => {
+    setActiveFolderContextMenu(ctxFolder.folderID)
+    setActiveFolderContextMenuFull(ctxFolder)
+    setActiveFolderContextMenuEvent(mouseEv)
+  }
+
   const closeNoteCtx = () => {
     setActiveNoteContextMenu(null)
+    setActiveNoteContextMenuFull(null)
     setActiveNoteContextMenuEvent(null)
+  }
+
+  const closeFolderCtx = () => {
+    setActiveFolderContextMenu(null)
+    setActiveFolderContextMenuFull(null)
+    setActiveFolderContextMenuEvent(null)
   }
 
   const closeNoteInfoPopup = () => {
@@ -549,7 +610,11 @@ const App = () => {
 
   // Apply changes from Edit Note popup
   const applyNoteEdits = (editedNote) => {
-    updateNote(editedNote)
+    if(editPopupType === "note") {
+      updateNote(editedNote)
+    } else if(editPopupType === "folder") {
+      updateFolder(editedNote)
+    }    
   }
 
   const onExportDone = (numExported, isSharpbook, isDB) => {
@@ -644,11 +709,15 @@ const App = () => {
   };
 
   const exportThruCtx = (note) => {
-    setNoteToExportNoteThruCtx(note)
+    setNotesToExportNoteThruCtx([note])
+  }
+
+  const exportFolderNotesThruCtx = (folder) => {
+    setNotesToExportNoteThruCtx(notes.filter(note => folder.folderNotes.includes(note.noteID)));
   }
 
   const clearPreSelectThruCtx = () => {
-    setNoteToExportNoteThruCtx(null)
+    setNotesToExportNoteThruCtx(null)
   }
 
   const handleUnsavedChangesAnswer = async (answer) => {
@@ -754,6 +823,11 @@ const App = () => {
     }
   }, [userJustAnsweredYesToUnsavedChangesPopup, unsavedChangesPopupType, unsavedChangesPopupNoteToSwitchTo]);
 
+  const setActiveEditorContentOnUpdate = (content) => {
+    setactiveEditorNoteContent(content)
+    setIsEditorContentDecoded(true)
+  }
+
   return (
     <div className="App">
       <div className="App-main">
@@ -764,7 +838,7 @@ const App = () => {
           toggleDeleteMode={toggleDeleteMode}
           toggleLeftPanel={onToggleLeftPanel}
           onImport={importData}
-          exportNoteThruCtx={noteToExportNoteThruCtx}
+          exportNoteThruCtx={notesToExportNoteThruCtx}
           onPreSelectReceived={clearPreSelectThruCtx}
           presetFile={fileToImport}
         />
@@ -786,13 +860,14 @@ const App = () => {
             onDeleteFolder={deleteFolder}
             folders={folders}
             openedFolders={openedFolders}
+            onFolderContextMenu={openFolderContextMenu}
           />
           <NoteEditor 
             selectedNote={selectedNote} 
             onUpdateNote={updateNote} 
             settings={settings} 
             onAutoSaveStatusChange={handleAutoSaveStatusChange} 
-            onActiveEditorContentUpdate={setactiveEditorNoteContent} 
+            onActiveEditorContentUpdate={setActiveEditorContentOnUpdate} 
             onNoteChanged={setNoteContentChanged}
             hasClickedAwayFromStartScreen={hasClickedAwayFromStartScreen}
           />
@@ -803,6 +878,7 @@ const App = () => {
             closeEditPopup={closeEditPopup}
             noteToEdit={editPopupNote}  // Pass current settings
             applyEdits={applyNoteEdits} // Pass function to apply new settings
+            editPopupType={editPopupType}
           />
         )}
         {showWelcomePopup && (
@@ -824,10 +900,23 @@ const App = () => {
             onMoveToSelected={onMoveToSelected}
           />
         )}
+        {activeFolderContextMenu && (
+          <FolderContextMenu 
+            currentMouseEvent={activeFolderContextMenuEvent}
+            currentActiveCtx={activeFolderContextMenu}
+            currentActiveCtxFull={activeFolderContextMenuFull}
+            onCloseCtx={closeFolderCtx}
+            onEditFolder={openEditPopup}
+            onViewFolderInfo={openNoteInfoPopup}
+            onDeleteFolder={deleteFolder}
+            onExportThruCtx={exportFolderNotesThruCtx}
+          />
+        )}
         {isNoteInfoPopupOpen && (
           <NoteInfo
             noteToShow={noteInfoPopupNote}
             onNoteInfoPopupClose={closeNoteInfoPopup}
+            noteInfoPopupType={noteInfoPopupType}
           />
         )}
         {isUnsavedChangesPopupOpen && (
@@ -842,6 +931,7 @@ const App = () => {
         <BottomBar 
           autosaveStatus={autosaveStatus} 
           editorContent={activeEditorNoteContent} 
+          isEditorContentDecoded={isEditorContentDecoded}
           onRefresh={onRefresh} 
           onManualSaveNote={handleManualNoteSave} 
           noteOpened={isNoteOpened} 
@@ -849,6 +939,7 @@ const App = () => {
           manualSaveText={manualSaveText}
           onShortcutAddNote={addNote}
           onShortcutCloseNote={closeNote}
+          settings={settings}
         />
       </div>
     </div>

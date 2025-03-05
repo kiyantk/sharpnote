@@ -77,6 +77,16 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     }));
   }
 
+  const handleCheckboxChangeShowTextStatistics = (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      userSettings: {
+        ...prev.userSettings,
+        showTextStatistics: event.target.checked,
+      },
+    }));
+  }
+
   const handleUsernameChange = (event) => {
     const newValue = event.target.value;
   
@@ -179,6 +189,14 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                       onChange={handleCheckboxChangeUnsavedChangesWarning}
                     />
                     <span>Show unsaved changes warning</span>
+                </div>
+                <div className="settings-content-item">
+                    <input
+                      type="checkbox"
+                      checked={settings?.userSettings.showTextStatistics}
+                      onChange={handleCheckboxChangeShowTextStatistics}
+                    />
+                    <span>Show text statistics</span>
                 </div>
               </div>
             )}

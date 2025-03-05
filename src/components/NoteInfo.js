@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const NoteInfo = ({ noteToShow, onNoteInfoPopupClose }) => {
+const NoteInfo = ({ noteToShow, onNoteInfoPopupClose, noteInfoPopupType }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "Unknown";
     return new Date(dateString).toLocaleString("en-US", {
@@ -15,6 +15,8 @@ const NoteInfo = ({ noteToShow, onNoteInfoPopupClose }) => {
   return (
     <div className="settings-popup-overlay">
       <div className="noteinfo-popup">
+        {noteInfoPopupType === "note" && (
+        <div>
         <div>
             <h2>Note Info</h2>
         </div>
@@ -84,6 +86,51 @@ const NoteInfo = ({ noteToShow, onNoteInfoPopupClose }) => {
             </div>
           </div>
         </div>
+        </div>
+        )}
+        {noteInfoPopupType === "folder" && (
+        <div>
+        <div>
+            <h2>Folder Info</h2>
+        </div>
+        <div className="noteinfo-popup-content">
+          <div className="noteinfo-popup-content-container">
+            <div className="noteinfo-popup-sidebyside">
+              <div className="editnote-popup-item">
+                  <span>Folder Title</span>
+                  <input type="text" disabled className="noteinfo-input editnote-titleinput" value={noteToShow.folderTitle}></input>
+              </div>
+              <div className="editnote-popup-item" style={{width: '182px'}}>
+                  <span>Folder Color</span>
+                  <div style={{ backgroundColor: noteToShow.folderColor, width: "30px", height: "30px", marginTop: "4px", borderRadius: "4px", border: "1px solid #ccc" }}></div>
+              </div>
+              <div className="editnote-popup-item">
+                  <span>Folder Notes</span>
+                  <input type="text" disabled className="noteinfo-input editnote-titleinput" value={
+                      Array.isArray(noteToShow.folderNotes) 
+                          ? noteToShow.folderNotes.length 
+                          : JSON.parse(noteToShow.folderNotes || "[]").length
+                  }></input>
+              </div>
+            </div>
+            <div className="noteinfo-popup-sidebyside">
+              <div className="editnote-popup-item">
+                  <span>Original Author</span>
+                  <input type="text" disabled className="noteinfo-input editnote-titleinput" value={noteToShow.folderOriginalAuthor}></input>
+              </div>
+              <div className="editnote-popup-item">
+                  <span>Created</span>
+                  <input type="text" disabled className="noteinfo-input editnote-titleinput" value={formatDate(noteToShow.created)}></input>
+              </div>
+              <div className="editnote-popup-item">
+                  <span>Folder ID</span>
+                  <input type="text" disabled className="noteinfo-input editnote-titleinput" value={noteToShow.folderID}></input>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        )}
         <div className="settings-bottom-bar">
           <button className="settings-close-btn" onClick={onNoteInfoPopupClose}>
             Close
