@@ -929,6 +929,7 @@ const App = () => {
         <SnackbarProvider />
         </div>
         <BottomBar 
+          notes={notes}
           autosaveStatus={autosaveStatus} 
           editorContent={activeEditorNoteContent} 
           isEditorContentDecoded={isEditorContentDecoded}

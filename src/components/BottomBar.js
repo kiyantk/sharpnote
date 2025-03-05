@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotate, faToggleOn, faCheck, faToggleOff, faQuestion, faStarOfLife } from "@fortawesome/free-solid-svg-icons";
 
-const BottomBar = ({ autosaveStatus, editorContent, isEditorContentDecoded, onRefresh, onManualSaveNote, noteOpened, manualSaveIcon, manualSaveText, onShortcutAddNote, onShortcutCloseNote, settings }) => {
+const BottomBar = ({ notes, autosaveStatus, editorContent, isEditorContentDecoded, onRefresh, onManualSaveNote, noteOpened, manualSaveIcon, manualSaveText, onShortcutAddNote, onShortcutCloseNote, settings }) => {
   const [rotating, setRotating] = useState(false);
   let editorContentToUse = ''
 
@@ -83,6 +83,11 @@ const BottomBar = ({ autosaveStatus, editorContent, isEditorContentDecoded, onRe
         <button className={`refresh-btn ${rotating ? "rotating" : ""}`} onClick={handleRefresh}>
           <FontAwesomeIcon icon={faRotate} />
         </button>
+        {settings?.userSettings?.showNoteCounter && (
+        <div>
+          <span className="note-counter">{notes.length} notes</span>
+        </div>
+        )}
       </div>
 
       <div className="bottom-bar-right">

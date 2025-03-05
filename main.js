@@ -327,7 +327,8 @@ const defaultConfig = {
     "showUnsavedChangesWarning": true,
     "disableImportChecks": false,
     "folderDeleteBehaviour": "deletenotes",
-    "showTextStatistics": true
+    "showTextStatistics": true,
+    "showNoteCounter": false
   },
   "structure": {
     "folders": [],

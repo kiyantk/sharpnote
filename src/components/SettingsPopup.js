@@ -87,6 +87,16 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
     }));
   }
 
+  const handleCheckboxChangeShowNoteCounter = (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      userSettings: {
+        ...prev.userSettings,
+        showNoteCounter: event.target.checked,
+      },
+    }));
+  }
+
   const handleUsernameChange = (event) => {
     const newValue = event.target.value;
   
@@ -222,6 +232,14 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                       onChange={handleCheckboxChangeShowMenubarIcons}
                     />
                     <span>Show icons in menubar</span>
+                </div>
+                <div className="settings-content-item">
+                    <input
+                      type="checkbox"
+                      checked={settings?.userSettings.showNoteCounter}
+                      onChange={handleCheckboxChangeShowNoteCounter}
+                    />
+                    <span>Show note counter</span>
                 </div>
               </div>
             )}

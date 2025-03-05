@@ -6,14 +6,34 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
   const [importedFile, setImportedFile] = useState(null);
   const [fileValid, setFileValid] = useState(false);
   const [fileInvalid, setFileInvalid] = useState(false);
+  const [versionNotSupported, setVersionNotSupported] = useState(false)
+  const [version, setVersion] = useState("")
   const fileInputRef = React.useRef(null);
   const [fileName, setFileName] = useState(null);
   const [invalidSubnotes, setInvalidSubnotes] = useState(0);
 
+  const versionCheck = (noteVersion) => {
+    if(noteVersion === "1.0.0" || noteVersion === "1.1.0") {
+      return false
+    } else {
+      return true
+    }
+  }
+
   const checkImportValid = (json) => {
+    setImportedFile(null);
+    setFileValid(false);
+    setFileInvalid(false);
+    setVersionNotSupported(false);
+    setVersion("");
     if(!settings.userSettings.disableImportChecks) {
       const authorRegex = /^[a-zA-Z0-9\-_ ]*$/;
       if(json.noteID) {
+        if(!versionCheck(json.sharpnoteVersion)) {
+          setVersionNotSupported(true);
+          setVersion(json.sharpnoteVersion);
+          return {newJSON: json, valid: false};
+        }
         // Checks for a .sharp
         if(json.hasOwnProperty('sharpnoteVersion') && 
            json.hasOwnProperty('noteTitle') && 
@@ -42,6 +62,11 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
           return {newJSON: json, valid: false}
         }
       } else if(json.sharpbookID) {
+        if(!versionCheck(json.sharpnoteVersion)) {
+          setVersionNotSupported(true);
+          setVersion(json.sharpnoteVersion);
+          return {newJSON: json, valid: false};
+        }
         // Checks for a .sharpbook
         if(json.hasOwnProperty('notes') && 
            json.hasOwnProperty('sharpnoteVersion') && 
@@ -67,7 +92,8 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
               note.noteOriginalAuthor.length <= 32 &&
               note.noteLastAuthor.length <= 32 &&
               note.noteHistory.created &&
-              authorRegex.test(note.noteOriginalAuthor)
+              authorRegex.test(note.noteOriginalAuthor) &&
+              versionCheck(note.sharpnoteVersion)
             );
           
             if (!isValid) {
@@ -186,7 +212,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
               onChange={handleFileSelect}
             />
           </div>
-          {importedFile && fileValid && (
+          {importedFile && fileValid && !versionNotSupported && (
             <div className="import-file-info">
               <span className="import-valid-file-text"><FontAwesomeIcon icon={faCircleCheck} /> Valid SharpNote File</span>
               {importedFile.notes && (
@@ -209,7 +235,13 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
               )}
             </div>
           )}
-          {fileInvalid && (
+          {versionNotSupported && (
+            <div className="import-file-info">
+              <span className="import-invalid-file-text"><FontAwesomeIcon icon={faCircleXmark} /> SharpNote version not supported</span><br></br>
+              <span className="import-invalid-version-text">The selected file was created in SharpNote version {version}, which isn't supported by your installed version (1.2.0)</span>
+            </div>
+          )}
+          {fileInvalid && !versionNotSupported && (
             <div className="import-file-info">
               <span className="import-invalid-file-text"><FontAwesomeIcon icon={faCircleXmark} /> Invalid SharpNote File</span>
             </div>

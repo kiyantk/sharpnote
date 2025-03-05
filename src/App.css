@@ -582,7 +582,9 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: transform 0.5s ease;
-  display: inline-flex
+  display: inline-flex;
+  margin-right: 10px;
+  align-items: center;
 }
 
 .refresh-btn.rotating {
@@ -609,9 +611,24 @@ body {
   width: 122px;
 }
 
+.note-counter {
+  position: relative;
+  border-left: 1px solid #313131;
+  border-right: 1px solid #313131;
+  padding: 0px 10px;
+  width: fit-content;
+  font-size: 14px;
+  display: block;
+  height: 100%;
+  line-height: 1.5;
+}
+
 .bottom-bar-left {
+  display: flex;
   position: absolute;
-  left: 10px
+  left: 10px;
+  height: 100%;
+  overflow-y: clip;
 }
 
 .bottom-bar-right {
@@ -943,6 +960,11 @@ input:focus {
 .import-invalid-file-text {
   color: #e6b3b3;
   vertical-align: middle;
+}
+
+.import-invalid-version-text {
+  color: gray;
+  font-size: 12px;
 }
 
 .import-file-info {
