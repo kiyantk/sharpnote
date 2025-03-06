@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import NoteItem from "./NoteItem";
 import FolderItem from "./FolderItem";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faBars, faClockRotateLeft, faFolderPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faBars, faClockRotateLeft, faFolderPlus, faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
 
 const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, activeTab, onTabSwitch, onEditNote, 
   selectedNoteId, onNoteContextMenu, deleteModeOn, leftPanelVisible, onAddFolder, folders,
-  onDeleteFolder, onClickFolder, onFolderContextMenu, openedFolders}) => {
+  onDeleteFolder, onClickFolder, onFolderContextMenu, openedFolders, toggleLeftPanel}) => {
   const [fullList, setFullList] = useState([]);
   // Sort notes based on tab selected (all tab = created, recent tab = lastOpened)
   const sortedList = activeTab === "recent"
@@ -18,12 +18,12 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
   }, [notes, folders]);
 
   return (
-    <div className="note-list" style={{display: leftPanelVisible ? 'initial' : 'none'}}>
-      <div className="note-list-topbar">
+    <div className={`${leftPanelVisible ? 'note-list' : 'note-list-min'}`}>
+      <div className="note-list-topbar" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
         <button className="note-list-topbutton" onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> New Note</button>
         <button className="note-list-topbutton" onClick={onAddFolder} style={{borderLeft: '2px solid #4e4e4e'}}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button>
       </div>
-      <div className="note-list-tabs">
+      <div className="note-list-tabs" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
         <div 
           className={`note-list-tab ${activeTab === "all" ? 'note-list-tab-active' : ''}`} 
           id="note-list-tab-all" 
@@ -39,7 +39,7 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
           <FontAwesomeIcon icon={faClockRotateLeft} /> Recent Notes
         </div>
       </div>
-      <div className="note-list-notes">
+      <div className="note-list-notes" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
       <div className={`note-list-notes-${activeTab}`}>
         {sortedList.map((note) =>
           (note.sharpnoteType === "note" && (note.noteFolder?.length < 1 || note.noteFolder === null)) ? (
@@ -76,6 +76,21 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
         )}
       </div>
       </div>
+      {leftPanelVisible && (
+        <div className="note-list-bottombar">
+          <button className="note-list-bottombutton"></button>
+          <button className="note-list-bottombutton"></button>
+          <button className="note-list-bottombutton"></button>
+          <button className="note-list-bottombutton"></button>
+          <button className="note-list-bottombutton"></button>
+          <button className="note-list-bottombutton" onClick={toggleLeftPanel}><FontAwesomeIcon icon={faAnglesLeft} /></button>
+        </div>
+      )}
+      {!leftPanelVisible && (
+        <div className="note-list-bottombar-min">
+          <button className="note-list-bottombutton note-list-bottombutton-min" onClick={toggleLeftPanel}><FontAwesomeIcon icon={faAnglesRight} /></button>
+        </div>
+      )}
     </div>
   );
 };

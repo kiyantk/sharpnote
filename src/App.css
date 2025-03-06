@@ -77,6 +77,7 @@ body {
   /* border-bottom: 1px solid gray; */
   border-bottom: 1px solid #414141;
   user-select: none;
+  z-index: 200;
 }
 
 /* Dropdown Menu */
@@ -246,8 +247,27 @@ body {
   border-right: 1px solid #393939;
   /* padding: 10px; */
   /* height: 100%; Full height */
-  height: calc(100% - 26px);
+  height: calc(100% - 23px);
   user-select: none;
+}
+
+.note-list-min {
+  width: 50px; /* Fixed width for note list */
+  /* background: #2c2c2c; */
+  background-color: #222222;
+  border-right: 1px solid #393939;
+  /* padding: 10px; */
+  /* height: 100%; Full height */
+  height: calc(100% - 23px);
+  user-select: none;
+}
+
+.note-list-bottombar-min {
+  display: grid;
+  grid-template-columns: auto;
+  height: 100%;
+  position: relative;
+  background-color: #181818;
 }
 
 .note-list-topbutton {
@@ -269,6 +289,32 @@ body {
   display: grid;
   grid-template-columns: 50% 50%;
   border-bottom: 2px solid #4e4e4e;
+}
+
+.note-list-bottombar {
+  display: grid;
+  grid-template-columns: 15% 15% 15% 15% 15% 15%;
+  height: 40px;
+  justify-content: right;
+  background-color: #181818;
+  border-top: 1px solid #4e4e4e;
+}
+
+.note-list-bottombutton {
+  padding: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #181818;
+  color: white;
+  border: none;
+  line-height: 1;
+}
+
+.note-list-bottombutton-min {
+  height: 40px;
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
 }
 
 .note-list-topbutton:hover {
@@ -461,7 +507,7 @@ body {
 .note-list-notes {
   margin-top: 9px;
   overflow-y: auto;
-  height: calc(100vh - 131px);
+  height: calc(100vh - 171px);
 }
 
 /* width */

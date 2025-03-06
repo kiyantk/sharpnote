@@ -861,6 +861,7 @@ const App = () => {
             folders={folders}
             openedFolders={openedFolders}
             onFolderContextMenu={openFolderContextMenu}
+            toggleLeftPanel={onToggleLeftPanel}
           />
           <NoteEditor 
             selectedNote={selectedNote} 
