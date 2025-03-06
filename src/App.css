@@ -428,7 +428,7 @@ body {
   display: flex;
   flex-direction: column;
   /* height: 100%; Ensure it stretches fully */
-  height: calc(100% - 26px);
+  height: calc(100% - 23px);
 }
 
 .editor input {
