@@ -29,10 +29,6 @@ const FolderContextMenu = ({currentActiveCtx, currentActiveCtxFull, currentMouse
     }
   }
 
-  useEffect(() => {
-    console.log(currentActiveCtxFull.folderNotes)
-  }, [currentActiveCtxFull]);
-
   return (
     <div className="note-context-menu" ref={menuRef} style={{left: currentMouseEvent?.clientX + 10, top: currentMouseEvent?.clientY}}>
       <div className="note-context-menu-container">

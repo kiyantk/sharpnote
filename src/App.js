@@ -213,7 +213,6 @@ const App = () => {
       noteContent: "",
       noteColor: "#FFFFFF",
       noteAttachments: [],
-      noteSyntax: "",
       noteOriginalAuthor: localUsername ? localUsername : null,
       noteLastAuthor: localUsername ? localUsername : null,
       noteFolder: null,
@@ -225,6 +224,7 @@ const App = () => {
         noteVersion: 1,
       },
       noteTags: [],
+      isReadonly: 0
     };
 
     try {

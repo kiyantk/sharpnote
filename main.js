@@ -137,7 +137,7 @@ ipcMain.handle("get-folders", () => {
 // Add a new note
 ipcMain.handle("add-note", (_, newNote) => {
   const stmt = db.prepare(`
-    INSERT INTO notes (noteID, sharpnoteVersion, sharpnoteType, noteTitle, noteContent, noteColor, noteAttachments, noteSyntax, noteOriginalAuthor, noteLastAuthor, noteFolder, created, lastSaved, lastOpened, lastExported, noteVersion, noteTags)
+    INSERT INTO notes (noteID, sharpnoteVersion, sharpnoteType, noteTitle, noteContent, noteColor, noteAttachments, noteOriginalAuthor, noteLastAuthor, noteFolder, created, lastSaved, lastOpened, lastExported, noteVersion, noteTags, isReadonly )
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
@@ -149,7 +149,6 @@ ipcMain.handle("add-note", (_, newNote) => {
     newNote.noteContent,
     newNote.noteColor,
     JSON.stringify(newNote.noteAttachments || []), // Store as JSON
-    newNote.noteSyntax,
     newNote.noteOriginalAuthor,
     newNote.noteLastAuthor,
     newNote.noteFolder,
@@ -158,7 +157,8 @@ ipcMain.handle("add-note", (_, newNote) => {
     newNote.noteHistory.lastOpened,
     newNote.noteHistory.lastExported || "",
     newNote.noteHistory.noteVersion,
-    JSON.stringify(newNote.noteTags || []) // Store as JSON
+    JSON.stringify(newNote.noteTags || []), // Store as JSON
+    newNote.isReadonly
   );
 
   return newNote;
@@ -188,7 +188,7 @@ ipcMain.handle("update-note", (_, updatedNote) => {
   try {
     const stmt = db.prepare(`
       UPDATE notes
-      SET noteTitle = ?, noteContent = ?, noteColor = ?, noteAttachments = ?, noteSyntax = ?, noteOriginalAuthor = ?, noteLastAuthor = ?, lastSaved = ?, lastOpened = ?, lastExported = ?, noteVersion = ?, noteTags = ?
+      SET noteTitle = ?, noteContent = ?, noteColor = ?, noteAttachments = ?, noteOriginalAuthor = ?, noteLastAuthor = ?, lastSaved = ?, lastOpened = ?, lastExported = ?, noteVersion = ?, noteTags = ? , isReadonly = ?
       WHERE noteID = ?
     `);
 
@@ -197,7 +197,6 @@ ipcMain.handle("update-note", (_, updatedNote) => {
       updatedNote.noteContent,
       updatedNote.noteColor,
       updatedNote.noteAttachments,
-      updatedNote.noteSyntax,
       updatedNote.noteOriginalAuthor,
       updatedNote.noteLastAuthor,
       updatedNote.lastSaved,
@@ -205,6 +204,7 @@ ipcMain.handle("update-note", (_, updatedNote) => {
       updatedNote.lastExported || "",
       updatedNote.noteVersion,
       updatedNote.noteTags,
+      updatedNote.isReadonly,
       updatedNote.noteID
     );
 

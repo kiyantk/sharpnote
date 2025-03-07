@@ -47,6 +47,13 @@ const EditPopup = ({ closeEditPopup, noteToEdit, applyEdits, editPopupType }) =>
     setEditedNoteToDisplay(newSetting)
   }
 
+  const handleReadonlyInputChange = (event) => {
+    const newSetting = { ...editedNoteToSave, isReadonly: event.target.checked ? 1 : 0 };
+  
+    setEditedNoteToSave({ ...newSetting });  // Create a new object reference
+    setEditedNoteToDisplay({ ...newSetting }); // Ensure rerender
+  };
+
   return (
     <div className="settings-popup-overlay">
       <div className="editnote-popup">
@@ -67,6 +74,12 @@ const EditPopup = ({ closeEditPopup, noteToEdit, applyEdits, editPopupType }) =>
                 <div className="noteColor-editcontainer">
                     <div style={{ backgroundColor: editedNoteToDisplay.noteColor, width: "30px", height: "30px", borderRadius: "4px", border: "1px solid #ccc" }}></div>
                     <input type="color" className="editnote-input" value={editedNoteToDisplay.noteColor} onInput={handleColorInputChange}></input>
+                </div>
+            </div>
+            <div className="editnote-popup-item">
+                <span>Is Readonly</span>
+                <div className="noteColor-editcontainer">
+                    <input type="checkbox" className="editnote-input" style={{width: '25px', height: '25px'}} checked={!!editedNoteToDisplay.isReadonly} onChange={handleReadonlyInputChange}></input>
                 </div>
             </div>
         </div>

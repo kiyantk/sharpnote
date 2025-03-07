@@ -24,7 +24,6 @@ db.exec(`
     noteContent TEXT,
     noteColor TEXT,
     noteAttachments TEXT,
-    noteSyntax TEXT,
     noteOriginalAuthor TEXT,
     noteLastAuthor TEXT,
     noteFolder TEXT,
@@ -33,7 +32,8 @@ db.exec(`
     lastOpened TEXT,
     lastExported TEXT,
     noteVersion INTEGER,
-    noteTags TEXT
+    noteTags TEXT,
+    isReadonly BOOL
   )
 `);
 

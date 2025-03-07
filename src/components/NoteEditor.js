@@ -81,6 +81,7 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
     <div className="editor">
       <textarea
         value={content}
+        disabled={selectedNote && selectedNote.isReadonly === 1}
         onInput={(e) => handleUpdate("noteContent", e.target.value)}
       />
     </div>
