@@ -54,7 +54,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "installerSidebar": "build/sharpnote-v1-installfinished.bmp"
+      "installerSidebar": "build/sharpnote-v2-installfinished.bmp"
     },
     "fileAssociations": [
       {

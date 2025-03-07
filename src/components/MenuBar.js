@@ -3,9 +3,9 @@ import SettingsPopup from "./SettingsPopup";
 import ExportPopup from "./ExportPopup";
 import ImportPopup from "./ImportPopup";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowsLeftRightToLine, faBook, faClipboard, faCog, faCopy, faCut, faDownload, faFileImport, faRectangleXmark, faRedo, faTrash, faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faArrowsLeftRightToLine, faBook, faClipboard, faCog, faCopy, faCut, faDownload, faFileImport, faRectangleXmark, faRedo, faTrash, faUndo, faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
 
-const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedError, toggleDeleteMode, toggleLeftPanel, exportNoteThruCtx, onPreSelectReceived, presetFile}) => {
+const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedError, toggleDeleteMode, toggleLeftPanel, exportNoteThruCtx, onPreSelectReceived, presetFile, deleteAllNotes, toggleFullscreen}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSettingsPopupOpen, setIsSettingsPopupOpen] = useState(false);
   const [isExportPopupOpen, setIsExportPopupOpen] = useState(false);
@@ -148,6 +148,7 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
         <div className="menubar-dropdown-overlay">
         <div ref={menuRef} className={`dropdown-menu ${settings?.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>
           <button onClick={toggleLeftPanel}><FontAwesomeIcon icon={faArrowsLeftRightToLine} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Toggle Left Panel</span></button>
+          <button onClick={toggleFullscreen}><FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} style={{display: settings?.userSettings.showMenubarIcons ? "initial" : "none"}}/><span>Toggle Fullscreen</span></button>
         </div>
         </div>
       )}
@@ -163,6 +164,7 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
           closePopup={closeSettingsPopup}
           currentSettings={settings}  // Pass current settings
           applySettings={applySettings} // Pass function to apply new settings
+          deleteAllNotes={deleteAllNotes}
         />
       )}
       {isExportPopupOpen && (

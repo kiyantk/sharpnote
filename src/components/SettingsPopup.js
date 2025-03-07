@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDisplay, faHardDrive, faKeyboard, faPencil, faToolbox, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faDisplay, faHardDrive, faKeyboard, faPencil, faToolbox, faTriangleExclamation, faUser } from '@fortawesome/free-solid-svg-icons';
 
-const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
+const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNotes }) => {
   const [selectedTab, setSelectedTab] = useState("User");
   const [settings, setSettings] = useState(currentSettings);
 
@@ -266,6 +266,10 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings }) => {
                         <option value="deletenotes">Delete notes</option>
                         <option value="keepnotes">Keep notes</option>
                     </select>
+                </div>
+                <div className="settings-content-item">
+                    <span>Storage Actions:</span>
+                    <button className="settings-normal-button" onClick={deleteAllNotes}><FontAwesomeIcon icon={faTriangleExclamation} /> Delete Everything</button>
                 </div>
               </div>
             )}

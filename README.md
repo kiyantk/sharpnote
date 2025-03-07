@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://cdn.kiy.li/img/sharpnote/logo-v1-colored-blue-verybright-100px.png" alt="SharpNote Logo"/>
+  <img src="https://cdn.kiy.li/img/sharpnote/logo-v2-dark-light-flat-sharp-4-128.png" width="100" alt="SharpNote Logo"/>
 </p>
 
 # SharpNote

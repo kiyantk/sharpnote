@@ -483,11 +483,12 @@ body {
 .note-list-tabs {
   display: grid;
   grid-template-columns: 50% 50%;
+  font-size: 14px;
 }
 
 .note-list-tab {
   background-color: #171717;
-  padding: 6px;
+  padding: 5px;
 }
 
 .note-list-tab:hover {
@@ -505,9 +506,9 @@ body {
 }
 
 .note-list-notes {
-  margin-top: 9px;
+  margin-top: 7px;
   overflow-y: auto;
-  height: calc(100vh - 171px);
+  height: calc(100vh - 164px);
 }
 
 /* width */

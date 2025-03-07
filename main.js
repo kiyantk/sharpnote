@@ -388,6 +388,10 @@ ipcMain.handle("open-sharpnote-location", () => {
   shell.openPath(appPath);
 });
 
+ipcMain.handle("toggle-fullscreen", (event, mode) => {
+  mainWindow.setFullScreen(mode);
+});
+
 // Function that updates just the lastOpened field in the database (implement this)
 async function updateNoteLastOpened(noteID) {
   const stmt = db.prepare(`

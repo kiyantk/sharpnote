@@ -9,6 +9,7 @@ import NoteContextMenu from "./components/NoteContextMenu";
 import NoteInfo from "./components/NoteInfo";
 import UnsavedChanges from "./components/UnsavedChanges";
 import FolderContextMenu from "./components/FolderContextMenu";
+import DeleteAllPopup from "./components/DeleteAllPopup";
 import './App.css';
 import { faXmark, faCheck, faSave } from "@fortawesome/free-solid-svg-icons";
 import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from 'notistack';
@@ -56,6 +57,8 @@ const App = () => {
   const [activeFolderContextMenuFull, setActiveFolderContextMenuFull] = useState(null);
   const [activeFolderContextMenuEvent, setActiveFolderContextMenuEvent] = useState(null);
   const [editPopupType, setEditPopupType] = useState(null);
+  const [isDeleteAllPopupOpen, setIsDeleteAllPopupOpen] = useState(false);
+  const [currentFsMode, setCurrentFsMode] = useState(false);
 
   const handleAutoSaveStatusChange = (status) => {
     setAutosaveStatus(status); // Update the status when it's passed from NoteEditor
@@ -828,6 +831,30 @@ const App = () => {
     setIsEditorContentDecoded(true)
   }
 
+  const toggleFullscreen = () => {
+    if (!window.electron) return;
+    const newFsMode = !currentFsMode;
+    window.electron.ipcRenderer.invoke("toggle-fullscreen", newFsMode);
+    setCurrentFsMode(newFsMode);
+  }
+
+  const deleteAllNotesCheck = () => {
+    setIsDeleteAllPopupOpen(true)
+  }
+
+  const deleteAllNotes = (answer) => {
+    if(answer === "yes") {
+      notes.forEach(note => {
+        deleteNote(note)
+      });
+
+      folders.forEach(folder => {
+        deleteFolder(folder)
+      });
+    }
+    setIsDeleteAllPopupOpen(false)
+  }
+
   return (
     <div className="App">
       <div className="App-main">
@@ -841,6 +868,8 @@ const App = () => {
           exportNoteThruCtx={notesToExportNoteThruCtx}
           onPreSelectReceived={clearPreSelectThruCtx}
           presetFile={fileToImport}
+          deleteAllNotes={deleteAllNotesCheck}
+          toggleFullscreen={toggleFullscreen}
         />
         <div className="content">
           <NoteList
@@ -925,6 +954,11 @@ const App = () => {
             onUnsavedChangesAnswer={handleUnsavedChangesAnswer}
             noteToSwitchTo={unsavedChangesPopupNoteToSwitchTo}
             unsavedChangesType={unsavedChangesPopupType}
+          />
+        )}
+        {isDeleteAllPopupOpen && (
+          <DeleteAllPopup
+            deleteAllAnswer={deleteAllNotes}
           />
         )}
         <SnackbarProvider />
