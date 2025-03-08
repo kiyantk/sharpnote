@@ -17,6 +17,7 @@ app.whenReady().then(() => {
       enableRemoteModule: false,
       nodeIntegration: false, // Prevent unsafe access
     },
+    titleBarStyle: 'hidden'
   });
 
   app.on('browser-window-focus', () => {
