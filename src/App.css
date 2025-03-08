@@ -22,7 +22,7 @@
 
 .App-main {
   /* background-color: #25272b; */
-  background-color: #222222;
+  background-color: #070b12;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -67,7 +67,7 @@ body {
   width: 100%;
   height: 26px;
   /* background: #282c34; */
-  background: #242424;
+  background: #070b12;
   color: white;
   display: flex;
   align-items: center;
@@ -75,9 +75,9 @@ body {
   gap: 10px;
   /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
   /* border-bottom: 1px solid gray; */
-  border-bottom: 1px solid #414141;
   user-select: none;
   z-index: 200;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
 /* Dropdown Menu */
@@ -210,7 +210,7 @@ body {
 }
 
 .note-item-active {
-  background-color: #3a3a3a !important
+  background-color: #24292f !important
 }
 
 .menu-bar>button {
@@ -243,7 +243,7 @@ body {
 .note-list {
   width: 300px; /* Fixed width for note list */
   /* background: #2c2c2c; */
-  background-color: #222222;
+  background-color: #070b12;
   border-right: 1px solid #393939;
   /* padding: 10px; */
   /* height: 100%; Full height */
@@ -254,7 +254,7 @@ body {
 .note-list-min {
   width: 50px; /* Fixed width for note list */
   /* background: #2c2c2c; */
-  background-color: #222222;
+  background-color: #070b12;
   border-right: 1px solid #393939;
   /* padding: 10px; */
   /* height: 100%; Full height */
@@ -267,14 +267,14 @@ body {
   grid-template-columns: auto;
   height: 100%;
   position: relative;
-  background-color: #181818;
+  background-color: #070b12;
 }
 
 .note-list-topbutton {
   padding: 10px;
   font-size: 16px;
   cursor: pointer;
-  background: #2e2e2e;
+  background: #070b12;
   color: white;
   border: none;
   line-height: 1;
@@ -288,7 +288,7 @@ body {
   /* margin-top: 10px; */
   display: grid;
   grid-template-columns: 50% 50%;
-  border-bottom: 2px solid #4e4e4e;
+  border-bottom: 1px solid #2d2d2d;
 }
 
 .note-list-bottombar {
@@ -296,15 +296,15 @@ body {
   grid-template-columns: 15% 15% 15% 15% 15% 15%;
   height: 40px;
   justify-content: right;
-  background-color: #181818;
-  border-top: 1px solid #4e4e4e;
+  background-color: #070b12;
+  border-top: 1px solid #2d2d2d;
 }
 
 .note-list-bottombutton {
   padding: 5px;
   font-size: 14px;
   cursor: pointer;
-  background: #181818;
+  background: #070b12;
   color: white;
   border: none;
   line-height: 1;
@@ -325,20 +325,18 @@ body {
   display: grid;
   justify-content: space-between;
   align-items: center;
-  background: #2e2e2e;
-  /* border-radius: 5px; */
+  background: #070b12;
+  border-radius: 5px;
   margin-bottom: 4.8px;
   cursor: pointer;
   padding: 0px 0px 0px 10px;
   grid-template-columns: 8% 92%;
   text-align: left;
-  height: 32px;
-  border-bottom: 1px solid #363636;
-  border-top: 1px solid #363636;
+  height: 25px;
 }
 
 .note-item:hover, .note-item-style-slim:hover, .note-item-style-big:hover, .note-item-style-detailed:hover {
-  background: #434343;
+  background: #161a21;
 }
 
 .note-item-style-slim {
@@ -429,6 +427,7 @@ body {
   flex-direction: column;
   /* height: 100%; Ensure it stretches fully */
   height: calc(100% - 23px);
+  background: #201f1e;
 }
 
 .editor input {
@@ -508,7 +507,9 @@ body {
 .note-list-notes {
   margin-top: 7px;
   overflow-y: auto;
-  height: calc(100vh - 164px);
+  height: calc(100vh - 134px);
+  padding: 0px 10px;
+  font-size: 14px;
 }
 
 /* width */
@@ -979,8 +980,7 @@ input:focus {
 
 .note-item-deletemode:hover {
   background-color: rgba(211, 131, 131, 0.248) !important;
-  border-top: 1px solid #6f4646;
-  border-bottom: 1px solid #6f4646;
+  border: 1px solid #6f4646;
 }
 
 .hide-vertical-overflow-text {
@@ -1086,13 +1086,13 @@ input:focus {
 
 .opened-folder-notes-container {
   display: block;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  /* padding-top: 5px; */
+  /* padding-bottom: 5px; */
   /* background-color: #1e1e1e; */
-  margin-top: -4.8px;
+  /* margin-top: -4.8px; */
 }
 
 .note-item-under-folder {
   margin-left: 19px;
-  border-left: 1px solid #363636;
+  /* border-left: 1px solid #363636; */
 }

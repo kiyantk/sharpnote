@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NoteItem from "./NoteItem";
 import FolderItem from "./FolderItem";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faBars, faClockRotateLeft, faFolderPlus, faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faBars, faClockRotateLeft, faFolderPlus, faAnglesLeft, faAnglesRight, faArrowDownWideShort } from '@fortawesome/free-solid-svg-icons';
 
 const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, activeTab, onTabSwitch, onEditNote, 
   selectedNoteId, onNoteContextMenu, deleteModeOn, leftPanelVisible, onAddFolder, folders,
@@ -21,9 +21,9 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
     <div className={`${leftPanelVisible ? 'note-list' : 'note-list-min'}`}>
       <div className="note-list-topbar" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
         <button className="note-list-topbutton" onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> New Note</button>
-        <button className="note-list-topbutton" onClick={onAddFolder} style={{borderLeft: '2px solid #4e4e4e'}}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button>
+        <button className="note-list-topbutton" onClick={onAddFolder}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button>
       </div>
-      <div className="note-list-tabs" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
+      {/* <div className="note-list-tabs" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
         <div 
           className={`note-list-tab ${activeTab === "all" ? 'note-list-tab-active' : ''}`} 
           id="note-list-tab-all" 
@@ -38,7 +38,7 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
         >
           <FontAwesomeIcon icon={faClockRotateLeft} /> Recent Notes
         </div>
-      </div>
+      </div> */}
       <div className="note-list-notes" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
       <div className={`note-list-notes-${activeTab}`}>
         {sortedList.map((note) =>
@@ -82,7 +82,7 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
           <button className="note-list-bottombutton"></button>
           <button className="note-list-bottombutton"></button>
           <button className="note-list-bottombutton"></button>
-          <button className="note-list-bottombutton"></button>
+          <button className="note-list-bottombutton"><FontAwesomeIcon icon={faArrowDownWideShort} /></button>
           <button className="note-list-bottombutton" onClick={toggleLeftPanel}><FontAwesomeIcon icon={faAnglesLeft} /></button>
         </div>
       )}
