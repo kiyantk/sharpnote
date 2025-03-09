@@ -6,6 +6,19 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
   const [selectedTab, setSelectedTab] = useState("User");
   const [settings, setSettings] = useState(currentSettings);
 
+  const [storageUsage, setStorageUsage] = useState({ app: 0, notes: 0, total: 1 });
+
+  const getUsageData = async () => {
+      await window.electron.ipcRenderer.invoke("get-storage-usage").then((data) => {
+        if (data) {
+          setStorageUsage({
+            app: data.appStorageUsed,
+            notes: data.dbSize,
+          });
+        }
+      });
+  };
+
   useEffect(() => {
     // Load settings when component mounts
     window.electron.ipcRenderer.invoke("get-settings").then((loadedSettings) => {
@@ -148,6 +161,8 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     window.electron.ipcRenderer.invoke('open-sharpnote-location');
   }
 
+  function formatBytes(a,b=2){if(!+a)return"0 Bytes";const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return`${parseFloat((a/Math.pow(1024,d)).toFixed(c))} ${["Bytes","KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"][d]}`}
+
   return (
     <div className="settings-popup-overlay">
       <div className="settings-popup">
@@ -266,6 +281,16 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
                         <option value="deletenotes">Delete notes</option>
                         <option value="keepnotes">Keep notes</option>
                     </select>
+                </div>
+                <div className="settings-content-item">
+                  <span>Storage Usage:</span>
+                  <button className="settings-normal-button" onClick={() => getUsageData()}>Fetch Usage</button>
+                  <div className="storage-bar-container">
+                    <div className="storage-legend">
+                      <span className="storage-legend-text"><div className="storage-legend-app"></div>App Storage: {storageUsage.app > 0 ? formatBytes(storageUsage.app) : '?'}</span>
+                      <span className="storage-legend-text"><div className="storage-legend-notes"></div>Notes Storage {storageUsage.notes > 0 ? formatBytes(storageUsage.notes) : '?'}</span>
+                    </div>
+                  </div>
                 </div>
                 <div className="settings-content-item">
                     <span>Storage Actions:</span>

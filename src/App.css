@@ -858,6 +858,7 @@ input:focus {
   color: white;
   border: none;
   padding: 6px;
+  margin-top: 4px;
 }
 
 .settings-normal-button:hover {
@@ -905,7 +906,7 @@ input:focus {
 .note-export-typeselect {
   background-color: #333333;
   border: none;
-  padding: 10px 0px;
+  padding: 10px 3px;
   color: white;
   /* text-align: center; */
   width: 20%;
@@ -916,7 +917,7 @@ input:focus {
 .settings-itemstyle-select {
   background-color: #333333;
   border: none;
-  padding: 10px 0px;
+  padding: 10px 3px;
   color: white;
   /* text-align: center; */
   width: 20%;
@@ -940,7 +941,7 @@ input:focus {
 .note-export-methodselect {
   background-color: #333333;
   border: none;
-  padding: 10px 0px;
+  padding: 10px 3px;
   color: white;
   /* text-align: center; */
   width: 40%;
@@ -1095,4 +1096,60 @@ input:focus {
 .note-item-under-folder {
   margin-left: 19px;
   border-left: 1px solid #363636;
+}
+
+.storage-bar {
+  display: flex;
+  height: 16px;
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.storage-bar-app {
+  background-color: #4caf50;
+  height: 100%;
+  transition: width 0.4s ease-in-out;
+}
+
+.storage-bar-notes {
+  background-color: #2196f3;
+  height: 100%;
+  transition: width 0.4s ease-in-out;
+}
+
+.storage-legend {
+  margin-top: 3px;
+  display: grid;
+  justify-content: space-between;
+  font-size: 14px;
+  grid-template-columns: auto auto;
+  justify-content: left;
+  grid-gap: 10px;
+}
+
+.storage-legend-app {
+  background-color: #4caf50;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+}
+
+.storage-legend-notes {
+  background-color: #2196f3;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+}
+
+.storage-legend-text {
+  color: lightgray;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  grid-gap: 6px;
+  font-size: 13px;
+  line-height: 1.4;
 }
