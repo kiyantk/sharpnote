@@ -12,6 +12,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
   const [fileName, setFileName] = useState(null);
   const [invalidSubnotes, setInvalidSubnotes] = useState(0);
 
+  // Check if imported file was made in a supported version
   const versionCheck = async (noteVersion) => {
     if(noteVersion === "1.0.0" || noteVersion === "1.1.0") {
       return false
@@ -20,6 +21,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     }
   }
 
+  // Import validity checks
   const checkImportValid = async (json) => {
     setImportedFile(null);
     setFileValid(false);
@@ -149,6 +151,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     reader.readAsText(file);
   };
 
+  // If the user opened a .sharp or .sharpbook file
   const handleFileSelectByOpenFile = (file) => {
     if (!file || !file.content) return;
   
@@ -172,17 +175,20 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     }
   };
 
+  // Open file selection window on button click
   const triggerFileSelect = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
+  // Import the data on popup submission
   const doImport = () => {
     onImport(importedFile)
     closePopup();
   }
 
+  // If preset file (user opened .sharp or .sharpbook file directly)
   useEffect(() => {
     if (presetFile) {
       handleFileSelectByOpenFile(presetFile)

@@ -13,6 +13,7 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
   ? fullList.sort((a, b) => new Date(b.lastOpened) - new Date(a.lastOpened))
   : fullList.sort((a, b) => new Date(b.created) - new Date(a.created));
 
+  // Create full list by combining notes array and folders array
   useEffect(() => {
     setFullList(notes.concat(folders))
   }, [notes, folders]);
@@ -20,8 +21,8 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
   return (
     <div className={`${leftPanelVisible ? 'note-list' : 'note-list-min'}`}>
       <div className="note-list-topbar" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
-        <button className="note-list-topbutton" onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> New Note</button>
-        <button className="note-list-topbutton" onClick={onAddFolder} style={{borderLeft: '2px solid #4e4e4e'}}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button>
+        <button className="note-list-topbutton" onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> <span className="note-list-top-text">New Note</span></button>
+        <button className="note-list-topbutton" onClick={onAddFolder} style={{borderLeft: '2px solid #4e4e4e'}}><FontAwesomeIcon icon={faFolderPlus} /> <span className="note-list-top-text">New Folder</span></button>
       </div>
       <div className="note-list-tabs" style={{display: leftPanelVisible ? 'grid' : 'none'}}>
         <div 
@@ -29,14 +30,14 @@ const NoteList = ({ notes, settings, onAddNote, onDeleteNote, onSelectNote, acti
           id="note-list-tab-all" 
           onClick={() => onTabSwitch("all")} // Fix: Now correctly updates state on click
         >
-          <FontAwesomeIcon icon={faBars} /> All Notes
+          <FontAwesomeIcon icon={faBars} /> <span className="note-list-top-text">All Notes</span>
         </div>
         <div 
           className={`note-list-tab ${activeTab === "recent" ? 'note-list-tab-active' : ''}`} 
           id="note-list-tab-recent" 
           onClick={() => onTabSwitch("recent")} // Fix: Same as above
         >
-          <FontAwesomeIcon icon={faClockRotateLeft} /> Recent Notes
+          <FontAwesomeIcon icon={faClockRotateLeft} /> <span className="note-list-top-text">Recent Notes</span>
         </div>
       </div>
       <div className="note-list-notes" style={{display: leftPanelVisible ? 'grid' : 'none'}}>

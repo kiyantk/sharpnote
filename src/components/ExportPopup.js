@@ -24,6 +24,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     return result;
   };
   
+  // Do the exporting
   const handleExport = async () => {
     const currentTime = new Date().toISOString();
   
@@ -55,16 +56,20 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     };
   
     if (exportType === "single" && selectedNotes?.length === 1) {
+      // If user is exporting a single note
       const note = formatNoteForExport(selectedNotes[0]);
       if(exportFormat === "single-sharp") {
+        // Export as .sharp
         const fileContent = JSON.stringify(note, null, 2);
         const blob = new Blob([fileContent], { type: "application/json" });
         saveAs(blob, `${filename || note.noteTitle}.sharp`);
       } else if(exportFormat === "single-txt") {
+        // Export as Plaintext
         const decodedContent = atob(note.noteContent); // Decode base64 content
         const blob = new Blob([decodedContent], { type: "text/plain" });
         saveAs(blob, `${filename || note.noteTitle}.txt`);
       } else if(exportFormat === "single-pdf") {
+        // Export as PDF
         const decodedContent = atob(note.noteContent);
 
         const doc = new jsPDF();
@@ -73,6 +78,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
       
         doc.save(`${filename || note.noteTitle}.pdf`);
       } else if(exportFormat === "single-html") {
+        // Export as HTML
         const decodedContent = atob(note.noteContent);
 
         const htmlContent = `<!DOCTYPE html>
@@ -89,6 +95,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
         const blob = new Blob([htmlContent], { type: "text/html" });
         saveAs(blob, `${filename || note.noteTitle}.html`);
       } else if(exportFormat === "single-docx") {
+        // Export as Word Document
         const decodedContent = atob(note.noteContent);
         const lines = decodedContent.split('\n'); // Split by newline to separate into lines
         
@@ -123,6 +130,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
 
       window.addEventListener('focus', handleFocus(false));
     } else if ((exportType === "all" || exportType === "selection") && selectedNotes?.length > 0) {
+      // If the user is exporting multiple notes
       if (exportFormat === "pack") {
         // Export as a single .sharpbook file
         const bookContent = {
@@ -162,6 +170,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
         }
       }      
     } else if (exportType === "database") {
+      // If user is exporting the database
       try {
         const response = await window.electron.ipcRenderer.invoke("export-database", filename || "sharpnote.db");
   
@@ -180,7 +189,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     }
   };
 
-
+  // Update the filename and export format if user chooses new single note
   useEffect(() => {
     if(exportType === "single" && selectedNotes && selectedNotes.length === 1) {
       setFilename(selectedNotes[0].noteTitle);
@@ -188,6 +197,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     }
   }, [selectedNotes]);
 
+  // Set notes to be selected from pre-selected
   useEffect(() => {
     if(preSelecteds) {
       if(preSelecteds.length > 1) {
@@ -198,6 +208,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     }
   }, [preSelecteds]);
 
+  // Update filename and format on exportType change
   useEffect(() => {
     if(exportType === "all") {
       setFilename("Sharpbook");
@@ -223,6 +234,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     }
   }, [exportType]);
 
+  // Get filetype based on exportType and exportFormat
   const getFileType = () => {
     if(exportType) {
       switch(exportType) {
@@ -250,6 +262,7 @@ const ExportPopup = ({ closePopup, allNotes, settings, onExport, noneSelectedErr
     }
   }
 
+  // Icon to use next to exportType selection field
   const getExportTypeIcon = () => {
     if(exportType) {
       switch(exportType) {

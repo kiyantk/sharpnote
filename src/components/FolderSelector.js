@@ -4,8 +4,8 @@ import { faEdit, faTrash, faCircleInfo, faDownload, faArrowRight, faFolderPlus, 
 
 const FolderSelector = ({folders, onMoveToSelected, onCloseCtx, forNote}) => {
   const menuRef = useRef(null);
-  const [needToSelectFolder, setNeedToSelectFolder] = useState(false)
 
+  // Close alongside ctx if click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {

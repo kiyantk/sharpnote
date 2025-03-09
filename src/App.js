@@ -620,6 +620,7 @@ const App = () => {
     }    
   }
 
+  // Show success message after export
   const onExportDone = (numExported, isSharpbook, isDB) => {
     if(isSharpbook) {
       enqueueSnackbar(`Exported Sharpbook (${numExported} ${numExported > 1 ? 'notes' : 'note'})`, {className: 'notistack-custom-default', variant: 'success'})
@@ -630,6 +631,7 @@ const App = () => {
     }
   }
 
+  // Show error if user attempts to export 0 notes
   const showNoneSelectedError = () => {
     enqueueSnackbar("No notes were selected", {className: 'notistack-custom-default'})
   }
@@ -723,6 +725,7 @@ const App = () => {
     setNotesToExportNoteThruCtx(null)
   }
 
+  // If user answered yes to unsaved changes popup, do the action
   const handleUnsavedChangesAnswer = async (answer) => {
     if(answer === "yes") {
       // If user answered yes, switch note anyway
@@ -735,6 +738,7 @@ const App = () => {
     window.electron.confirmQuit() // Tell main process to quit
   }
 
+  // Move note to folder selected in FolderSelector thru CTX
   const onMoveToSelected = async (note, folder) => {
     if (!window.electron) return;
     if(note.noteID === selectedNoteId) {
@@ -743,9 +747,9 @@ const App = () => {
     }
     try {
     // Store the previous folder ID before changing
-    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS vv
+    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work) vv
     const oldFolderID = note.noteFolder;
-    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS ^^
+    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work) ^^
 
     // Toggle noteFolder
     note.noteFolder = note.noteFolder === folder.folderID ? null : folder.folderID;
@@ -764,7 +768,7 @@ const App = () => {
     folder.folderNotes = updatedFolderNotes;
 
     // Find the old folder (if the note was previously in one)
-    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS vv
+    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work) vv
     let updatedFolders = await window.electron.ipcRenderer.invoke("get-folders"); // Fetch latest folders
     let oldFolder = updatedFolders.find((f) => f.folderID === oldFolderID);
 
@@ -780,7 +784,7 @@ const App = () => {
       // Save changes to old folder
       await window.electron.ipcRenderer.invoke("set-foldernotes", oldFolder);
     }
-    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS ^^
+    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work) ^^
       
       await window.electron.ipcRenderer.invoke("set-notefolder", note);
       await window.electron.ipcRenderer.invoke("set-foldernotes", folder);
@@ -795,7 +799,7 @@ const App = () => {
             return { ...prevFolder, folderNotes: updatedFolderNotes }; // Update new folder
           }
           if (prevFolder.folderID === oldFolderID) {
-            return { ...prevFolder, folderNotes: oldFolder?.folderNotes || [] }; // Update old folder - REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS
+            return { ...prevFolder, folderNotes: oldFolder?.folderNotes || [] }; // Update old folder - REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work)
           }
           return prevFolder;
         })
@@ -806,6 +810,7 @@ const App = () => {
     }
   }
 
+  // If user answered yes to unsaved changes popup, do the action
   useEffect(() => {
     if (userJustAnsweredYesToUnsavedChangesPopup) {
       switch(unsavedChangesPopupType) {
@@ -831,6 +836,7 @@ const App = () => {
     setIsEditorContentDecoded(true)
   }
 
+  // Toggle fullscreen
   const toggleFullscreen = () => {
     if (!window.electron) return;
     const newFsMode = !currentFsMode;
@@ -838,10 +844,12 @@ const App = () => {
     setCurrentFsMode(newFsMode);
   }
 
+  // Ask user if they really want to delete all notes
   const deleteAllNotesCheck = () => {
     setIsDeleteAllPopupOpen(true)
   }
 
+  // Delete all notes if user answered yes to confirmation
   const deleteAllNotes = (answer) => {
     if(answer === "yes") {
       notes.forEach(note => {

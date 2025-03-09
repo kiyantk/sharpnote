@@ -11,7 +11,6 @@ const UnsavedChanges = ({ onUnsavedChangesAnswer, unsavedChangesType }) => {
     }
   }
 
-
   return (
     <div className="settings-popup-overlay">
       <div className="unsavedchanges-popup">

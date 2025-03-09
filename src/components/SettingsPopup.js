@@ -8,6 +8,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
 
   const [storageUsage, setStorageUsage] = useState({ app: 0, notes: 0, total: 1 });
 
+  // Get storage used in bytes
   const getUsageData = async () => {
       await window.electron.ipcRenderer.invoke("get-storage-usage").then((data) => {
         if (data) {
@@ -39,7 +40,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }));
   };
 
-  // Set local settings
+  // Set local settings (menu bar icons updated)
   const handleCheckboxChangeShowMenubarIcons = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -50,6 +51,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }));
   };
 
+  // Set local settings (note item style updated)
   const handleNoteItemStyleChange = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -60,6 +62,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }));
   }
 
+  // Set local settings (folder delete behaviour updated)
   const handleFolderDeleteBehaviourChange = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -70,6 +73,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }));
   }
 
+  // Set local settings (unsaved changes warning updated)
   const handleCheckboxChangeUnsavedChangesWarning = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -80,6 +84,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }));
   }
 
+  // Set local settings (disable import checks updated)
   const handleCheckboxChangeDisableImportChecks = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -90,6 +95,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }));
   }
 
+  // Set local settings (show text stats updated)
   const handleCheckboxChangeShowTextStatistics = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -100,6 +106,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }));
   }
 
+  // Set local settings (show note counter updated)
   const handleCheckboxChangeShowNoteCounter = (event) => {
     setSettings((prev) => ({
       ...prev,
@@ -148,6 +155,7 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }
   };
 
+  // Define tab icons
   const tabIcons = {
     "User": faUser,
     "Display": faDisplay,
@@ -157,10 +165,12 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     "App": faToolbox
   };
   
+  // Open app location in File Explorer
   const openAppLocation = () => {
     window.electron.ipcRenderer.invoke('open-sharpnote-location');
   }
 
+  // Convert bytes to human-readable
   function formatBytes(a,b=2){if(!+a)return"0 Bytes";const c=0>b?0:b,d=Math.floor(Math.log(a)/Math.log(1024));return`${parseFloat((a/Math.pow(1024,d)).toFixed(c))} ${["Bytes","KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"][d]}`}
 
   return (

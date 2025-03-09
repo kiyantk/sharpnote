@@ -9,7 +9,8 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
  }) => {
   const [isFolderOpened, setIsFolderOpened] = useState(false);
   const [fullFolderNotes, setFullFolderNotes] = useState([]);
-  const handleNoteClick = () => {
+
+  const handleFolderClick = () => {
     if(deleteModeOn) {
       onDeleteFolder(folder)
     } else {
@@ -17,6 +18,7 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
     }
   }
 
+  // Toggle folder open state
   useEffect(() => {
     if(openedFolders.includes(folder.folderID)) {
       setIsFolderOpened(true);
@@ -25,6 +27,7 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
     }
   }, [openedFolders]);
 
+  // Get the full notes from the noteIDs in folderNotes
   useEffect(() => {
     if (!folder || !notes) return;
 
@@ -39,6 +42,7 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
     setFullFolderNotes(filteredNotes);
   }, [folder, notes]);
 
+  // Get classname for folder item based on item style in settings
   const getNoteItemStyle = () => {
     if(settings && settings?.userSettings) {
       if(settings?.userSettings.noteItemStyle === "normal") return "note-item"
@@ -48,6 +52,7 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
     }
   }
 
+  // Format the date to human-readable
   const formatDate = (dateString) => {
     if (!dateString) return "Unknown";
     return new Date(dateString).toLocaleString("en-US", {
@@ -62,7 +67,7 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
 
   return (
     <div>
-    <div className={`${getNoteItemStyle()} ${folder.folderID === isFolderOpened ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''}`} onClick={() => handleNoteClick()} 
+    <div className={`${getNoteItemStyle()} ${folder.folderID === isFolderOpened ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''}`} onClick={() => handleFolderClick()} 
     onContextMenu={(e) => {
       e.preventDefault();
       onFolderContextMenu(e, folder);

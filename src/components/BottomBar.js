@@ -50,6 +50,7 @@ const BottomBar = ({ notes, autosaveStatus, editorContent, isEditorContentDecode
     onManualSaveNote()
   }
 
+  // Bind keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event) => {
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
@@ -74,15 +75,16 @@ const BottomBar = ({ notes, autosaveStatus, editorContent, isEditorContentDecode
     return () => {
         window.removeEventListener("keydown", handleKeyDown);
     };
-}, [noteOpened, editorContent]);
+  }, [noteOpened, editorContent]);
 
   return (
     <div className="bottom-bar">
       <div className="bottom-bar-left">
-        {/* Left: Refresh Button */}
+        {/* Leftmost: Refresh Button */}
         <button className={`refresh-btn ${rotating ? "rotating" : ""}`} onClick={handleRefresh}>
           <FontAwesomeIcon icon={faRotate} />
         </button>
+        {/* Left: Note Counter */}
         {settings?.userSettings?.showNoteCounter && (
         <div>
           <span className="note-counter">{notes.length} notes</span>

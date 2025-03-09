@@ -40,10 +40,12 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
     });
   }, []);
 
+  // Open export popup if user clicked export in CTX
   useEffect(() => {
     if(exportNoteThruCtx) setIsExportPopupOpen(true)
   }, [exportNoteThruCtx]);
 
+  // Open export popup if user opened .sharp or .sharpbook file directly
   useEffect(() => {
     if(presetFile) setIsImportPopupOpen(true)
   }, [presetFile]);
@@ -83,6 +85,7 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
   }
   const closeImportPopup = () => setIsImportPopupOpen(false);
 
+  // Close the app
   const closeSharpnote = () => {
     window.close()
   }
@@ -111,6 +114,7 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
     // 
   }
 
+  // Toggle Delete Mode
   const toggleDelMode = () => {
     toggleDropdown();
     toggleDeleteMode();

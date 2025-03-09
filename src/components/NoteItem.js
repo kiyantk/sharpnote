@@ -12,6 +12,7 @@ const NoteItem = ({ note, settings, onDeleteNote, onSelectNote, selectedNoteId, 
     }
   }
 
+  // Get note item class based on item style in settings
   const getNoteItemStyle = () => {
     if(settings && settings?.userSettings) {
       if(settings?.userSettings.noteItemStyle === "normal") return "note-item"
