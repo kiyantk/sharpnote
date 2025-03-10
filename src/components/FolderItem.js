@@ -91,7 +91,7 @@ return (
     </div>
 
     <div className={"opened-folder-notes-container"} style={{ display: isFolderOpened ? "block" : "none" }}>
-      <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd} sensors={sensors}> {/* Handle drag within the folder */}
+      <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd} sensors={sensors} autoScroll={{ enabled: false }} > {/* Handle drag within the folder */}
         <SortableContext items={fullFolderNotes.map(note => note.noteID)} strategy={verticalListSortingStrategy}>
           {fullFolderNotes.map((note) => (
             <SortableItem
