@@ -863,6 +863,92 @@ const App = () => {
     setIsDeleteAllPopupOpen(false)
   }
 
+  const onUpdateFullList = async (newArray) => {
+    // Early return if settings are not available or the array is unchanged
+    if (!settings || JSON.stringify(settings.structure?.rootOrder) === JSON.stringify(newArray)) return;
+    
+    const newConfig = { ...settings };
+  
+    // Ensure settings.structure exists before accessing it
+    if (!newConfig.structure) {
+      newConfig.structure = {}; // Initialize structure if it doesn't exist
+    }
+  
+    // Now it's safe to set rootOrder
+    newConfig.structure.rootOrder = newArray;
+  
+    setSettings(newConfig); // Set the new settings
+  
+    try {
+      const response = await window.electron.ipcRenderer.invoke("save-settings", newConfig);
+      if (!response.success) {
+        console.error("Failed to save settings:", response.error);
+        enqueueSnackbar('An error occurred while trying to save settings', { className: 'notistack-custom-default' });
+      }
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      enqueueSnackbar('An error occurred while trying to save settings', { className: 'notistack-custom-default' });
+    }
+  };  
+  
+
+  const updateFolderOrder = async (newFolder) => {
+    if (!settings) return;
+    
+    const newConfig = { ...settings };
+  
+    // Ensure that structure and structure.folders exist before accessing them
+    if (!newConfig.structure) {
+      newConfig.structure = {}; // Initialize structure if it doesn't exist
+    }
+    
+    if (!newConfig.structure.folders) {
+      newConfig.structure.folders = []; // Initialize folders if they don't exist
+    }
+  
+    // Check if folder already exists in the structure
+    const folderIndex = newConfig.structure.folders.findIndex(folder => folder.folderID === newFolder.folderID);
+  
+    if (folderIndex !== -1) {
+      // Folder exists, update its folderOrder
+      newConfig.structure.folders[folderIndex] = {
+        folderID: newFolder.folderID,
+        folderOrder: newFolder.folderNotes
+      };
+    } else {
+      // Folder doesn't exist, add a new entry
+      newConfig.structure.folders = [
+        ...newConfig.structure.folders,
+        {
+          folderID: newFolder.folderID,
+          folderOrder: newFolder.folderNotes
+        }
+      ];
+    }
+  
+    setSettings(newConfig);
+
+    let newFolderNotes = Array.isArray(newFolder.folderNotes)
+    ? newFolder.folderNotes
+    : JSON.parse(newFolder.folderNotes || "[]");
+
+    const newFolderForSetFolderNotes = {
+      ...newFolder,
+      folderNotes: newFolderNotes
+    }
+    await window.electron.ipcRenderer.invoke("set-foldernotes", newFolderForSetFolderNotes); 
+    try {
+      const response = await window.electron.ipcRenderer.invoke("save-settings", newConfig);
+      if (!response.success) {
+        console.error("Failed to save settings:", response.error);
+        enqueueSnackbar('An error occurred while trying to save settings', { className: 'notistack-custom-default' });
+      }
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      enqueueSnackbar('An error occurred while trying to save settings', { className: 'notistack-custom-default' });
+    }
+  };  
+
   return (
     <div className="App">
       <div className="App-main">
@@ -899,6 +985,8 @@ const App = () => {
             openedFolders={openedFolders}
             onFolderContextMenu={openFolderContextMenu}
             toggleLeftPanel={onToggleLeftPanel}
+            onUpdateFullList={onUpdateFullList}
+            onUpdateFolderOrder={updateFolderOrder}
           />
           <NoteEditor 
             selectedNote={selectedNote} 

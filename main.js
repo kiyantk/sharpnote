@@ -331,7 +331,8 @@ const defaultConfig = {
     "disableImportChecks": false,
     "folderDeleteBehaviour": "deletenotes",
     "showTextStatistics": true,
-    "showNoteCounter": false
+    "showNoteCounter": false,
+    "disableDnD": false
   },
   "structure": {
     "folders": [],

@@ -35,7 +35,8 @@ const NoteItem = ({ note, settings, onDeleteNote, onSelectNote, selectedNoteId, 
   };
 
   return (
-    <div className={`${getNoteItemStyle()} ${note.noteID === selectedNoteId ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''} ${isOpenedUnderFolder ? 'note-item-under-folder' : ''}`} onClick={() => handleNoteClick()} 
+    <div className={`${getNoteItemStyle()} ${note.noteID === selectedNoteId ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''} ${isOpenedUnderFolder ? 'note-item-under-folder' : ''}`} 
+    onClick={() => handleNoteClick()} 
     onContextMenu={(e) => {
       e.preventDefault();
       onNoteContextMenu(e, note);

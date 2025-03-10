@@ -117,6 +117,17 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
     }));
   }
 
+  // Set local settings (dnd disabled updated)
+  const handleCheckboxChangeDnD = (event) => {
+    setSettings((prev) => ({
+      ...prev,
+      userSettings: {
+        ...prev.userSettings,
+        disableDnD: event.target.checked,
+      },
+    }));
+  }
+
   const handleUsernameChange = (event) => {
     const newValue = event.target.value;
   
@@ -265,6 +276,14 @@ const SettingsPopup = ({ closePopup, currentSettings, applySettings, deleteAllNo
                       onChange={handleCheckboxChangeShowNoteCounter}
                     />
                     <span>Show note counter</span>
+                </div>
+                <div className="settings-content-item">
+                    <input
+                      type="checkbox"
+                      checked={settings?.userSettings.disableDnD}
+                      onChange={handleCheckboxChangeDnD}
+                    />
+                    <span>Disable Drag-and-drop ordering</span>
                 </div>
               </div>
             )}

@@ -415,7 +415,7 @@ body {
 
 .note-item span {
   /* margin-left: 25px; */
-  line-height: 1;
+  line-height: 1.8;
   text-overflow: ellipsis;
   max-width: 100%;
   overflow-x: clip;
@@ -510,6 +510,7 @@ body {
   margin-top: 7px;
   overflow-y: auto;
   height: calc(100vh - 164px);
+  overflow-x: hidden;
 }
 
 /* width */
