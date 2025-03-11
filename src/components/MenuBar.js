@@ -3,7 +3,7 @@ import SettingsPopup from "./SettingsPopup";
 import ExportPopup from "./ExportPopup";
 import ImportPopup from "./ImportPopup";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowsLeftRightToLine, faBook, faClipboard, faCog, faCopy, faCut, faDownload, faFileImport, faRectangleXmark, faRedo, faTrash, faUndo, faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
+import { faArrowsLeftRightToLine, faBook, faClipboard, faCog, faCopy, faCut, faDownload, faFileImport, faRectangleXmark, faRedo, faTrash, faUndo, faUpRightAndDownLeftFromCenter, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedError, toggleDeleteMode, toggleLeftPanel, exportNoteThruCtx, onPreSelectReceived, presetFile, deleteAllNotes, toggleFullscreen}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -122,10 +122,12 @@ const MenuBar = ({onSettingsChange, allNotes, onExport, onImport, noneSelectedEr
 
   return (
     <div className="menu-bar">
+      <img className="menubar-icon" src={process.env.PUBLIC_URL + "/favicon.ico"} alt="Logo" />
       <button onClick={(e) => toggleDropdown(e, "file")}>File</button>
       <button onClick={(e) => toggleDropdown(e, "edit")}>Edit</button>
       <button onClick={(e) => toggleDropdown(e, "view")}>View</button>
       <button onClick={(e) => toggleDropdown(e, "help")}>Help</button>
+      <button className="menubar-close-btn" onClick={closeSharpnote}><FontAwesomeIcon icon={faXmark}/></button>
       {(isDropdownOpen && dropdownType === "file") && (
         <div className="menubar-dropdown-overlay">
         <div ref={menuRef} className={`dropdown-menu ${settings?.userSettings.showMenubarIcons ? "dropdown-menu-with-icons" : ""} `} style={{left: dropdownPosition}}>

@@ -172,15 +172,7 @@ const sensors = useSensors(
     <div className={`${leftPanelVisible ? 'note-list' : 'note-list-min'}`}>  
       <div className="note-list-topbar" style={{ display: leftPanelVisible ? 'grid' : 'none' }}>
         <button className="note-list-topbutton" onClick={onAddNote}><FontAwesomeIcon icon={faPlus} /> New Note</button>
-        <button className="note-list-topbutton" onClick={onAddFolder} style={{ borderLeft: '2px solid #4e4e4e' }}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button>
-      </div>
-      <div className="note-list-tabs" style={{ display: leftPanelVisible ? 'grid' : 'none' }}>
-        <div className={`note-list-tab ${activeTab === "all" ? 'note-list-tab-active' : ''}`} onClick={() => onTabSwitch("all")}>
-          <FontAwesomeIcon icon={faBars} /> All Notes
-        </div>
-        <div className={`note-list-tab ${activeTab === "recent" ? 'note-list-tab-active' : ''}`} onClick={() => onTabSwitch("recent")}>
-          <FontAwesomeIcon icon={faClockRotateLeft} /> Recent Notes
-        </div>
+        <button className="note-list-topbutton" onClick={onAddFolder}><FontAwesomeIcon icon={faFolderPlus} /> New Folder</button>
       </div>
       <DndContext 
   collisionDetection={closestCenter} 

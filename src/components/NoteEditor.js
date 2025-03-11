@@ -79,6 +79,7 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
 
   return (
     <div className="editor">
+      <div className="editor-ribbon"></div>
       <textarea
         value={content}
         disabled={selectedNote && selectedNote.isReadonly === 1}

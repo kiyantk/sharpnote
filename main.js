@@ -19,6 +19,7 @@ app.whenReady().then(() => {
       enableRemoteModule: false,
       nodeIntegration: false, // Prevent unsafe access
     },
+    titleBarStyle: 'hidden',
     backgroundColor: '#222222'
   });
 
