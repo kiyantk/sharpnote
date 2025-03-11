@@ -161,17 +161,16 @@ body {
   width: 100%;
 }
 
+.settings-popup button {
+
+}
+
 .editnote-popup-item {
   display: grid;
   justify-items: center;
   margin-bottom: 10px;
   width: fit-content;
   justify-self: center;
-}
-
-.editnote-popup-item>span {
-  font-size: 14px;
-  color: #c8c8c8;
 }
 
 .editnote-popup {
@@ -205,7 +204,7 @@ body {
 }
 
 .editnote-titleinput {
-  margin-top: 3px;
+  margin-top: 5px;
 }
 
 .noteColor-editcontainer {
@@ -420,7 +419,7 @@ body {
 
 .note-item span {
   /* margin-left: 25px; */
-  line-height: 1.8;
+  line-height: 1;
   text-overflow: ellipsis;
   max-width: 100%;
   overflow-x: clip;
@@ -518,7 +517,6 @@ body {
   height: calc(100vh - 134px);
   padding: 0px 10px;
   font-size: 14px;
-  overflow-x: hidden;
 }
 
 /* width */
@@ -840,8 +838,6 @@ input:focus {
   width: 90%;
   justify-self: center;
   margin-top: 20px;
-  overflow-y: auto;
-  max-height: 80%;
 }
 
 .noteinfo-popup {
@@ -871,7 +867,6 @@ input:focus {
   color: white;
   border: none;
   padding: 6px;
-  margin-top: 4px;
 }
 
 .settings-normal-button:hover {
@@ -888,7 +883,6 @@ input:focus {
 
 .noteinfo-popup-content-container {
   justify-items: center;
-  display: grid;
 }
 
 .note-browser-small {
@@ -920,7 +914,7 @@ input:focus {
 .note-export-typeselect {
   background-color: #333333;
   border: none;
-  padding: 10px 3px;
+  padding: 10px 0px;
   color: white;
   /* text-align: center; */
   width: 20%;
@@ -931,7 +925,7 @@ input:focus {
 .settings-itemstyle-select {
   background-color: #333333;
   border: none;
-  padding: 10px 3px;
+  padding: 10px 0px;
   color: white;
   /* text-align: center; */
   width: 20%;
@@ -955,7 +949,7 @@ input:focus {
 .note-export-methodselect {
   background-color: #333333;
   border: none;
-  padding: 10px 3px;
+  padding: 10px 0px;
   color: white;
   /* text-align: center; */
   width: 40%;
@@ -999,8 +993,6 @@ input:focus {
 
 .hide-vertical-overflow-text {
   overflow-y: hidden;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
 }
 
 .file-select-btn {
@@ -1127,66 +1119,4 @@ input:focus {
 .editor-ribbon {
   height: 37px;
   background-color: #252525;
-}
-
-.storage-legend {
-  margin-top: 3px;
-  display: grid;
-  justify-content: space-between;
-  font-size: 14px;
-  grid-template-columns: auto auto;
-  justify-content: left;
-  grid-gap: 10px;
-}
-
-.storage-legend-app {
-  background-color: #4caf50;
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-}
-
-.storage-legend-notes {
-  background-color: #2196f3;
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-}
-
-.storage-legend-text {
-  color: lightgray;
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  grid-gap: 6px;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-@media only screen and (max-width: 735px) {
-  .noteinfo-popup-content {
-      width: 90%;
-      justify-self: center;
-      margin-top: 20px;
-      overflow-y: scroll;
-      max-height: 80%;
-  }
-
-  .noteinfo-popup-sidebyside {
-    display: block;
-  }
-
-  .noteinfo-popup>div {
-    height: 100%;
-  }
-
-  .settings-bottom-bar {
-    height: 30px !important;
-  }
-}
-
-@media only screen and (max-width: 500px) {
-  .note-list-top-text {
-    display: none;
-  }
 }

@@ -47,7 +47,6 @@ const EditPopup = ({ closeEditPopup, noteToEdit, applyEdits, editPopupType }) =>
     setEditedNoteToDisplay(newSetting)
   }
 
-  // Update stored edit version due to readonly change
   const handleReadonlyInputChange = (event) => {
     const newSetting = { ...editedNoteToSave, isReadonly: event.target.checked ? 1 : 0 };
   

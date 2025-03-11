@@ -620,7 +620,6 @@ const App = () => {
     }    
   }
 
-  // Show success message after export
   const onExportDone = (numExported, isSharpbook, isDB) => {
     if(isSharpbook) {
       enqueueSnackbar(`Exported Sharpbook (${numExported} ${numExported > 1 ? 'notes' : 'note'})`, {className: 'notistack-custom-default', variant: 'success'})
@@ -631,7 +630,6 @@ const App = () => {
     }
   }
 
-  // Show error if user attempts to export 0 notes
   const showNoneSelectedError = () => {
     enqueueSnackbar("No notes were selected", {className: 'notistack-custom-default'})
   }
@@ -725,7 +723,6 @@ const App = () => {
     setNotesToExportNoteThruCtx(null)
   }
 
-  // If user answered yes to unsaved changes popup, do the action
   const handleUnsavedChangesAnswer = async (answer) => {
     if(answer === "yes") {
       // If user answered yes, switch note anyway
@@ -738,7 +735,6 @@ const App = () => {
     window.electron.confirmQuit() // Tell main process to quit
   }
 
-  // Move note to folder selected in FolderSelector thru CTX
   const onMoveToSelected = async (note, folder) => {
     if (!window.electron) return;
     if(note.noteID === selectedNoteId) {
@@ -747,9 +743,9 @@ const App = () => {
     }
     try {
     // Store the previous folder ID before changing
-    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work) vv
+    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS vv
     const oldFolderID = note.noteFolder;
-    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work) ^^
+    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS ^^
 
     // Toggle noteFolder
     note.noteFolder = note.noteFolder === folder.folderID ? null : folder.folderID;
@@ -768,7 +764,7 @@ const App = () => {
     folder.folderNotes = updatedFolderNotes;
 
     // Find the old folder (if the note was previously in one)
-    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work) vv
+    // vv REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS vv
     let updatedFolders = await window.electron.ipcRenderer.invoke("get-folders"); // Fetch latest folders
     let oldFolder = updatedFolders.find((f) => f.folderID === oldFolderID);
 
@@ -784,7 +780,7 @@ const App = () => {
       // Save changes to old folder
       await window.electron.ipcRenderer.invoke("set-foldernotes", oldFolder);
     }
-    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work) ^^
+    // ^^ REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS ^^
       
       await window.electron.ipcRenderer.invoke("set-notefolder", note);
       await window.electron.ipcRenderer.invoke("set-foldernotes", folder);
@@ -799,7 +795,7 @@ const App = () => {
             return { ...prevFolder, folderNotes: updatedFolderNotes }; // Update new folder
           }
           if (prevFolder.folderID === oldFolderID) {
-            return { ...prevFolder, folderNotes: oldFolder?.folderNotes || [] }; // Update old folder - REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS (might require extra work)
+            return { ...prevFolder, folderNotes: oldFolder?.folderNotes || [] }; // Update old folder - REMOVE THIS IF YOU WANT NOTES TO BE ABLE TO BE UNDER MULTIPLE FOLDERS
           }
           return prevFolder;
         })
@@ -810,7 +806,6 @@ const App = () => {
     }
   }
 
-  // If user answered yes to unsaved changes popup, do the action
   useEffect(() => {
     if (userJustAnsweredYesToUnsavedChangesPopup) {
       switch(unsavedChangesPopupType) {
@@ -836,7 +831,6 @@ const App = () => {
     setIsEditorContentDecoded(true)
   }
 
-  // Toggle fullscreen
   const toggleFullscreen = () => {
     if (!window.electron) return;
     const newFsMode = !currentFsMode;
@@ -844,12 +838,10 @@ const App = () => {
     setCurrentFsMode(newFsMode);
   }
 
-  // Ask user if they really want to delete all notes
   const deleteAllNotesCheck = () => {
     setIsDeleteAllPopupOpen(true)
   }
 
-  // Delete all notes if user answered yes to confirmation
   const deleteAllNotes = (answer) => {
     if(answer === "yes") {
       notes.forEach(note => {
@@ -862,92 +854,6 @@ const App = () => {
     }
     setIsDeleteAllPopupOpen(false)
   }
-
-  const onUpdateFullList = async (newArray) => {
-    // Early return if settings are not available or the array is unchanged
-    if (!settings || JSON.stringify(settings.structure?.rootOrder) === JSON.stringify(newArray)) return;
-    
-    const newConfig = { ...settings };
-  
-    // Ensure settings.structure exists before accessing it
-    if (!newConfig.structure) {
-      newConfig.structure = {}; // Initialize structure if it doesn't exist
-    }
-  
-    // Now it's safe to set rootOrder
-    newConfig.structure.rootOrder = newArray;
-  
-    setSettings(newConfig); // Set the new settings
-  
-    try {
-      const response = await window.electron.ipcRenderer.invoke("save-settings", newConfig);
-      if (!response.success) {
-        console.error("Failed to save settings:", response.error);
-        enqueueSnackbar('An error occurred while trying to save settings', { className: 'notistack-custom-default' });
-      }
-    } catch (error) {
-      console.error("Error saving settings:", error);
-      enqueueSnackbar('An error occurred while trying to save settings', { className: 'notistack-custom-default' });
-    }
-  };  
-  
-
-  const updateFolderOrder = async (newFolder) => {
-    if (!settings) return;
-    
-    const newConfig = { ...settings };
-  
-    // Ensure that structure and structure.folders exist before accessing them
-    if (!newConfig.structure) {
-      newConfig.structure = {}; // Initialize structure if it doesn't exist
-    }
-    
-    if (!newConfig.structure.folders) {
-      newConfig.structure.folders = []; // Initialize folders if they don't exist
-    }
-  
-    // Check if folder already exists in the structure
-    const folderIndex = newConfig.structure.folders.findIndex(folder => folder.folderID === newFolder.folderID);
-  
-    if (folderIndex !== -1) {
-      // Folder exists, update its folderOrder
-      newConfig.structure.folders[folderIndex] = {
-        folderID: newFolder.folderID,
-        folderOrder: newFolder.folderNotes
-      };
-    } else {
-      // Folder doesn't exist, add a new entry
-      newConfig.structure.folders = [
-        ...newConfig.structure.folders,
-        {
-          folderID: newFolder.folderID,
-          folderOrder: newFolder.folderNotes
-        }
-      ];
-    }
-  
-    setSettings(newConfig);
-
-    let newFolderNotes = Array.isArray(newFolder.folderNotes)
-    ? newFolder.folderNotes
-    : JSON.parse(newFolder.folderNotes || "[]");
-
-    const newFolderForSetFolderNotes = {
-      ...newFolder,
-      folderNotes: newFolderNotes
-    }
-    await window.electron.ipcRenderer.invoke("set-foldernotes", newFolderForSetFolderNotes); 
-    try {
-      const response = await window.electron.ipcRenderer.invoke("save-settings", newConfig);
-      if (!response.success) {
-        console.error("Failed to save settings:", response.error);
-        enqueueSnackbar('An error occurred while trying to save settings', { className: 'notistack-custom-default' });
-      }
-    } catch (error) {
-      console.error("Error saving settings:", error);
-      enqueueSnackbar('An error occurred while trying to save settings', { className: 'notistack-custom-default' });
-    }
-  };  
 
   return (
     <div className="App">
@@ -985,8 +891,6 @@ const App = () => {
             openedFolders={openedFolders}
             onFolderContextMenu={openFolderContextMenu}
             toggleLeftPanel={onToggleLeftPanel}
-            onUpdateFullList={onUpdateFullList}
-            onUpdateFolderOrder={updateFolderOrder}
           />
           <NoteEditor 
             selectedNote={selectedNote} 

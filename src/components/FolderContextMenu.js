@@ -19,14 +19,13 @@ const FolderContextMenu = ({currentActiveCtx, currentActiveCtxFull, currentMouse
     };
   }, []);
 
-  // Get amount of notes in the folder
   const getFolderLength = () => {
     if(Array.isArray(currentActiveCtxFull.folderNotes)) {
       return currentActiveCtxFull.folderNotes.length
     } else if (currentActiveCtxFull.folderNotes === undefined || currentActiveCtxFull.folderNotes === null) {
       return []
     } else {
-      return [currentActiveCtxFull.folderNotes].length
+      return [currentActiveCtxFull.folderNotes]
     }
   }
 

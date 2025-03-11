@@ -12,8 +12,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
   const [fileName, setFileName] = useState(null);
   const [invalidSubnotes, setInvalidSubnotes] = useState(0);
 
-  // Check if imported file was made in a supported version
-  const versionCheck = async (noteVersion) => {
+  const versionCheck = (noteVersion) => {
     if(noteVersion === "1.0.0" || noteVersion === "1.1.0") {
       return false
     } else {
@@ -21,8 +20,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     }
   }
 
-  // Import validity checks
-  const checkImportValid = async (json) => {
+  const checkImportValid = (json) => {
     setImportedFile(null);
     setFileValid(false);
     setFileInvalid(false);
@@ -31,7 +29,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     if(!settings.userSettings.disableImportChecks) {
       const authorRegex = /^[a-zA-Z0-9\-_ ]*$/;
       if(json.noteID) {
-        if(!await versionCheck(json.sharpnoteVersion)) {
+        if(!versionCheck(json.sharpnoteVersion)) {
           setVersionNotSupported(true);
           setVersion(json.sharpnoteVersion);
           return {newJSON: json, valid: false};
@@ -42,8 +40,8 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
            json.hasOwnProperty('noteContent') && 
            json.hasOwnProperty('noteColor') && 
            json.hasOwnProperty('noteOriginalAuthor') && 
-           (json.noteOriginalAuthor === null || json.noteOriginalAuthor === "" || json.noteOriginalAuthor?.length <= 32) &&
-           (json.noteLastAuthor === null || json.noteLastAuthor === "" || json.noteLastAuthor?.length <= 32) &&
+           json.noteOriginalAuthor.length <= 32 &&
+           json.noteLastAuthor.length <= 32 &&
            json.noteHistory.created &&
            authorRegex.test(json.noteOriginalAuthor)
           ) {
@@ -56,13 +54,15 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
               newjson.noteContent = ""
             } else if(json.noteColor === "" || json.noteColor === null) {
               newjson.noteColor = ""
+            } else {
+              return {newJSON: json, valid: false}
             }
             return {newJSON: newjson, valid: true}
         } else {
           return {newJSON: json, valid: false}
         }
       } else if(json.sharpbookID) {
-        if(!await versionCheck(json.sharpnoteVersion)) {
+        if(!versionCheck(json.sharpnoteVersion)) {
           setVersionNotSupported(true);
           setVersion(json.sharpnoteVersion);
           return {newJSON: json, valid: false};
@@ -72,7 +72,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
            json.hasOwnProperty('sharpnoteVersion') && 
            json.notes.length > 0 &&
            json.hasOwnProperty('bookAuthor') &&
-           (json.bookAuthor === null || json.bookAuthor === "" || json.bookAuthor?.length <= 32) &&
+           json.bookAuthor.length <= 32 &&
            authorRegex.test(json.bookAuthor)
         ) {
           const newjson = {...json, notes: [...json.notes]}; // Ensure deep copy
@@ -81,8 +81,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
           }
 
           let invalidSubnotesCount = 0;
-          let invalidNotes = [];
-          newjson.notes = json.notes.filter(async note => {
+          newjson.notes = json.notes.filter(note => {
             const isValid = (
               note.hasOwnProperty('noteID') &&
               note.hasOwnProperty('sharpnoteVersion') &&
@@ -90,15 +89,14 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
               note.hasOwnProperty('noteContent') &&
               note.hasOwnProperty('noteColor') &&
               note.hasOwnProperty('noteOriginalAuthor') &&
-              (note.noteOriginalAuthor === null || note.noteOriginalAuthor === "" || note.noteOriginalAuthor?.length <= 32) &&
-              (note.noteLastAuthor === null || note.noteLastAuthor === "" || note.noteLastAuthor?.length <= 32) &&
+              note.noteOriginalAuthor.length <= 32 &&
+              note.noteLastAuthor.length <= 32 &&
               note.noteHistory.created &&
               authorRegex.test(note.noteOriginalAuthor) &&
-              await versionCheck(note.sharpnoteVersion)
+              versionCheck(note.sharpnoteVersion)
             );
           
             if (!isValid) {
-              invalidNotes.push(note)
               invalidSubnotesCount++;
             }
           
@@ -107,7 +105,7 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
 
           setInvalidSubnotes(invalidSubnotesCount);
 
-          return { newJSON: newjson, invalidNotes, valid: true };
+          return { newJSON: newjson, valid: true };
 
         } else {
           return {newJSON: json, valid: false}
@@ -126,10 +124,10 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     if (!file) return;
     setFileName(file.name)
     const reader = new FileReader();
-    reader.onload = async (e) => {
+    reader.onload = (e) => {
       try {
         const json = JSON.parse(e.target.result);
-        const validCheck = await checkImportValid(json);
+        const validCheck = checkImportValid(json);
         if(validCheck.valid === true) {
           if(validCheck.newJSON !== json) {
             setImportedFile(validCheck.newJSON);
@@ -151,7 +149,6 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     reader.readAsText(file);
   };
 
-  // If the user opened a .sharp or .sharpbook file
   const handleFileSelectByOpenFile = (file) => {
     if (!file || !file.content) return;
   
@@ -175,20 +172,17 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
     }
   };
 
-  // Open file selection window on button click
   const triggerFileSelect = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  // Import the data on popup submission
   const doImport = () => {
     onImport(importedFile)
     closePopup();
   }
 
-  // If preset file (user opened .sharp or .sharpbook file directly)
   useEffect(() => {
     if (presetFile) {
       handleFileSelectByOpenFile(presetFile)

@@ -3,17 +3,13 @@ import ReactDOM from 'react-dom'
 import NoteItem from "./NoteItem"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFolderClosed, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-import { closestCenter, DndContext } from "@dnd-kit/core";
-import SortableItem from "./SortableItem";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, onFolderContextMenu, deleteModeOn, openedFolders,
-  onDeleteNote, onSelectNote, onEditNote, onNoteContextMenu, selectedNoteId, onDragEnd, sensors
+  onDeleteNote, onSelectNote, onEditNote, onNoteContextMenu, selectedNoteId
  }) => {
   const [isFolderOpened, setIsFolderOpened] = useState(false);
   const [fullFolderNotes, setFullFolderNotes] = useState([]);
-
-  const handleFolderClick = () => {
+  const handleNoteClick = () => {
     if(deleteModeOn) {
       onDeleteFolder(folder)
     } else {
@@ -21,7 +17,6 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
     }
   }
 
-  // Toggle folder open state
   useEffect(() => {
     if(openedFolders.includes(folder.folderID)) {
       setIsFolderOpened(true);
@@ -31,28 +26,19 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
   }, [openedFolders]);
 
   useEffect(() => {
-    if (!folder || !notes || !settings) return;
-  
-    // Ensure settings.structure exists before trying to access folders
-    const folderSettings = settings.structure?.folders?.find(f => f.folderID === folder.folderID);
-  
-    // If the folder exists in settings, use its folderOrder; otherwise, fallback to folder.folderNotes
-    const folderNotesArray = folderSettings
-      ? JSON.parse(folderSettings.folderOrder)
-      : (Array.isArray(folder.folderNotes) ? folder.folderNotes : JSON.parse(folder.folderNotes || "[]"));
-  
-    // Map over folderNotesArray and order the notes based on the noteIDs
-    const orderedNotes = folderNotesArray
-      .map((noteID) => {
-        return notes.find((note) => note.noteID === noteID);
-      })
-      .filter(note => note !== undefined); // Filter out undefined if any noteID doesn't match
-  
-    
-    setFullFolderNotes(orderedNotes);
-  }, [folder, notes, settings]); // Added settings as a dependency  
+    if (!folder || !notes) return;
 
-  // Get classname for folder item based on item style in settings
+    // Ensure folder.folderNotes is an array (parse if stored as a string)
+    const folderNotesArray = Array.isArray(folder.folderNotes)
+      ? folder.folderNotes
+      : JSON.parse(folder.folderNotes || "[]");
+  
+    // Filter notes where noteID is in folder.folderNotes
+    const filteredNotes = notes.filter((note) => folderNotesArray.includes(note.noteID));
+  
+    setFullFolderNotes(filteredNotes);
+  }, [folder, notes]);
+
   const getNoteItemStyle = () => {
     if(settings && settings?.userSettings) {
       if(settings?.userSettings.noteItemStyle === "normal") return "note-item"
@@ -62,7 +48,6 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
     }
   }
 
-  // Format the date to human-readable
   const formatDate = (dateString) => {
     if (!dateString) return "Unknown";
     return new Date(dateString).toLocaleString("en-US", {
@@ -75,48 +60,40 @@ const FolderItem = ({ notes, folder, settings, onDeleteFolder, onClickFolder, on
     });
   };
 
-// Add a drag context for notes inside the folder
-return (
-  <div>
-    <div
-      className={`${getNoteItemStyle()} ${folder.folderID === isFolderOpened ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''}`}
-      onClick={() => handleFolderClick()}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        onFolderContextMenu(e, folder);
-      }}
-    >
+  return (
+    <div>
+    <div className={`${getNoteItemStyle()} ${folder.folderID === isFolderOpened ? 'note-item-active' : ''} ${deleteModeOn ? 'note-item-deletemode' : ''}`} onClick={() => handleNoteClick()} 
+    onContextMenu={(e) => {
+      e.preventDefault();
+      onFolderContextMenu(e, folder);
+    }}>
       <FontAwesomeIcon style={{ color: folder.folderColor }} icon={isFolderOpened ? faFolderOpen : faFolderClosed} />
       <span className="hide-vertical-overflow-text">{folder.folderTitle}</span>
+      {settings?.userSettings.noteItemStyle === "detailed" && (
+        <div style={{width: '287px'}}>
+          <span className="hide-vertical-overflow-text note-item-detailed-contentpreview">{folder.folderNotes.length} notes</span>
+          <span className="note-item-detailed-lastsaved">{formatDate(folder.created)}</span>
+        </div>
+      )}
     </div>
-    <div className={"opened-folder-notes-container"} style={{ display: isFolderOpened ? "block" : "none" }}>
-      <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd} sensors={sensors} autoScroll={{ enabled: false }} > {/* Handle drag within the folder */}
-        <SortableContext items={fullFolderNotes.map(note => note.noteID)} strategy={verticalListSortingStrategy}>
-          {fullFolderNotes.map((note) => (
-            <SortableItem
-              key={note.noteID}
-              id={note.noteID}
-              onClick={() => onSelectNote(note.noteID)}
-              settingsIsDNDDisabled={settings.userSettings.disableDnD}
-            >
-              <NoteItem
-                note={note}
-                onDeleteNote={onDeleteNote}
-                selectedNoteId={selectedNoteId}
-                onSelectNote={() => onSelectNote(note.noteID)}
-                onEditNote={onEditNote}
-                onNoteContextMenu={onNoteContextMenu}
-                deleteModeOn={deleteModeOn}
-                settings={settings}
-                isOpenedUnderFolder={true}
-              />
-            </SortableItem>
-          ))}
-        </SortableContext>
-      </DndContext>
+    <div className={"opened-folder-notes-container"} style={{display: isFolderOpened ? "block" : "none"}}>
+    {fullFolderNotes.map((note) =>
+        <NoteItem
+          key={`notelistnote-` + note.noteID}
+          note={note}
+          onDeleteNote={onDeleteNote}
+          selectedNoteId={selectedNoteId}
+          onSelectNote={() => onSelectNote(note.noteID)}
+          onEditNote={onEditNote}
+          onNoteContextMenu={onNoteContextMenu}
+          deleteModeOn={deleteModeOn}
+          settings={settings}
+          isOpenedUnderFolder={true}
+        />
+    )}
     </div>
-  </div>
-);
+    </div>
+  );
 };
 
 export default FolderItem;
