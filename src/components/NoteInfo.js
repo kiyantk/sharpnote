@@ -16,7 +16,7 @@ const NoteInfo = ({ noteToShow, onNoteInfoPopupClose, noteInfoPopupType }) => {
     <div className="settings-popup-overlay">
       <div className="noteinfo-popup">
         {noteInfoPopupType === "note" && (
-        <div>
+        <div style={{height: '95%'}}>
         <div>
             <h2>Note Info</h2>
         </div>
@@ -89,7 +89,7 @@ const NoteInfo = ({ noteToShow, onNoteInfoPopupClose, noteInfoPopupType }) => {
         </div>
         )}
         {noteInfoPopupType === "folder" && (
-        <div>
+        <div style={{height: '95%'}}>
         <div>
             <h2>Folder Info</h2>
         </div>

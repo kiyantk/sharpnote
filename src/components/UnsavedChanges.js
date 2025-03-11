@@ -11,7 +11,6 @@ const UnsavedChanges = ({ onUnsavedChangesAnswer, unsavedChangesType }) => {
     }
   }
 
-
   return (
     <div className="settings-popup-overlay">
       <div className="unsavedchanges-popup">
@@ -20,7 +19,7 @@ const UnsavedChanges = ({ onUnsavedChangesAnswer, unsavedChangesType }) => {
         </div>
         <div className="noteinfo-popup-content">
           <div className="noteinfo-popup-content-container">
-            <span>Are you sure you want to {getUnsavedChangesText()}</span><br></br><br></br>
+            <span>Are you sure you want to {getUnsavedChangesText()}</span><br></br>
             <span>Unsaved changes will be lost.</span>
           </div>
         </div>

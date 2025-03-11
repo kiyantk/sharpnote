@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const WelcomePopup = ({ submitWelcomePopup }) => {
   const [welcomePopupContent, setWelcomePopupContent] = useState({username: null});
 
-  // Save new note data
+  // Submit welcome form
   const saveSettings = async () => {
     try {
       submitWelcomePopup(welcomePopupContent)
@@ -12,7 +12,7 @@ const WelcomePopup = ({ submitWelcomePopup }) => {
     }
   };
 
-  // Update stored edit version due to title change
+  // Update stored edit version due to username change
   const handleUsernameInputChange = (event) => {
     const newSetting = {...welcomePopupContent}
     newSetting.username = event.target.value

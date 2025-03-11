@@ -10,6 +10,8 @@ app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    minWidth: 400,
+    minHeight: 400,
     icon: path.join(__dirname, './public/logo512.png'), // Set the app icon
     webPreferences: {
       preload: path.join(__dirname, "preload.js"), // Load the preload script
@@ -17,7 +19,8 @@ app.whenReady().then(() => {
       enableRemoteModule: false,
       nodeIntegration: false, // Prevent unsafe access
     },
-    titleBarStyle: 'hidden'
+    titleBarStyle: 'hidden',
+    backgroundColor: '#222222'
   });
 
   app.on('browser-window-focus', () => {
@@ -329,7 +332,8 @@ const defaultConfig = {
     "disableImportChecks": false,
     "folderDeleteBehaviour": "deletenotes",
     "showTextStatistics": true,
-    "showNoteCounter": false
+    "showNoteCounter": false,
+    "disableDnD": false
   },
   "structure": {
     "folders": [],
@@ -391,6 +395,48 @@ ipcMain.handle("open-sharpnote-location", () => {
 
 ipcMain.handle("toggle-fullscreen", (event, mode) => {
   mainWindow.setFullScreen(mode);
+});
+
+ipcMain.handle('get-storage-usage', async () => {
+  try {
+      const appDataPath = path.join(__dirname); // App root folder
+      const dbPath = path.join(appDataPath, 'sharpnote.db'); 
+
+      let dbSize = 0;
+      if (fs.existsSync(dbPath)) {
+          const stats = fs.statSync(dbPath);
+          dbSize = stats.size; // Size in bytes
+      }
+
+      // Calculate total storage used by the app itself
+      const getDirectorySize = (dirPath) => {
+          let totalSize = 0;
+          const files = fs.readdirSync(dirPath);
+
+          for (const file of files) {
+              const filePath = path.join(dirPath, file);
+              const stats = fs.statSync(filePath);
+
+              if (stats.isDirectory()) {
+                  totalSize += getDirectorySize(filePath);
+              } else {
+                  totalSize += stats.size;
+              }
+          }
+          return totalSize;
+      };
+
+      const appStorageUsed = getDirectorySize(appDataPath);
+
+      return {
+          appStorageUsed, // Total space used by the app (bytes)
+          dbSize          // Space used by `sharpnote.db` (bytes)
+      };
+
+  } catch (error) {
+      console.error('Error getting storage usage:', error);
+      return { appStorageUsed: 0, dbSize: 0 }; 
+  }
 });
 
 // Function that updates just the lastOpened field in the database (implement this)
