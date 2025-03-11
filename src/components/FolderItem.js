@@ -89,7 +89,6 @@ return (
       <FontAwesomeIcon style={{ color: folder.folderColor }} icon={isFolderOpened ? faFolderOpen : faFolderClosed} />
       <span className="hide-vertical-overflow-text">{folder.folderTitle}</span>
     </div>
-
     <div className={"opened-folder-notes-container"} style={{ display: isFolderOpened ? "block" : "none" }}>
       <DndContext collisionDetection={closestCenter} onDragEnd={onDragEnd} sensors={sensors} autoScroll={{ enabled: false }} > {/* Handle drag within the folder */}
         <SortableContext items={fullFolderNotes.map(note => note.noteID)} strategy={verticalListSortingStrategy}>

@@ -991,6 +991,8 @@ input:focus {
 
 .hide-vertical-overflow-text {
   overflow-y: hidden;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .file-select-btn {

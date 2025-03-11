@@ -18,10 +18,11 @@ const SortableItem = ({ id, children, settingsIsDNDDisabled }) => {
   } = useSortable({ id, disabled: settingsIsDNDDisabled });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: transform ? CSS.Translate.toString(transform) : undefined,
     transition,
     opacity: isDndKitDragging ? 0.5 : 1, // Reduce opacity while dragging
     cursor: "grab",
+    zIndex: 100
   };
 
   // Start drag after the delay (e.g., 300ms)
