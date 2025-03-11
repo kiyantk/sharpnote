@@ -250,7 +250,7 @@ body {
   width: 300px; /* Fixed width for note list */
   /* background: #2c2c2c; */
   background-color: #070b12;
-  border-right: 1px solid #393939;
+  /* border-right: 1px solid #393939; */
   /* padding: 10px; */
   /* height: 100%; Full height */
   height: calc(100% - 23px);
@@ -434,7 +434,7 @@ body {
   flex-direction: column;
   /* height: 100%; Ensure it stretches fully */
   height: calc(100% - 23px);
-  background: #201f1e;
+  background: #181818;
 }
 
 .editor input {
@@ -626,7 +626,7 @@ body {
   width: 100%;
   position: absolute;
   bottom: 0;
-  border-top: 1px solid #414141;
+  border-top: 1px solid #2d2d2d;
   user-select: none;
 }
 
@@ -1114,4 +1114,9 @@ input:focus {
   position: absolute;
   right: 0;
   width: 30px !important;
+}
+
+.editor-ribbon {
+  height: 37px;
+  background-color: #252525;
 }
