@@ -514,6 +514,7 @@ body {
 .note-list-notes {
   margin-top: 7px;
   overflow-y: auto;
+  overflow-x: hidden;
   height: calc(100vh - 134px);
   padding: 0px 10px;
   font-size: 14px;
@@ -797,7 +798,6 @@ input:focus {
 
 .note-context-menu {
   position: absolute;
-  width: 200px;
   background-color: #292929;
   /* height: 200px; */
   box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
@@ -1082,9 +1082,9 @@ input:focus {
 
 .folder-selector-container {
   width: 200px;
-  background-color: #131313;
+  background-color: #353535;
   position: relative;
-  height: 192px;
+  height: 141px;
   overflow-y: auto;
 }
 
