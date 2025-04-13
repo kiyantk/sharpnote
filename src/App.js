@@ -586,7 +586,7 @@ const App = () => {
     }
   };
 
-  const deleteFolder = async (folder) => {
+  const deleteFolder = async (folder, massDelete) => {
     if (!window.electron) return;
 
     try {
@@ -693,6 +693,7 @@ const App = () => {
           className: "notistack-custom-default",
         });
       }
+      if (!massDelete) onRefreshFull();
     } catch (error) {
       console.error("Error deleting folder:", error);
       enqueueSnackbar("An error occurred while trying to delete this folder", {

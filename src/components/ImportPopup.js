@@ -169,14 +169,13 @@ const ImportPopup = ({ closePopup, onImport, presetFile, settings }) => {
   };
 
   // If the user opened a .sharp or .sharpbook file
-  const handleFileSelectByOpenFile = (file) => {
+  const handleFileSelectByOpenFile = async (file) => {
     if (!file || !file.content) return;
 
     setFileName(file.name);
-
     try {
       const json = JSON.parse(file.content);
-      const validCheck = checkImportValid(json);
+      const validCheck = await checkImportValid(json);
       if (validCheck.valid === true) {
         setImportedFile(validCheck.newJSON || json);
         setFileValid(true);
