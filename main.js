@@ -1,4 +1,11 @@
-const { app, BrowserWindow, ipcMain, globalShortcut, shell, dialog } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  globalShortcut,
+  shell,
+  dialog,
+} = require("electron");
 const db = require("./database");
 const path = require("path");
 
@@ -12,7 +19,7 @@ app.whenReady().then(() => {
     height: 800,
     minWidth: 400,
     minHeight: 400,
-    icon: path.join(__dirname, './public/logo512.png'), // Set the app icon
+    icon: path.join(__dirname, "./public/logo512.png"), // Set the app icon
     webPreferences: {
       preload: path.join(__dirname, "preload.js"), // Load the preload script
       contextIsolation: true, // Keep context isolation enabled (default)
@@ -23,36 +30,36 @@ app.whenReady().then(() => {
     backgroundColor: '#222222'
   });
 
-  app.on('browser-window-focus', () => {
-    globalShortcut.register('CommandOrControl+Shift+I', () => {
+  app.on("browser-window-focus", () => {
+    globalShortcut.register("CommandOrControl+Shift+I", () => {
       if (mainWindow) {
         mainWindow.webContents.toggleDevTools();
       }
-    })
-  })
-  
-  app.on('browser-window-blur', () => {
-    globalShortcut.unregisterAll()
-  })
+    });
+  });
+
+  app.on("browser-window-blur", () => {
+    globalShortcut.unregisterAll();
+  });
 
   mainWindow.removeMenu(); // Hides the default top menu
   mainWindow.maximize(); // Start in maximized mode
-  mainWindow.on('closed', () => {
-    mainWindow = null
-  })
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url); // Open URL in user's browser.
     return { action: "deny" }; // Prevent the app from opening the URL.
-  })
+  });
 
-  mainWindow.on('close', (event) => {
-    event.preventDefault() // Prevent default quit behavior
-    mainWindow.webContents.send('check-unsaved-changes') // Notify React app
-  })
+  mainWindow.on("close", (event) => {
+    event.preventDefault(); // Prevent default quit behavior
+    mainWindow.webContents.send("check-unsaved-changes"); // Notify React app
+  });
 
-  app.on('ready', () => {
-    process.chdir(path.dirname(app.getPath('exe'))); // Ensures correct working directory
+  app.on("ready", () => {
+    process.chdir(path.dirname(app.getPath("exe"))); // Ensures correct working directory
   });
 
   // Use in Dev
@@ -73,7 +80,6 @@ app.whenReady().then(() => {
   // MACOS: npx @electron/packager <full path to local repo> SharpNote --platform=darwin --arch=x64
   // REMOVE DIST BEFORE MOVING ON TO DIFFERENT PLATFORM; ESPECIALLY WHEN BUILDING MACOS AS NOT DOING SO WILL CAUSE THE MACOS BUILD TO CONTAIN THE DIST FOLDER
   // Output should be in the 'dist' folder
-
 
   // USE THIS WHEN BUILDING
   // mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -122,9 +128,9 @@ ipcMain.handle("export-database", async (event, defaultFilename) => {
   }
 });
 
-ipcMain.on('confirm-quit', () => {
-  app.exit() // Quit when confirmed
-})
+ipcMain.on("confirm-quit", () => {
+  app.exit(); // Quit when confirmed
+});
 
 // Fetch all notes
 ipcMain.handle("get-notes", () => {
@@ -216,7 +222,10 @@ ipcMain.handle("update-note", (_, updatedNote) => {
     if (result.changes > 0) {
       return { success: true };
     } else {
-      return { success: false, message: "No rows were updated. The noteID might be incorrect." };
+      return {
+        success: false,
+        message: "No rows were updated. The noteID might be incorrect.",
+      };
     }
   } catch (error) {
     return { success: false, error: error.message };
@@ -242,7 +251,10 @@ ipcMain.handle("update-folder", (_, updatedFolder) => {
     if (result.changes > 0) {
       return { success: true };
     } else {
-      return { success: false, message: "No rows were updated. The folderID might be incorrect." };
+      return {
+        success: false,
+        message: "No rows were updated. The folderID might be incorrect.",
+      };
     }
   } catch (error) {
     return { success: false, error: error.message };
@@ -264,7 +276,10 @@ ipcMain.handle("set-notefolder", (_, updatedNote) => {
     if (result.changes > 0) {
       return { success: true };
     } else {
-      return { success: false, message: "No rows were updated. The noteID might be incorrect." };
+      return {
+        success: false,
+        message: "No rows were updated. The noteID might be incorrect.",
+      };
     }
   } catch (error) {
     return { success: false, error: error.message };
@@ -280,13 +295,19 @@ ipcMain.handle("set-foldernotes", (_, updatedFolder) => {
       WHERE folderID = ?
     `);
 
-    stmt.run(JSON.stringify(updatedFolder.folderNotes || []), updatedFolder.folderID);
+    stmt.run(
+      JSON.stringify(updatedFolder.folderNotes || []),
+      updatedFolder.folderID
+    );
 
     // Check if any rows were updated
     if (result.changes > 0) {
       return { success: true };
     } else {
-      return { success: false, message: "No rows were updated. The noteID might be incorrect." };
+      return {
+        success: false,
+        message: "No rows were updated. The noteID might be incorrect.",
+      };
     }
   } catch (error) {
     return { success: false, error: error.message };
@@ -305,11 +326,11 @@ ipcMain.handle("delete-folder", (_, folderID) => {
   stmt.run(folderID);
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
   }
-})
+});
 
 let appPath = app.getAppPath();
 
@@ -322,23 +343,24 @@ let configPath = appPath + "/sharpnote-config.json";
 
 // Default configuration
 const defaultConfig = {
-  "username": null,
-  "welcomePopupSeen": false,
-  "userSettings": {
-    "autoSave": true,
-    "showMenubarIcons": true,
-    "noteItemStyle": "normal",
-    "showUnsavedChangesWarning": true,
-    "disableImportChecks": false,
-    "folderDeleteBehaviour": "deletenotes",
-    "showTextStatistics": true,
-    "showNoteCounter": false,
-    "disableDnD": false
+  username: null,
+  welcomePopupSeen: false,
+  userSettings: {
+    autoSave: true,
+    showMenubarIcons: true,
+    noteItemStyle: "normal",
+    showUnsavedChangesWarning: true,
+    disableImportChecks: false,
+    folderDeleteBehaviour: "deletenotes",
+    showTextStatistics: true,
+    showNoteCounter: false,
+    disableDnD: false,
+    spellCheck: true,
   },
-  "structure": {
-    "folders": [],
-    "rootOrder": []
-  }
+  structure: {
+    folders: [],
+    rootOrder: [],
+  },
 };
 
 // Read settings
@@ -347,7 +369,11 @@ ipcMain.handle("get-settings", async () => {
     // Check if the config file exists
     if (!fs.existsSync(configPath)) {
       // If not, write the default config to the file
-      fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2), "utf8");
+      fs.writeFileSync(
+        configPath,
+        JSON.stringify(defaultConfig, null, 2),
+        "utf8"
+      );
       console.log("Config file created with default settings.");
     }
     const data = fs.readFileSync(configPath, "utf8");
@@ -370,7 +396,7 @@ ipcMain.handle("save-settings", async (event, settings) => {
 });
 
 // New handler to update only the lastOpened property
-ipcMain.handle('update-note-last-opened', async (event, noteID) => {
+ipcMain.handle("update-note-last-opened", async (event, noteID) => {
   try {
     // Assuming you have a function that updates a single field for a note
     const updatedNote = await updateNoteLastOpened(noteID); // Implement this function
@@ -378,7 +404,7 @@ ipcMain.handle('update-note-last-opened', async (event, noteID) => {
     return updatedNote; // Return the updated note (just lastOpened)
   } catch (error) {
     console.error("Error updating lastOpened:", error);
-    throw error;  // Propagate the error to the renderer
+    throw error; // Propagate the error to the renderer
   }
 });
 
@@ -397,45 +423,44 @@ ipcMain.handle("toggle-fullscreen", (event, mode) => {
   mainWindow.setFullScreen(mode);
 });
 
-ipcMain.handle('get-storage-usage', async () => {
+ipcMain.handle("get-storage-usage", async () => {
   try {
-      const appDataPath = path.join(__dirname); // App root folder
-      const dbPath = path.join(appDataPath, 'sharpnote.db'); 
+    const appDataPath = path.join(__dirname); // App root folder
+    const dbPath = path.join(appDataPath, "sharpnote.db");
 
-      let dbSize = 0;
-      if (fs.existsSync(dbPath)) {
-          const stats = fs.statSync(dbPath);
-          dbSize = stats.size; // Size in bytes
+    let dbSize = 0;
+    if (fs.existsSync(dbPath)) {
+      const stats = fs.statSync(dbPath);
+      dbSize = stats.size; // Size in bytes
+    }
+
+    // Calculate total storage used by the app itself
+    const getDirectorySize = (dirPath) => {
+      let totalSize = 0;
+      const files = fs.readdirSync(dirPath);
+
+      for (const file of files) {
+        const filePath = path.join(dirPath, file);
+        const stats = fs.statSync(filePath);
+
+        if (stats.isDirectory()) {
+          totalSize += getDirectorySize(filePath);
+        } else {
+          totalSize += stats.size;
+        }
       }
+      return totalSize;
+    };
 
-      // Calculate total storage used by the app itself
-      const getDirectorySize = (dirPath) => {
-          let totalSize = 0;
-          const files = fs.readdirSync(dirPath);
+    const appStorageUsed = getDirectorySize(appDataPath);
 
-          for (const file of files) {
-              const filePath = path.join(dirPath, file);
-              const stats = fs.statSync(filePath);
-
-              if (stats.isDirectory()) {
-                  totalSize += getDirectorySize(filePath);
-              } else {
-                  totalSize += stats.size;
-              }
-          }
-          return totalSize;
-      };
-
-      const appStorageUsed = getDirectorySize(appDataPath);
-
-      return {
-          appStorageUsed, // Total space used by the app (bytes)
-          dbSize          // Space used by `sharpnote.db` (bytes)
-      };
-
+    return {
+      appStorageUsed, // Total space used by the app (bytes)
+      dbSize, // Space used by `sharpnote.db` (bytes)
+    };
   } catch (error) {
-      console.error('Error getting storage usage:', error);
-      return { appStorageUsed: 0, dbSize: 0 }; 
+    console.error("Error getting storage usage:", error);
+    return { appStorageUsed: 0, dbSize: 0 };
   }
 });
 
@@ -451,6 +476,8 @@ async function updateNoteLastOpened(noteID) {
   stmt.run(new Date().toISOString(), noteID);
 
   // Fetch and return the updated note (optional, based on your app logic)
-  const updatedNote = db.prepare('SELECT * FROM notes WHERE noteID = ?').get(noteID);
+  const updatedNote = db
+    .prepare("SELECT * FROM notes WHERE noteID = ?")
+    .get(noteID);
   return updatedNote;
 }
