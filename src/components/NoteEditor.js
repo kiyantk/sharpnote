@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 
-const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChange, onActiveEditorContentUpdate, onNoteChanged, hasClickedAwayFromStartScreen }) => {
+const NoteEditor = ({
+  selectedNote,
+  onUpdateNote,
+  settings,
+  onAutoSaveStatusChange,
+  onActiveEditorContentUpdate,
+  onNoteChanged,
+  hasClickedAwayFromStartScreen,
+}) => {
   const [content, setContent] = useState(selectedNote?.noteContent || "");
   const [lastSaved, setLastSaved] = useState(selectedNote?.lastSaved || "");
 
-  let selectedNoteDeepCopy = { ...selectedNote }
+  let selectedNoteDeepCopy = { ...selectedNote };
 
   // Effect for auto-saving the note
   useEffect(() => {
@@ -14,12 +22,28 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
     if (settings?.userSettings.autoSave) {
       // Start the auto-save timer (every minute)
       autoSaveInterval = setInterval(() => {
-        if(selectedNote && (selectedNote.noteContent !== "" || content !== "")) {
+        if (
+          selectedNote &&
+          (selectedNote.noteContent !== "" || content !== "")
+        ) {
           // If a note is open
-          if (content !== new TextDecoder().decode(Uint8Array.from(atob(selectedNote.noteContent), c => c.charCodeAt(0)))) {
+          if (
+            content !==
+            new TextDecoder().decode(
+              Uint8Array.from(atob(selectedNote.noteContent), (c) =>
+                c.charCodeAt(0)
+              )
+            )
+          ) {
             // If the editor content is not the same as the latest stored noteContent, trigger update
-            const encodedContent = btoa(String.fromCharCode(...new TextEncoder().encode(content)))
-            const updatedNote = { ...selectedNote, noteContent: encodedContent, lastSaved: new Date().toISOString() };
+            const encodedContent = btoa(
+              String.fromCharCode(...new TextEncoder().encode(content))
+            );
+            const updatedNote = {
+              ...selectedNote,
+              noteContent: encodedContent,
+              lastSaved: new Date().toISOString(),
+            };
             onNoteChanged(false);
             onUpdateNote(updatedNote); // Update note in DB and state
             setLastSaved(updatedNote.lastSaved); // Update the last saved time
@@ -43,8 +67,16 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
 
   // Update content state whenever selectedNote changes
   useEffect(() => {
-    if(selectedNote) {
-      setContent(selectedNote.noteContent ? new TextDecoder().decode(Uint8Array.from(atob(selectedNote.noteContent), c => c.charCodeAt(0))) : "");
+    if (selectedNote) {
+      setContent(
+        selectedNote.noteContent
+          ? new TextDecoder().decode(
+              Uint8Array.from(atob(selectedNote.noteContent), (c) =>
+                c.charCodeAt(0)
+              )
+            )
+          : ""
+      );
     }
     // setContent(selectedNote?.noteContent || ""); // Update content whenever selectedNote changes
   }, [selectedNote]);
@@ -52,36 +84,45 @@ const NoteEditor = ({ selectedNote, onUpdateNote, settings, onAutoSaveStatusChan
   // Handle manual content update
   const handleUpdate = (field, value) => {
     setContent(value); // Update content state
-    selectedNoteDeepCopy.noteContent = value
+    selectedNoteDeepCopy.noteContent = value;
     onNoteChanged(true);
-    if(settings?.userSettings.autoSave) {
+    if (settings?.userSettings.autoSave) {
       onAutoSaveStatusChange(3); // Mark as "unsaved changes"
     }
-    onActiveEditorContentUpdate(value)
+    onActiveEditorContentUpdate(value);
   };
-    
+
   // If no note is selected, show start screen
   if (!selectedNote && !hasClickedAwayFromStartScreen) {
     return (
-        <div className="editor editor-empty">
-            <img className="editor-icon" src={process.env.PUBLIC_URL + "/logo-v1-light-darkgraytransparant-sharp.png"} alt="Logo" />
-            <p className="editor-empty-title">Welcome to SharpNote</p>
-            <p className="editor-empty-text">Click on 'New Note' on the left panel to create a new note.</p>
-        </div>
+      <div className="editor editor-empty">
+        <img
+          className="editor-icon"
+          src={
+            process.env.PUBLIC_URL +
+            "/logo-v1-light-darkgraytransparant-sharp.png"
+          }
+          alt="Logo"
+        />
+        <p className="editor-empty-title">Welcome to SharpNote</p>
+        <p className="editor-empty-text">
+          Click on 'New Note' on the left panel to create a new note.
+        </p>
+      </div>
     );
-  } 
+  }
 
   if (!selectedNote && hasClickedAwayFromStartScreen) {
-    return (
-        <div className="editor editor-empty"></div>
-    );
-  } 
+    return <div className="editor editor-empty"></div>;
+  }
 
   return (
     <div className="editor">
       <textarea
         value={content}
+        id="sharpnote-editor"
         disabled={selectedNote && selectedNote.isReadonly === 1}
+        spellCheck={settings?.userSettings.spellCheck.toString()}
         onInput={(e) => handleUpdate("noteContent", e.target.value)}
       />
     </div>
