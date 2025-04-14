@@ -118,6 +118,7 @@ const NoteEditor = ({
 
   return (
     <div className="editor">
+      <div className="editor-ribbon"></div>
       <textarea
         value={content}
         id="sharpnote-editor"

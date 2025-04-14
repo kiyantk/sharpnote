@@ -26,7 +26,8 @@ app.whenReady().then(() => {
       enableRemoteModule: false,
       nodeIntegration: false, // Prevent unsafe access
     },
-    backgroundColor: "#222222",
+    titleBarStyle: 'hidden',
+    backgroundColor: '#222222'
   });
 
   app.on("browser-window-focus", () => {

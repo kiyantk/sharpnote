@@ -175,11 +175,13 @@ const MenuBar = ({
 
   return (
     <div className="menu-bar">
+      <img className="menubar-icon" src={process.env.PUBLIC_URL + "/favicon.ico"} alt="Logo" />
       <button onClick={(e) => toggleDropdown(e, "file")}>File</button>
       <button onClick={(e) => toggleDropdown(e, "edit")}>Edit</button>
       <button onClick={(e) => toggleDropdown(e, "view")}>View</button>
       <button onClick={(e) => toggleDropdown(e, "help")}>Help</button>
-      {isDropdownOpen && dropdownType === "file" && (
+      <button className="menubar-close-btn" onClick={closeSharpnote}><FontAwesomeIcon icon={faXmark}/></button>
+      {(isDropdownOpen && dropdownType === "file") && (
         <div className="menubar-dropdown-overlay">
           <div
             ref={menuRef}
